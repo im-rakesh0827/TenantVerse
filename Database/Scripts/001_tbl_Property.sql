@@ -1,0 +1,23 @@
+CREATE TABLE tbl_Property
+(
+    PropertyId INT IDENTITY(1,1) PRIMARY KEY,
+    PropertyCode NVARCHAR(20) NOT NULL,
+    PropertyName NVARCHAR(150) NOT NULL,
+    OwnerName NVARCHAR(150) NOT NULL,
+    Email NVARCHAR(150) NULL,
+    PhoneNumber NVARCHAR(20) NULL,
+    AddressLine1 NVARCHAR(250) NOT NULL,
+    AddressLine2 NVARCHAR(250) NULL,
+    City NVARCHAR(100) NOT NULL,
+    State NVARCHAR(100) NOT NULL,
+    PostalCode NVARCHAR(20) NOT NULL,
+    Country NVARCHAR(100) NOT NULL,
+    TotalFloors INT NOT NULL,
+    TotalFlats INT NOT NULL,
+    Description NVARCHAR(500) NULL,
+    IsActive BIT NOT NULL DEFAULT(1),
+    CreatedOn DATETIME2 NOT NULL DEFAULT(GETUTCDATE()),
+    CreatedBy NVARCHAR(100) NULL,
+    UpdatedOn DATETIME2 NULL,
+    UpdatedBy NVARCHAR(100) NULL
+);

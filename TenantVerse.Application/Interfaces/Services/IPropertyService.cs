@@ -1,0 +1,17 @@
+using TenantVerse.Application.DTOs.Property;
+
+namespace TenantVerse.Application.Interfaces.Services;
+
+public interface IPropertyService
+{
+    Task<int> CreateAsync(CreatePropertyRequest request);
+
+    Task<IEnumerable<PropertyListResponse>> GetAllAsync();
+
+    Task<PropertyResponse?> GetByIdAsync(int propertyId);
+
+    Task<bool> UpdateAsync(UpdatePropertyRequest request);
+
+    Task<bool> DeleteAsync(int propertyId, string updatedBy);
+}
+

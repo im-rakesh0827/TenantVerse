@@ -1,0 +1,31 @@
+<MudOverlay Visible="@Visible"
+            DarkBackground="false"
+            Absolute="@Absolute"
+            ZIndex="@ZIndex"
+            AutoClose="false"
+            Class="@($"{OverlayClass} d-flex flex-column justify-center align-center")">
+
+    <div class="loader-spinner"
+         style="@($"width:{LoaderSize}px; height:{LoaderSize}px; border-top-color:{LoaderColor};")">
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(Text))
+    {
+        <MudText Typo="Typo.body2"
+                 Color="Color.Primary"
+                 Class="mt-4">
+            @Text
+        </MudText>
+    }
+
+</MudOverlay>
+
+@code {
+    [Parameter] public bool Visible { get; set; }
+    [Parameter] public string Text { get; set; } = "Loading...";
+    [Parameter] public string LoaderColor { get; set; } = "rgba(89,74,226,1)";
+    [Parameter] public int LoaderSize { get; set; } = 50;
+    [Parameter] public bool Absolute { get; set; } = true;
+    [Parameter] public int ZIndex { get; set; } = 2000;
+    [Parameter] public string OverlayClass { get; set; } = "custom-loader-overlay";
+}

@@ -1,0 +1,144 @@
+﻿@inherits LayoutComponentBase
+@inject IJSRuntime JS
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+<MudThemeProvider />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+@if (!_loading)
+{
+    <MudLayout>
+
+        <!-- TOP BAR -->
+        <MudAppBar Elevation="1" Color="Color.Primary">
+
+            <MudIconButton Icon="@Icons.Material.Filled.Menu"
+                           Edge="Edge.Start"
+                           Color="Color.Inherit"
+                           OnClick="ToggleDrawer" />
+
+            <MudText Typo="Typo.h6" Class="ml-2">
+                TenantVerse
+            </MudText>
+
+            <MudSpacer />
+
+            <MudIconButton Icon="@Icons.Material.Filled.Notifications"
+                           Color="Color.Inherit" />
+
+            <MudAvatar Color="Color.Secondary" Class="ms-2">
+                RK
+            </MudAvatar>
+
+        </MudAppBar>
+
+        <!-- SIDEBAR -->
+        <MudDrawer @bind-Open="_drawerOpen"
+                   ClipMode="DrawerClipMode.Always"
+                   Variant="DrawerVariant.Responsive"
+                   Breakpoint="Breakpoint.Md"
+                   Elevation="2">
+
+            <MudNavMenu Dense="true">
+
+                <MudNavLink Href="/"
+                            Match="NavLinkMatch.All"
+                            Icon="@Icons.Material.Filled.Dashboard">
+                    Dashboard
+                </MudNavLink>
+
+                <MudNavLink Href="/property"
+                            Icon="@Icons.Material.Filled.Business">
+                    Properties
+                </MudNavLink>
+
+                <MudNavLink Href="/flat"
+                            Icon="@Icons.Material.Filled.Apartment">
+                    Flats
+                </MudNavLink>
+
+                <MudNavLink Href="/tenant"
+                            Icon="@Icons.Material.Filled.People">
+                    Tenants
+                </MudNavLink>
+
+                <MudNavLink Href="/invoice"
+                            Icon="@Icons.Material.Filled.ReceiptLong">
+                    Invoices
+                </MudNavLink>
+
+                <MudNavLink Href="/payment"
+                            Icon="@Icons.Material.Filled.Payments">
+                    Payments
+                </MudNavLink>
+
+            </MudNavMenu>
+
+        </MudDrawer>
+
+        <!-- PAGE -->
+        <MudMainContent>
+
+            <MudContainer MaxWidth="MaxWidth.False"
+                          Class="pa-6">
+
+                @Body
+
+            </MudContainer>
+
+        </MudMainContent>
+
+    </MudLayout>
+}
+else
+{
+    <MudContainer MaxWidth="MaxWidth.False"
+                  Class="d-flex justify-center align-center"
+                  Style="height:100vh;">
+
+        <MudProgressCircular
+            Indeterminate="true"
+            Color="Color.Primary"
+            Size="Size.Large" />
+
+    </MudContainer>
+}
+
+
+@* 
+@code
+{
+    private bool _drawerOpen = true;
+    private bool _loading = true;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                _drawerOpen = await JS.InvokeAsync<bool>(
+                    "tenantVerse.getDrawerState");
+            }
+            catch
+            {
+                _drawerOpen = true;
+            }
+
+            _loading = false;
+
+            StateHasChanged();
+        }
+    }
+
+    private async Task ToggleDrawer()
+    {
+        _drawerOpen = !_drawerOpen;
+
+        await JS.InvokeVoidAsync(
+            "tenantVerse.saveDrawerState",
+            _drawerOpen);
+    }
+} *@
+

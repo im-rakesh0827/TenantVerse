@@ -1,0 +1,30 @@
+
+<Loader Text="@Text" IsVisible="@IsVisible"/>
+
+@code {
+    [Parameter]
+    public string Text { get; set; } = "Loading...";
+    
+
+    [Parameter]
+    public Color Color { get; set; } = Color.Secondary;
+    [Parameter]
+    public Size Size { get; set; } = Size.Large;
+
+    [Parameter]
+    public string LoaderColor { get; set; } = "rgba(89,74,226,1)";
+
+    [Parameter]
+    public int LoaderSize { get; set; } = 1;
+
+    [Parameter]
+    public string CssClass { get; set; }
+        = "d-flex flex-column justify-center align-center pa-10";
+
+    [Parameter]
+    public string Style { get; set; }
+        = "min-height:350px;";
+
+    [Parameter] 
+    public bool IsVisible { get; set; }
+} 

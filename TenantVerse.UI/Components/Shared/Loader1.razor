@@ -1,0 +1,31 @@
+<MudPaper Class="@CssClass"
+          Style="@Style">
+
+    <MudProgressCircular
+        Color="@Color"
+        Indeterminate="true"
+        Size="@Size" />
+
+    @if (!string.IsNullOrWhiteSpace(Text))
+    {
+        <MudText Typo="Typo.body2"
+                 Color="Color.Secondary"
+                 Class="mt-4">
+            @Text
+        </MudText>
+    }
+
+</MudPaper>
+
+@code {
+
+    [Parameter]
+    public string Text { get; set; } = "Loading...";
+
+    public Color Color { get; set; } = Color.Primary;
+    public Size Size { get; set; } = Size.Large;
+    public string CssClass { get; set; }
+        = "d-flex flex-column justify-center align-center pa-10";
+    public string Style { get; set; }
+        = "min-height:350px;";
+}

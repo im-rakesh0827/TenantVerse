@@ -1,0 +1,136 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using TenantVerse.UI.Models.Property;
+using TenantVerse.UI.Services;
+
+
+using Microsoft.AspNetCore.Components;
+
+using MudBlazor;
+
+
+
+namespace TenantVerse.UI.Components.Pages.Property
+{
+    public partial class PropertyList
+    {
+
+          [Inject]
+          protected PropertyService PropertyService { get; set; } = default!;
+          [Inject]
+          protected NavigationManager Navigation { get; set; } = default!;
+          [Inject]
+          protected ISnackbar Snackbar { get; set; } = default!;
+          [Inject]
+          protected HttpClient Http { get; set; } = default!;
+          [Inject]
+          protected PropertyState PropertyState { get; set; } = default!;
+          protected List<PropertyDto> properties = new();
+          protected bool IsLoading = true;
+          protected int TotalPropertyCount {get; set;} = 0;
+
+          protected string SearchString = string.Empty;
+          protected IEnumerable<PropertyDto> FilteredProperties =>string.IsNullOrWhiteSpace(SearchString)? properties:properties.Where(FilterProperty);
+
+          protected override async Task OnInitializedAsync()
+          {
+               StateHasChanged();
+               await LoadProperties();
+          }
+          private void NavigateToCreate()
+          {
+               Navigation.NavigateTo("/property/create");
+          }
+
+          private async Task DeleteProperty(int propertyId){
+               // string UserName ="TestUser";
+               // //var response = await Http.DeleteAsync($"http://localhost:5168/api/Property/delete/{propertyId}");
+               // var isDeleted = await PropertyService.DeleteAsync(propertyId,UserName);
+               // if (isDeleted)
+               // {
+               //      Snackbar.Add("Property deleted successfully.", Severity.Success);
+               //      await LoadProperties();
+               // }
+               // else
+               // {
+               //      Snackbar.Add("Failed to delete property.", Severity.Error);
+               // }
+          
+               string name = properties.FirstOrDefault(p => p.PropertyId == propertyId)?.PropertyName ?? "this property";
+               string userName = "TestUser";
+               var parameters = new DialogParameters
+               {
+                    { nameof(ConfirmDialog.Title), "Delete Confirmation" },
+                    { nameof(ConfirmDialog.Message), $"Are you sure you want to delete '{name}'?" },
+                    { nameof(ConfirmDialog.ConfirmButtonText), "Delete" }
+               };
+
+               var options = new DialogOptions
+               {
+                    CloseOnEscapeKey = true,
+                    MaxWidth = MaxWidth.ExtraSmall,
+                    FullWidth = true
+               };
+
+               var dialog = await DialogService.ShowAsync<ConfirmDialog>("", parameters, options);
+               var result = await dialog.Result;
+
+               if (result is not null && !result.Canceled)
+               {
+                    IsLoading=true;
+                    var isDeleted = await PropertyService.DeleteAsync(propertyId,userName);
+                    if (isDeleted)
+                    {
+                         PropertyState.Properties.RemoveAll(x => x.PropertyId == propertyId);
+                         Snackbar.Add("Property deleted successfully.", Severity.Success);
+                         await LoadProperties();
+                    }
+                    else
+                    {
+                         Snackbar.Add("Failed to delete property.", Severity.Error);
+                    }
+               }
+               IsLoading=false;
+          }
+
+          private async Task LoadProperties(){
+               IsLoading = true;
+               if (!PropertyState.IsLoaded)
+               {
+                    await Task.Delay(1000);
+                    var data = await PropertyService.GetAllAsync();
+                    PropertyState.Set(data);
+               }
+               properties = PropertyState.Properties;
+               TotalPropertyCount =properties.Count();
+               IsLoading = false;
+               Navigation.NavigateTo("/property");
+          }
+
+          private void UpdateOrView(int id, bool _isEditMode)
+          {   
+               var property = PropertyState.Properties.FirstOrDefault(x=>x.PropertyId==id);
+               PropertyState.SelectedProperty = property;
+               PropertyState._IsEditMode = _isEditMode;
+               // Navigation.NavigateTo($"/property/edit/{id}?IsEditMode={_isEditMode}");
+               Navigation.NavigateTo($"/property/edit/{id}");
+
+          }
+
+          private bool FilterProperty(PropertyDto property)
+          {
+               if (string.IsNullOrWhiteSpace(SearchString))
+                    return true;
+
+               return
+                    property.PropertyCode.Contains(SearchString, StringComparison.OrdinalIgnoreCase) ||
+                    property.PropertyName.Contains(SearchString, StringComparison.OrdinalIgnoreCase) ||
+                    property.OwnerName.Contains(SearchString, StringComparison.OrdinalIgnoreCase) ||
+                    property.City.Contains(SearchString, StringComparison.OrdinalIgnoreCase)||
+                    property.TotalFloors.ToString().Contains(SearchString, StringComparison.OrdinalIgnoreCase)||
+                    property.TotalFlats.ToString().Contains(SearchString, StringComparison.OrdinalIgnoreCase);
+          }
+     }
+}

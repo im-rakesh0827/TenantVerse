@@ -1,0 +1,32 @@
+
+<MudPaper Class="@CssClass"
+          Style="@Style">
+
+    <span class="loader1"
+          style="--color-1:@LoaderColor; --size:@($"{LoaderSize}px");">
+    </span>
+
+    @if (!string.IsNullOrWhiteSpace(Text))
+    {
+        <MudText Typo="Typo.body2"
+                 Color="Color.Primary"
+                 Class="mt-4">
+            @Text
+        </MudText>
+    }
+</MudPaper>
+
+@code {
+    [Parameter]
+    public string Text { get; set; } = "Loading...";
+    [Parameter] 
+    public bool IsVisible { get; set; }
+
+    public string LoaderColor { get; set; } = "rgba(89,74,226,1)";
+
+    public int LoaderSize { get; set; } = 1;
+
+    public string CssClass { get; set; } = "d-flex flex-column justify-center align-center pa-10";
+
+    public string Style { get; set; } = "min-height:350px;";
+}

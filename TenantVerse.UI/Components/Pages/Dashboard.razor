@@ -1,0 +1,128 @@
+@page "/"
+<PageTitle>Dashboard</PageTitle>
+<MudText Typo="Typo.h4" Class="mb-4">
+    Dashboard
+</MudText>
+
+@if (IsLoading)
+{
+    <LoaderComponent Text="Loading Dashboard..." IsVisible="@IsLoading" />
+}
+else
+{
+    <!-- Dashboard Cards -->
+    <MudGrid>
+        <!-- Total Properties -->
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Class="pa-4">
+
+                <MudText Typo="Typo.subtitle2" Color="Color.Secondary">
+                    Total Properties
+                </MudText>
+
+                <MudText Typo="Typo.h4">
+                    @TotalProperties
+                </MudText>
+
+            </MudPaper>
+        </MudItem>
+
+        <!-- Total Flats -->
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Class="pa-4">
+
+                <MudText Typo="Typo.subtitle2" Color="Color.Secondary">
+                    Total Flats
+                </MudText>
+
+                <MudText Typo="Typo.h4">
+                    @TotalFlats
+                </MudText>
+
+            </MudPaper>
+        </MudItem>
+
+        <!-- Active Tenants -->
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Class="pa-4">
+
+                <MudText Typo="Typo.subtitle2" Color="Color.Secondary">
+                    Active Tenants
+                </MudText>
+
+                <MudText Typo="Typo.h4">
+                    @ActiveTenants
+                </MudText>
+
+            </MudPaper>
+        </MudItem>
+
+        <!-- Pending Payments -->
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Class="pa-4">
+
+                <MudText Typo="Typo.subtitle2" Color="Color.Secondary">
+                    Pending Payments
+                </MudText>
+
+                <MudText Typo="Typo.h4">
+                    ₹@PendingPayments.ToString("N0")
+                </MudText>
+
+            </MudPaper>
+        </MudItem>
+
+    </MudGrid>
+
+    <MudDivider Class="my-6" />
+
+    <!-- Recent Properties -->
+    <MudPaper Class="pa-4">
+
+        <MudText Typo="Typo.h6" Class="mb-3">
+            Recent Properties
+        </MudText>
+
+        
+
+        <MudTable Items="_properties"
+                  Hover="true"
+                  Dense="true"
+                  Striped="true"
+                  Bordered="true"
+                  RowsPerPage="20">
+
+            <HeaderContent>
+
+                <MudTh>Code</MudTh>
+                <MudTh>Name</MudTh>
+                <MudTh>Owner</MudTh>
+                <MudTh>City</MudTh>
+
+            </HeaderContent>
+
+            <RowTemplate>
+
+                <MudTd>@context.PropertyCode</MudTd>
+                <MudTd>@context.PropertyName</MudTd>
+                <MudTd>@context.OwnerName</MudTd>
+                <MudTd>@context.City</MudTd>
+
+            </RowTemplate>
+
+            <NoRecordsContent>
+
+                <MudText Class="pa-4">
+                    No properties found.
+                </MudText>
+
+            </NoRecordsContent>
+
+            <PagerContent>
+               <MudTablePager PageSizeOptions="new int[] { 5, 10, 20, 50, 100, 200, 500 }" />
+          </PagerContent>
+
+        </MudTable>
+
+    </MudPaper>
+}
