@@ -3,10 +3,6 @@ using Dapper;
 using TenantVerse.Application.Interfaces.Repositories;
 using TenantVerse.Domain.Entities;
 using TenantVerse.Infrastructure.Persistence;
-using Dapper;
-using TenantVerse.Application.Interfaces.Repositories;
-using TenantVerse.Domain.Entities;
-using TenantVerse.Infrastructure.Persistence;
 
 namespace TenantVerse.Infrastructure.Repositories;
 

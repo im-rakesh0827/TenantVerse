@@ -1,0 +1,93 @@
+@page "/register"
+
+<PageTitle>Register</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Small" Class="mt-10">
+
+    <MudPaper Elevation="4" Class="pa-8">
+
+        <MudText Typo="Typo.h4"
+                 Align="Align.Center"
+                 GutterBottom="true">
+            Create Account
+        </MudText>
+
+        <MudText Typo="Typo.body2"
+                 Align="Align.Center"
+                 Class="mb-6">
+            Register to TenantVerse
+        </MudText>
+
+        <MudForm @ref="_form">
+
+            <MudGrid>
+
+                <MudItem xs="12" sm="6">
+                    <MudTextField T="string"
+                                  Label="First Name"
+                                  Variant="Variant.Outlined"
+                                  @bind-Value="_model.FirstName"
+                                  Required="true" />
+                </MudItem>
+
+                <MudItem xs="12" sm="6">
+                    <MudTextField T="string"
+                                  Label="Last Name"
+                                  Variant="Variant.Outlined"
+                                  @bind-Value="_model.LastName" />
+                </MudItem>
+
+                <MudItem xs="12">
+                    <MudTextField T="string"
+                                  Label="Email"
+                                  Variant="Variant.Outlined"
+                                  InputType="InputType.Email"
+                                  @bind-Value="_model.Email"
+                                  Required="true" />
+                </MudItem>
+
+                <MudItem xs="12">
+                    <MudTextField T="string"
+                                  Label="Phone Number"
+                                  Variant="Variant.Outlined"
+                                  @bind-Value="_model.PhoneNumber" />
+                </MudItem>
+
+                <MudItem xs="12">
+                    <MudTextField T="string"
+                                  Label="Password"
+                                  Variant="Variant.Outlined"
+                                  InputType="InputType.Password"
+                                  @bind-Value="_model.Password"
+                                  Required="true" />
+                </MudItem>
+
+                <MudItem xs="12">
+                    <MudTextField T="string"
+                                  Label="Confirm Password"
+                                  Variant="Variant.Outlined"
+                                  InputType="InputType.Password"
+                                  @bind-Value="_model.ConfirmPassword"
+                                  Required="true" />
+                </MudItem>
+
+                <MudItem xs="12" Class="mt-4">
+
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               FullWidth="true"
+                               Disabled="IsLoading"
+                               OnClick="RegisterAsync">
+                        Register
+
+                    </MudButton>
+
+                </MudItem>
+
+            </MudGrid>
+
+        </MudForm>
+
+    </MudPaper>
+
+</MudContainer>

@@ -6,8 +6,8 @@ using Microsoft.Extensions.DependencyInjection;
 using TenantVerse.Application.Interfaces;
 using TenantVerse.Application.Services;
 using TenantVerse.Application.Interfaces.Services;
-using TenantVerse.Application.Services;
-
+using TenantVerse.Application.Interfaces.Authentication;
+using TenantVerse.Application.Services.Authentication;
 
 namespace TenantVerse.Application
 {
@@ -17,6 +17,7 @@ namespace TenantVerse.Application
         {
             services.AddScoped<IHealthService, HealthService>();
             services.AddScoped<IPropertyService, PropertyService>();
+            services.AddScoped<IAuthService, AuthService>();
 
             return services;
         }

@@ -3,6 +3,9 @@ using Microsoft.Extensions.DependencyInjection;
 using TenantVerse.Application.Interfaces.Repositories;
 using TenantVerse.Infrastructure.Persistence;
 using TenantVerse.Infrastructure.Repositories;
+using TenantVerse.Application.Interfaces.Authentication;
+using TenantVerse.Infrastructure.Repositories.Authentication;
+using TenantVerse.Infrastructure.Services.Authentication;
 namespace TenantVerse.Infrastructure;
 
 public static class DependencyInjection
@@ -13,7 +16,8 @@ public static class DependencyInjection
     {
         services.AddSingleton<IDbConnectionFactory, SqlConnectionFactory>();
         services.AddScoped<IPropertyRepository, PropertyRepository>();
-
+        services.AddScoped<IAuthRepository, AuthRepository>();
+        services.AddScoped<IJwtService, JwtService>();
         return services;
     }
 }

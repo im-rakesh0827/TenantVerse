@@ -22,7 +22,7 @@ public class HealthController : ControllerBase
 
         var response = new ApiResponse<object>
         {
-            Success = true,
+            IsSuccess = true,
             Message = "TenantVerse API is running successfully.",
             Data = health
         };

@@ -9,8 +9,9 @@ public partial class Dashboard
 {
     [Inject]
     protected PropertyService PropertyService { get; set; } = default!;
+
     [Inject]
-    protected PropertyState PropertyState { get; set; } = default!;
+    protected StateContainer _StateContainer {get; set;} = default;
     
     private bool IsLoading = true;
 
@@ -50,14 +51,14 @@ public partial class Dashboard
         IsLoading = true;
         try
         {
-            if (!PropertyState.IsLoaded)
+            if (!_StateContainer.Property.IsLoaded)
             {
                 Console.WriteLine("Loading properties from API...1");
                 await Task.Delay(1000); 
                 var data = await PropertyService.GetAllAsync();
-                PropertyState.Set(data);
+                _StateContainer.Property.SetProperties(data);
             }
-            _properties = PropertyState.Properties;
+            _properties = _StateContainer.Property.Properties;
             TotalProperties = _properties.Count;
             TotalFlats = _properties.Sum(x => x.TotalFlats);
             ActiveTenants = 0;

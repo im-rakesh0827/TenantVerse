@@ -10,7 +10,7 @@ public static class ApiResponseHelper
     {
         return new ApiResponse<T>
         {
-            Success = true,
+            IsSuccess = true,
             Message = message,
             Data = data
         };
@@ -21,7 +21,7 @@ public static class ApiResponseHelper
     {
         return new ApiResponse<T>
         {
-            Success = false,
+            IsSuccess = false,
             Message = message,
             Data = default
         };

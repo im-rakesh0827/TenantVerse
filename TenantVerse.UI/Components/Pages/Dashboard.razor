@@ -1,4 +1,6 @@
-@page "/"
+@page "/dashboard"
+@* @attribute [Authorize] *@
+
 <PageTitle>Dashboard</PageTitle>
 <MudText Typo="Typo.h4" Class="mb-4">
     Dashboard
@@ -6,7 +8,8 @@
 
 @if (IsLoading)
 {
-    <LoaderComponent Text="Loading Dashboard..." IsVisible="@IsLoading" />
+    @* <LoaderComponent Text="Loading Dashboard..." IsVisible="@IsLoading" /> *@
+    <CustomLoaderComponent/>
 }
 else
 {

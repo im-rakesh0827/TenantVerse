@@ -31,7 +31,7 @@ public class GlobalExceptionMiddleware
 
             var response = new ApiResponse<object>
             {
-                Success = false,
+                IsSuccess = false,
                 Message = "An unexpected error occurred.",
                 Errors = new()
                 {

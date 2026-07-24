@@ -4,13 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using TenantVerse.UI.Models.Property;
 using TenantVerse.UI.Services;
-
-
 using Microsoft.AspNetCore.Components;
-
 using MudBlazor;
-
-
 
 namespace TenantVerse.UI.Components.Pages.Property
 {
@@ -25,8 +20,9 @@ namespace TenantVerse.UI.Components.Pages.Property
           protected ISnackbar Snackbar { get; set; } = default!;
           [Inject]
           protected HttpClient Http { get; set; } = default!;
+
           [Inject]
-          protected PropertyState PropertyState { get; set; } = default!;
+          protected StateContainer _StateContainer{get; set;} = default;
           protected List<PropertyDto> properties = new();
           protected bool IsLoading = true;
           protected int TotalPropertyCount {get; set;} = 0;
@@ -83,7 +79,7 @@ namespace TenantVerse.UI.Components.Pages.Property
                     var isDeleted = await PropertyService.DeleteAsync(propertyId,userName);
                     if (isDeleted)
                     {
-                         PropertyState.Properties.RemoveAll(x => x.PropertyId == propertyId);
+                         _StateContainer.Property.Properties.RemoveAll(x => x.PropertyId == propertyId);
                          Snackbar.Add("Property deleted successfully.", Severity.Success);
                          await LoadProperties();
                     }
@@ -97,13 +93,13 @@ namespace TenantVerse.UI.Components.Pages.Property
 
           private async Task LoadProperties(){
                IsLoading = true;
-               if (!PropertyState.IsLoaded)
+               if (!_StateContainer.Property.IsLoaded)
                {
                     await Task.Delay(1000);
                     var data = await PropertyService.GetAllAsync();
-                    PropertyState.Set(data);
+                    _StateContainer.Property.SetProperties(data);
                }
-               properties = PropertyState.Properties;
+               properties = _StateContainer.Property.Properties;
                TotalPropertyCount =properties.Count();
                IsLoading = false;
                Navigation.NavigateTo("/property");
@@ -111,9 +107,10 @@ namespace TenantVerse.UI.Components.Pages.Property
 
           private void UpdateOrView(int id, bool _isEditMode)
           {   
-               var property = PropertyState.Properties.FirstOrDefault(x=>x.PropertyId==id);
-               PropertyState.SelectedProperty = property;
-               PropertyState._IsEditMode = _isEditMode;
+               var property = _StateContainer.Property.Properties.FirstOrDefault(x=>x.PropertyId==id);
+               _StateContainer.Property.SetSelectedProperty(property);
+               _StateContainer.Property.SetEditMode(_isEditMode);
+               _StateContainer.Property.SetPropertyId(id);
                // Navigation.NavigateTo($"/property/edit/{id}?IsEditMode={_isEditMode}");
                Navigation.NavigateTo($"/property/edit/{id}");
 

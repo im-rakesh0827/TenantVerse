@@ -1,7 +1,8 @@
 using System.Net.Http.Json;
 using TenantVerse.UI.Models.Common;
 using TenantVerse.UI.Models.Property;
-
+using System.Net.Http.Headers;
+using Blazored.LocalStorage;
 namespace TenantVerse.UI.Services;
 
 public class PropertyService
@@ -12,6 +13,23 @@ public class PropertyService
     {
         _httpClient = factory.CreateClient("TenantVerseApi");
     }
+
+    // public PropertyService(
+    // IHttpClientFactory factory,
+    // ILocalStorageService localStorage)
+    // {
+    //     _httpClient = factory.CreateClient("TenantVerseAPI");
+
+    //     var token = localStorage.GetItemAsStringAsync("token")
+    //                             .GetAwaiter()
+    //                             .GetResult();
+
+    //     if (!string.IsNullOrWhiteSpace(token))
+    //     {
+    //         _httpClient.DefaultRequestHeaders.Authorization =
+    //             new AuthenticationHeaderValue("Bearer", token);
+    //     }
+    // }
     private string baseUrl = "http://localhost:5168/api/Property";
 
     public async Task<List<PropertyDto>> GetAllAsync()

@@ -3,9 +3,10 @@ using TenantVerse.Application.DTOs.Property;
 using TenantVerse.Application.Interfaces.Services;
 using TenantVerse.Shared.Models;
 using TenantVerse.Shared.Helpers;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TenantVerse.API.Controllers;
-
+// [Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class PropertyController : ControllerBase
@@ -24,7 +25,7 @@ public class PropertyController : ControllerBase
 
         var response = new ApiResponse<int>
         {
-            Success = true,
+            IsSuccess = true,
             Message = "Property created successfully.",
             Data = propertyId
         };
@@ -39,7 +40,7 @@ public class PropertyController : ControllerBase
 
         var response = new ApiResponse<IEnumerable<PropertyListResponse>>
         {
-            Success = true,
+            IsSuccess = true,
             Message = "Properties retrieved successfully.",
             Data = properties
         };
