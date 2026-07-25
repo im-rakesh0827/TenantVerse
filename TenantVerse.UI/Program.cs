@@ -51,11 +51,17 @@ builder.Services.AddTransient<AuthorizationMessageHandler>();
 // ------------------------------------------------------------
 // HttpClient
 // ------------------------------------------------------------
+// builder.Services.AddHttpClient("TenantVerseAPI", client =>
+// {
+//     client.BaseAddress = new Uri("https://localhost:7148/");
+// })
+// .AddHttpMessageHandler<AuthorizationMessageHandler>();
+
+
 builder.Services.AddHttpClient("TenantVerseAPI", client =>
 {
     client.BaseAddress = new Uri("https://localhost:7148/");
-})
-.AddHttpMessageHandler<AuthorizationMessageHandler>();
+});
 
 
 builder.Services.AddScoped(sp =>

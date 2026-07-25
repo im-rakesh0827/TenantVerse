@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using TenantVerse.Shared.Models.Authentication.Requests;
 using TenantVerse.UI.Services.Authentication;
+using Blazored.LocalStorage;
 namespace TenantVerse.UI.Features.Authentication;
 
 public partial class LoginPage
@@ -17,52 +18,84 @@ public partial class LoginPage
 
     [Inject]
     private NavigationManager NavigationManager { get; set; } = default!;
+    [Inject]
+    private ILocalStorageService LocalStorage { get; set; } = default!;
 
     private bool IsLoading;
 
-private LoginRequest _model = new();
+    private LoginRequest _model = new();
 
-private async Task LoginAsync()
-{
-    await _form!.Validate();
 
-    if (!_form.IsValid)
-        return;
-
-    IsLoading = true;
-
-    try
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        var response = await AuthService.LoginAsync(_model);
-        if (response == null)
-        {
-            Snackbar.Add("Unable to connect to server.", Severity.Error);
+        if (!firstRender)
             return;
-        }
 
-        if (response.IsSuccess)
+        try
         {
-            Snackbar.Add(response.Message, Severity.Success);
+            var token = await LocalStorage.GetItemAsync<string>("token");
 
-            _model = new LoginRequest();
-
-            await Task.Delay(1000);
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                NavigationManager.NavigateTo("/login");
+            }
+            else
+            {
+                NavigationManager.NavigateTo("/dashboard");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
 
             NavigationManager.NavigateTo("/login");
         }
-        else
-        {
-            Snackbar.Add(response.Message, Severity.Error);
-        }
+    }
 
-    }
-    catch (Exception ex)
+    private async Task LoginAsync()
     {
-        Snackbar.Add(ex.Message, Severity.Error);
+        await _form!.Validate();
+
+        if (!_form.IsValid)
+            return;
+
+        IsLoading = true;
+
+        try
+        {
+            var response = await AuthService.LoginAsync(_model);
+            if (response == null)
+            {
+                Snackbar.Add("Unable to connect to server.", Severity.Error);
+                return;
+            }
+
+            if (response.IsSuccess)
+            {
+                Snackbar.Add(response.Message, Severity.Success);
+
+                // Save JWT Token
+                await LocalStorage.SetItemAsync("token", response.Data.Token);
+
+                _model = new LoginRequest();
+
+                await Task.Delay(1000);
+
+                NavigationManager.NavigateTo("/dashboard");
+            }
+            else
+            {
+                Snackbar.Add(response.Message, Severity.Error);
+            }
+
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(ex.Message, Severity.Error);
+        }
+        finally
+        {
+            IsLoading = false;
+        }
     }
-    finally
-    {
-        IsLoading = false;
-    }
-}
 }
