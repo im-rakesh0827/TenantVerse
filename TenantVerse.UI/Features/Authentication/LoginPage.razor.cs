@@ -5,6 +5,7 @@ using MudBlazor;
 using TenantVerse.Shared.Models.Authentication.Requests;
 using TenantVerse.UI.Services.Authentication;
 using Blazored.LocalStorage;
+
 namespace TenantVerse.UI.Features.Authentication;
 
 public partial class LoginPage
@@ -73,14 +74,8 @@ public partial class LoginPage
             if (response.IsSuccess)
             {
                 Snackbar.Add(response.Message, Severity.Success);
-
-                // Save JWT Token
-                await LocalStorage.SetItemAsync("token", response.Data.Token);
-
                 _model = new LoginRequest();
-
                 await Task.Delay(1000);
-
                 NavigationManager.NavigateTo("/dashboard");
             }
             else

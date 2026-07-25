@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
+using TenantVerse.UI.Services.Authentication;
 
 namespace TenantVerse.UI.Components.Layout
 {
@@ -15,22 +16,20 @@ namespace TenantVerse.UI.Components.Layout
     private const string DrawerStateKey = "tv_drawer";
 
     [Inject]
-private ILocalStorageService LocalStorage { get; set; } = default!;
+    private ILocalStorageService LocalStorage { get; set; } = default!;
 
-[Inject]
-private NavigationManager NavigationManager { get; set; } = default!;
+    [Inject]
+    private NavigationManager NavigationManager { get; set; } = default!;
+    [Inject]
+    private AuthService AuthService { get; set; } = default!;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            // var state = await LocalStorage.GetItemAsync<bool?>("tv_drawer");
             var state = await LocalStorage.GetItemAsync<bool?>(DrawerStateKey);
-
             _drawerOpen = state ?? true;
-
             _loading = false;
-
             StateHasChanged();
         }
     }
@@ -38,18 +37,13 @@ private NavigationManager NavigationManager { get; set; } = default!;
     private async Task ToggleDrawer()
     {
         _drawerOpen = !_drawerOpen;
-
-        // await LocalStorage.SetItemAsync("tv_drawer", _drawerOpen);
         await LocalStorage.SetItemAsync(DrawerStateKey, _drawerOpen);
     }
 
     private async Task Logout()
-{
-    await LocalStorage.RemoveItemAsync("token");
-
-    NavigationManager.NavigateTo("/login", true);
-}
-        
-        
+    {
+        await AuthService.LogoutAsync();
+        NavigationManager.NavigateTo("/login", true);
+    }
     }
 }
