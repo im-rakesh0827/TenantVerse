@@ -1,11 +1,8 @@
-
-
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using TenantVerse.Shared.Models.Authentication.Requests;
 using TenantVerse.UI.Services.Authentication;
 using Blazored.LocalStorage;
-
 namespace TenantVerse.UI.Features.Authentication;
 
 public partial class LoginPage
@@ -59,36 +56,50 @@ public partial class LoginPage
             return;
 
         IsLoading = true;
+        await InvokeAsync(StateHasChanged);
 
         try
         {
             var response = await AuthService.LoginAsync(_model);
+
             if (response == null)
             {
-                Snackbar.Add("Unable to connect to server.", Severity.Error);
+                Snackbar.Add(
+                    "Unable to connect to server.",
+                    Severity.Error);
+
                 return;
             }
 
             if (response.IsSuccess)
             {
-                Snackbar.Add(response.Message, Severity.Success);
+                Snackbar.Add(
+                    response.Message,
+                    Severity.Success);
+
                 _model = new LoginRequest();
+
                 await Task.Delay(1000);
+
                 NavigationManager.NavigateTo("/dashboard");
             }
             else
             {
-                Snackbar.Add(response.Message, Severity.Error);
+                Snackbar.Add(
+                    response.Message,
+                    Severity.Error);
             }
-
         }
         catch (Exception ex)
         {
-            Snackbar.Add(ex.Message, Severity.Error);
+            Snackbar.Add(
+                ex.Message,
+                Severity.Error);
         }
         finally
         {
             IsLoading = false;
+            await InvokeAsync(StateHasChanged);
         }
     }
 }

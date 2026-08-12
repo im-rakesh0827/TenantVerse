@@ -1,12 +1,10 @@
 @page "/login"
+
 @layout TenantVerse.UI.Components.Layout.LoginLayout
 @using MudBlazor
-@using Blazored.LocalStorage
-@using TenantVerse.Shared.Models
 @using TenantVerse.Shared.Models.Authentication.Requests
-@using TenantVerse.Shared.Models.Authentication.Responses
-@using TenantVerse.UI.Services.Authentication
-@* <PageTitle>Login</PageTitle> *@
+
+<PageTitle>Login</PageTitle>
 
 <MudContainer MaxWidth="MaxWidth.Small" Class="mt-10">
 
@@ -35,7 +33,8 @@
                                   Variant="Variant.Outlined"
                                   InputType="InputType.Email"
                                   @bind-Value="_model.Email"
-                                  Required="true" />
+                                  Required="true"
+                                  Disabled="@IsLoading" />
 
                 </MudItem>
 
@@ -46,7 +45,8 @@
                                   Variant="Variant.Outlined"
                                   InputType="InputType.Password"
                                   @bind-Value="_model.Password"
-                                  Required="true" />
+                                  Required="true"
+                                  Disabled="@IsLoading" />
 
                 </MudItem>
 
@@ -55,10 +55,21 @@
                     <MudButton Variant="Variant.Filled"
                                Color="Color.Primary"
                                FullWidth="true"
-                               Disabled="IsLoading"
+                               Disabled="@IsLoading"
                                OnClick="LoginAsync">
 
-                        Login
+                        @if (IsLoading)
+                        {
+                            <MudProgressCircular Indeterminate="true"
+                                                  Size="Size.Small"
+                                                  Class="me-2" />
+
+                            <span>Signing in...</span>
+                        }
+                        else
+                        {
+                            <span>Login</span>
+                        }
 
                     </MudButton>
 
@@ -103,4 +114,3 @@
     </MudPaper>
 
 </MudContainer>
-
