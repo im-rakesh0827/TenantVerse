@@ -35,8 +35,10 @@
 
     @if (IsLoading)
     {
-          <LoaderComponent Text="Loading Properties..."
-                    Size="Size.Medium" />    
+          @* <LoaderComponent Text="Loading Properties..."
+                    Size="Size.Medium" />     *@
+                        <CustomLoaderComponent/>
+
     }
     else
     {
@@ -87,11 +89,11 @@
 
                     <MudIconButton Icon="@Icons.Material.Filled.Visibility"
                                    Color="Color.Info"
-                                   OnClick="@(() => UpdateOrView(context.PropertyId, false))" />
+                                   OnClick="@(() => UpdateOrView(context.PropertyId, "view"))" />
 
                     <MudIconButton Icon="@Icons.Material.Filled.Edit"
                                    Color="Color.Primary"
-                                   OnClick="@(() => UpdateOrView(context.PropertyId, true))" />
+                                   OnClick="@(() => UpdateOrView(context.PropertyId, "edit"))" />
 
                     <MudIconButton Icon="@Icons.Material.Filled.Delete"
                                    Color="Color.Error"

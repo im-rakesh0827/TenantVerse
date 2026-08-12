@@ -28,6 +28,8 @@ namespace TenantVerse.UI.Components.Pages.Property
           protected StateContainer _StateContainer{get; set;} = default;
           [Parameter]
           public int Id { get; set; }
+          [Parameter]
+          public string Mode { get; set; } = string.Empty;
           // [SupplyParameterFromQuery]
            public bool IsEditMode { get; set; }
            public string Title{get; set;} = "Edit Property";
@@ -36,25 +38,45 @@ namespace TenantVerse.UI.Components.Pages.Property
             protected bool IsLoading{get; set;} = false;
             PropertyDto propertyModel { get; set; } = new PropertyDto();
             protected override async Task OnInitializedAsync(){
-                try{
-                    IsLoading = true;
-                    if (_StateContainer.Property.SelectedProperty == null && string.IsNullOrWhiteSpace(_StateContainer.Property.SelectedProperty.Email))
+                // try{
+                //     IsLoading = true;
+                //     if (_StateContainer.Property.SelectedProperty == null && string.IsNullOrWhiteSpace(_StateContainer.Property.SelectedProperty.Email))
+                //     {
+                //         propertyModel = await PropertyService.GetByIdAsync(Id);
+                //     }                
+                //     else{
+                //         propertyModel = _StateContainer.Property.SelectedProperty;
+                //     }
+                //     IsEditMode = _StateContainer.Property.IsEditMode;
+                //     IsDisabled = !IsEditMode;
+                //     Title = IsEditMode ? "Edit Property" : "View Property";
+                // }
+                // catch(Exception ex){
+                //     Console.WriteLine(ex.Message);
+                // }
+                // finally{
+                //     IsLoading = false;
+                //     await InvokeAsync(StateHasChanged);
+                // }
+                IsDisabled = !(Mode == "edit");
+                Title = Mode== "edit" ? "Edit Property" : "View Property";
+                await LoadProperty();
+            }
+
+            private async Task LoadProperty()
+            {
+                IsLoading = true;
+                try
+                {
+                    var property = await PropertyService.GetByIdAsync(Id);
+                    if (property is not null)
                     {
-                        propertyModel = await PropertyService.GetByIdAsync(Id);
-                    }                
-                    else{
-                        propertyModel = _StateContainer.Property.SelectedProperty;
+                        propertyModel = property;
                     }
-                    IsEditMode = _StateContainer.Property.IsEditMode;
-                    IsDisabled = !IsEditMode;
-                    Title = IsEditMode ? "Edit Property" : "View Property";
                 }
-                catch(Exception ex){
-                    Console.WriteLine(ex.Message);
-                }
-                finally{
+                finally
+                {
                     IsLoading = false;
-                    await InvokeAsync(StateHasChanged);
                 }
             }
 

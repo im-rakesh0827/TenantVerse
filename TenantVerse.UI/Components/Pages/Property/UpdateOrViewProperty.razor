@@ -1,4 +1,5 @@
-@page "/property/edit/{Id:int}"
+@* @page "/property/edit/{Id:int}" *@
+@page "/property/{mode}/{Id:int}"
 @* @attribute [Authorize] *@
 
 <PageTitle>Edit Property</PageTitle>
@@ -9,12 +10,7 @@
         @Title
     </MudText>
 
-    @* @if (IsLoading)
-    {
-        <LoaderComponent Text="Loading..." />
-    }
-    else
-    { *@
+    
         <EditForm Model="propertyModel" OnValidSubmit="UpdateProperty">
             <DataAnnotationsValidator />
 
@@ -184,7 +180,8 @@
             </MudStack>
 
         </EditForm>
-            
-    @* } *@
-<CustomLoader Visible="@IsLoading" Text="Loading..." />
+@if(IsLoading)
+{
+    <CustomLoaderComponent/>
+}
 </MudPaper>

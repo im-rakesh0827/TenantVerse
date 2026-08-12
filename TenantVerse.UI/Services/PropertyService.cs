@@ -1,8 +1,10 @@
 using System.Net.Http.Json;
-using TenantVerse.UI.Models.Common;
 using TenantVerse.UI.Models.Property;
 using System.Net.Http.Headers;
 using Blazored.LocalStorage;
+// using TenantVerse.Shared.Models.Common;
+using TenantVerse.Shared.Models;
+
 namespace TenantVerse.UI.Services;
 
 public class PropertyService
@@ -62,7 +64,7 @@ public class PropertyService
 
             var result = await response.Content.ReadFromJsonAsync<ApiResponse<int>>();
 
-            return result?.Success == true ? result.Data : 0;
+            return result?.IsSuccess == true ? result.Data : 0;
         }
         catch (Exception ex)
         {
@@ -76,6 +78,7 @@ public class PropertyService
     {
         try
         {
+            Console.WriteLine($"Updating property with ID: {property.PropertyId}");
             property.UpdatedBy="TestUser";
             var response = await _httpClient.PutAsJsonAsync($"{baseUrl}/update", property);
 
@@ -88,7 +91,7 @@ public class PropertyService
 
             var result = await response.Content.ReadFromJsonAsync<ApiResponse<bool>>();
 
-            return result?.Success ?? false;
+            return result?.IsSuccess ?? false;
         }
         catch (Exception ex)
         {
@@ -111,7 +114,7 @@ public class PropertyService
                 return false;
             }
             var result = await response.Content.ReadFromJsonAsync<ApiResponse<bool>>();
-            return result?.Success ?? false;
+            return result?.IsSuccess ?? false;
         }
         catch (Exception ex)
         {

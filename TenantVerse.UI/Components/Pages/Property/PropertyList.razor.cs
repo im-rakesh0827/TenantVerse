@@ -42,19 +42,6 @@ namespace TenantVerse.UI.Components.Pages.Property
           }
 
           private async Task DeleteProperty(int propertyId){
-               // string UserName ="TestUser";
-               // //var response = await Http.DeleteAsync($"http://localhost:5168/api/Property/delete/{propertyId}");
-               // var isDeleted = await PropertyService.DeleteAsync(propertyId,UserName);
-               // if (isDeleted)
-               // {
-               //      Snackbar.Add("Property deleted successfully.", Severity.Success);
-               //      await LoadProperties();
-               // }
-               // else
-               // {
-               //      Snackbar.Add("Failed to delete property.", Severity.Error);
-               // }
-          
                string name = properties.FirstOrDefault(p => p.PropertyId == propertyId)?.PropertyName ?? "this property";
                string userName = "TestUser";
                var parameters = new DialogParameters
@@ -76,10 +63,12 @@ namespace TenantVerse.UI.Components.Pages.Property
 
                if (result is not null && !result.Canceled)
                {
-                    IsLoading=true;
+                    IsLoading = true;
+                    await InvokeAsync(StateHasChanged);
+                    await Task.Delay(1000);
                     var isDeleted = await PropertyService.DeleteAsync(propertyId,userName);
                     if (isDeleted)
-                    {
+                    {                        
                          _StateContainer.Property.Properties.RemoveAll(x => x.PropertyId == propertyId);
                          Snackbar.Add("Property deleted successfully.", Severity.Success);
                          await LoadProperties();
@@ -89,7 +78,6 @@ namespace TenantVerse.UI.Components.Pages.Property
                          Snackbar.Add("Failed to delete property.", Severity.Error);
                     }
                }
-               IsLoading=false;
           }
 
           private async Task LoadProperties(){
@@ -106,14 +94,14 @@ namespace TenantVerse.UI.Components.Pages.Property
                Navigation.NavigateTo("/property");
           }
 
-          private void UpdateOrView(int id, bool _isEditMode)
+          private void UpdateOrView(int id, string mode)
           {   
                var property = _StateContainer.Property.Properties.FirstOrDefault(x=>x.PropertyId==id);
                _StateContainer.Property.SetSelectedProperty(property);
-               _StateContainer.Property.SetEditMode(_isEditMode);
+               _StateContainer.Property.SetEditMode(mode == "edit");
                _StateContainer.Property.SetPropertyId(id);
-               // Navigation.NavigateTo($"/property/edit/{id}?IsEditMode={_isEditMode}");
-               Navigation.NavigateTo($"/property/edit/{id}");
+               Navigation.NavigateTo($"/property/{mode}/{id}");
+               // Navigation.NavigateTo($"/property/edit/{id}");
 
           }
 
