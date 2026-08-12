@@ -5,8 +5,6 @@ using TenantVerse.Shared.Models.Authentication;
 using TenantVerse.Shared.Models.Authentication.Requests;
 using TenantVerse.Shared.Models.Authentication.Responses;
 // using TenantVerse.Infrastructure.Services.Authentication;
-
-
 // using System.Security.Cryptography;
 
 namespace TenantVerse.Application.Services.Authentication;

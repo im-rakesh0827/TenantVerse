@@ -136,3 +136,159 @@ else
 
     </MudContainer>
 }
+
+
+
+
+
+@* 
+@inherits LayoutComponentBase
+@using Microsoft.AspNetCore.Components.Authorization
+@inject IJSRuntime JS
+
+<MudThemeProvider />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<AuthorizeView>
+
+    <Authorized>
+
+        @if (!_loading)
+        {
+            <MudLayout>
+
+                <!-- TOP BAR -->
+                <MudAppBar Elevation="1" Color="Color.Primary">
+
+                    <MudIconButton Icon="@Icons.Material.Filled.Menu"
+                                   Edge="Edge.Start"
+                                   Color="Color.Inherit"
+                                   OnClick="ToggleDrawer" />
+
+                    <MudText Typo="Typo.h6" Class="d-flex align-center">
+
+                        TenantVerse
+
+                        <MudImage Src="favicon.png"
+                                  Width="32"
+                                  Height="32"
+                                  Class="ms-2" />
+
+                    </MudText>
+
+                    <MudSpacer />
+
+                    <MudIconButton Icon="@Icons.Material.Filled.Notifications"
+                                   Color="Color.Inherit" />
+
+                    <MudMenu>
+
+                        <ActivatorContent Context="menu">
+
+                            <div @onclick="menu.ToggleAsync"
+                                 style="cursor:pointer">
+
+                                <MudAvatar Color="Color.Secondary">
+                                    RK
+                                </MudAvatar>
+
+                            </div>
+
+                        </ActivatorContent>
+
+                        <ChildContent>
+
+                            <MudMenuItem Icon="@Icons.Material.Filled.Logout"
+                                         OnClick="Logout">
+                                Logout
+                            </MudMenuItem>
+
+                        </ChildContent>
+
+                    </MudMenu>
+
+                </MudAppBar>
+
+                <!-- SIDEBAR -->
+                <MudDrawer @bind-Open="_drawerOpen"
+                           ClipMode="DrawerClipMode.Always"
+                           Variant="DrawerVariant.Responsive"
+                           Breakpoint="Breakpoint.Md"
+                           Elevation="2">
+
+                    <MudNavMenu Dense="true">
+
+                        <MudNavLink Href="/dashboard"
+                                    Match="NavLinkMatch.All"
+                                    Icon="@Icons.Material.Filled.Dashboard">
+                            Dashboard
+                        </MudNavLink>
+
+                        <MudNavLink Href="/property"
+                                    Icon="@Icons.Material.Filled.Business">
+                            Properties
+                        </MudNavLink>
+
+                        <MudNavLink Href="/flat"
+                                    Icon="@Icons.Material.Filled.Apartment">
+                            Flats
+                        </MudNavLink>
+
+                        <MudNavLink Href="/tenant"
+                                    Icon="@Icons.Material.Filled.People">
+                            Tenants
+                        </MudNavLink>
+
+                        <MudNavLink Href="/invoice"
+                                    Icon="@Icons.Material.Filled.ReceiptLong">
+                            Invoices
+                        </MudNavLink>
+
+                        <MudNavLink Href="/payment"
+                                    Icon="@Icons.Material.Filled.Payments">
+                            Payments
+                        </MudNavLink>
+
+                    </MudNavMenu>
+
+                </MudDrawer>
+
+                <!-- PAGE -->
+                <MudMainContent>
+
+                    <MudContainer MaxWidth="MaxWidth.False"
+                                  Class="pa-6">
+
+                        @Body
+
+                    </MudContainer>
+
+                </MudMainContent>
+
+            </MudLayout>
+        }
+        else
+        {
+            <MudContainer MaxWidth="MaxWidth.False"
+                          Class="d-flex justify-center align-center"
+                          Style="height:100vh;">
+
+                <MudProgressCircular
+                    Indeterminate="true"
+                    Color="Color.Primary"
+                    Size="Size.Large" />
+
+            </MudContainer>
+        }
+
+    </Authorized>
+
+    <NotAuthorized>
+
+        @Body
+
+    </NotAuthorized>
+
+</AuthorizeView> *@

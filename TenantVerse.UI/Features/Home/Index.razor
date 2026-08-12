@@ -1,17 +1,16 @@
 @page "/"
-
-@using Blazored.LocalStorage
-@using MudBlazor
-
-@inject ILocalStorageService LocalStorage
+@using TenantVerse.UI.Services.Authentication;
 @inject NavigationManager Navigation
+@inject TokenService TokenService
+@inject JwtAuthenticationStateProvider AuthenticationStateProvider
 
 <MudContainer Class="d-flex justify-center align-center"
               Style="height:100vh">
 
-    <MudProgressCircular Indeterminate="true"
-                         Color="Color.Primary"
-                         Size="Size.Large" />
+    <MudProgressCircular
+        Indeterminate="true"
+        Color="Color.Primary"
+        Size="Size.Large" />
 
 </MudContainer>
 
@@ -22,24 +21,15 @@
         if (!firstRender)
             return;
 
-        try
-        {
-            var token = await LocalStorage.GetItemAsync<string>("token");
+        await AuthenticationStateProvider.InitializeAsync();
 
-            if (string.IsNullOrWhiteSpace(token))
-            {
-                Navigation.NavigateTo("/login");
-            }
-            else
-            {
-                Navigation.NavigateTo("/dashboard");
-            }
+        if (await TokenService.HasValidTokenAsync())
+        {
+            Navigation.NavigateTo("/dashboard", true);
         }
-        catch (Exception ex)
+        else
         {
-            Console.WriteLine(ex.Message);
-
-            Navigation.NavigateTo("/login");
+            Navigation.NavigateTo("/login", true);
         }
     }
 }

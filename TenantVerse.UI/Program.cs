@@ -7,6 +7,7 @@ using MudBlazor.Services;
 using TenantVerse.UI.Components;
 using TenantVerse.UI.Services;
 using TenantVerse.UI.Services.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +19,7 @@ builder.Services
     .AddRazorComponents()
     .AddInteractiveServerComponents();
 
+builder.Services.AddCascadingAuthenticationState();
 
 // ------------------------------------------------------------
 // MudBlazor
@@ -34,13 +36,31 @@ builder.Services.AddBlazoredLocalStorage();
 // ------------------------------------------------------------
 // Authentication / Authorization
 // ------------------------------------------------------------
-builder.Services.AddAuthorizationCore();
+// builder.Services.AddAuthorizationCore();
+// builder.Services
+//     .AddAuthentication(options =>
+//     {
+//         options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+//         options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+//     })
+//     .AddCookie();
 
-// builder.Services.AddScoped<JwtAuthenticationStateProvider>();
+// builder.Services.AddAuthorization();
 
-// builder.Services.AddScoped<AuthenticationStateProvider>(
-//     provider => provider.GetRequiredService<JwtAuthenticationStateProvider>());
+builder.Services
+    .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/login";
+        options.AccessDeniedPath = "/login";
+    });
 
+builder.Services.AddAuthorization();
+
+builder.Services.AddScoped<JwtAuthenticationStateProvider>();
+
+builder.Services.AddScoped<AuthenticationStateProvider>(sp =>
+    sp.GetRequiredService<JwtAuthenticationStateProvider>());
 
 // ------------------------------------------------------------
 // HTTP Message Handler
@@ -75,6 +95,7 @@ builder.Services.AddScoped(sp =>
 // ------------------------------------------------------------
 // Application Services
 // ------------------------------------------------------------
+builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<AuthService>();
 
 builder.Services.AddScoped<PropertyService>();

@@ -1,0 +1,23 @@
+@* @using TenantVerse.UI.Services.Authentication;
+@inject JwtAuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager Navigation
+@inject TokenService TokenService
+@inject JwtAuthenticationStateProvider AuthenticationStateProvider
+
+@code
+{
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+            return;
+
+        await AuthenticationStateProvider.InitializeAsync();
+
+        var token = await TokenService.GetTokenAsync();
+
+        if (string.IsNullOrWhiteSpace(token))
+        {
+            Navigation.NavigateTo("/login", true);
+        }
+    }
+} *@

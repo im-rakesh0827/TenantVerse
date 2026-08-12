@@ -60,12 +60,12 @@ private NavigationManager NavigationManager { get; set; } = default!;
         IsLoading = true;
         try
         {
-            var token = await LocalStorage.GetItemAsync<string>("token");
-            if (string.IsNullOrWhiteSpace(token))
-            {
-                NavigationManager.NavigateTo("/login");
-                return;
-            }
+            // var token = await LocalStorage.GetItemAsync<string>("token");
+            // if (string.IsNullOrWhiteSpace(token))
+            // {
+            //     NavigationManager.NavigateTo("/login");
+            //     return;
+            // }
             if (!_StateContainer.Property.IsLoaded)
             {
                 await Task.Delay(1000); 

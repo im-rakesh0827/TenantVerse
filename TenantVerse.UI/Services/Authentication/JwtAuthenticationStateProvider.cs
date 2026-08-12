@@ -1,72 +1,53 @@
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 
 namespace TenantVerse.UI.Services.Authentication;
 
 public class JwtAuthenticationStateProvider : AuthenticationStateProvider
 {
-    private readonly ILocalStorageService _localStorage;
+    private readonly TokenService _tokenService;
 
-    private const string TokenKey = "token";
+    private ClaimsPrincipal _currentUser =
+        new(new ClaimsIdentity());
 
-    public JwtAuthenticationStateProvider(
-        ILocalStorageService localStorage)
+    public JwtAuthenticationStateProvider(TokenService tokenService)
     {
-        _localStorage = localStorage;
+        _tokenService = tokenService;
     }
 
-    public override async Task<AuthenticationState> GetAuthenticationStateAsync()
+    public override Task<AuthenticationState> GetAuthenticationStateAsync()
     {
-        var token = await _localStorage.GetItemAsync<string>(TokenKey);
-
-        var identity = new ClaimsIdentity();
-
-        if (!string.IsNullOrWhiteSpace(token))
-        {
-            var handler = new JwtSecurityTokenHandler();
-
-            if (handler.CanReadToken(token))
-            {
-                var jwt = handler.ReadJwtToken(token);
-
-                identity = new ClaimsIdentity(
-                    jwt.Claims,
-                    authenticationType: "jwt");
-            }
-        }
-
-        var user = new ClaimsPrincipal(identity);
-
-        return new AuthenticationState(user);
+        return Task.FromResult(
+            new AuthenticationState(_currentUser));
     }
 
-    public async Task NotifyUserAuthentication(string token)
+    public async Task InitializeAsync()
     {
-        await _localStorage.SetItemAsync(TokenKey, token);
+        var token = await _tokenService.GetTokenAsync();
 
-        var handler = new JwtSecurityTokenHandler();
-        var jwt = handler.ReadJwtToken(token);
+        if (string.IsNullOrWhiteSpace(token))
+            return;
 
-        var identity = new ClaimsIdentity(
-            jwt.Claims,
-            authenticationType: "jwt");
+        var claims = JwtHelper.GetClaims(token);
 
-        var user = new ClaimsPrincipal(identity);
+        MarkUserAsAuthenticated(claims);
+    }
+
+    public void MarkUserAsAuthenticated(IEnumerable<Claim> claims)
+    {
+        var identity = new ClaimsIdentity(claims, "jwt");
+
+        _currentUser = new ClaimsPrincipal(identity);
 
         NotifyAuthenticationStateChanged(
-            Task.FromResult(new AuthenticationState(user)));
+            Task.FromResult(new AuthenticationState(_currentUser)));
     }
 
-    public async Task NotifyUserLogout()
+    public void MarkUserAsLoggedOut()
     {
-        await _localStorage.RemoveItemAsync(TokenKey);
-
-        var anonymous =
-            new ClaimsPrincipal(new ClaimsIdentity());
+        _currentUser = new ClaimsPrincipal(new ClaimsIdentity());
 
         NotifyAuthenticationStateChanged(
-            Task.FromResult(new AuthenticationState(anonymous)));
+            Task.FromResult(new AuthenticationState(_currentUser)));
     }
 }

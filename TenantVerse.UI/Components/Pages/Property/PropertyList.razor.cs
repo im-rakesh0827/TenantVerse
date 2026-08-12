@@ -27,6 +27,7 @@ namespace TenantVerse.UI.Components.Pages.Property
           protected bool IsLoading = true;
           protected int TotalPropertyCount {get; set;} = 0;
 
+
           protected string SearchString = string.Empty;
           protected IEnumerable<PropertyDto> FilteredProperties =>string.IsNullOrWhiteSpace(SearchString)? properties:properties.Where(FilterProperty);
 
@@ -127,6 +128,7 @@ namespace TenantVerse.UI.Components.Pages.Property
                     property.OwnerName.Contains(SearchString, StringComparison.OrdinalIgnoreCase) ||
                     property.City.Contains(SearchString, StringComparison.OrdinalIgnoreCase)||
                     property.TotalFloors.ToString().Contains(SearchString, StringComparison.OrdinalIgnoreCase)||
+                    property.Email.ToString().Contains(SearchString, StringComparison.OrdinalIgnoreCase)||
                     property.TotalFlats.ToString().Contains(SearchString, StringComparison.OrdinalIgnoreCase);
           }
      }

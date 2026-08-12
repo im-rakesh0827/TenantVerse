@@ -34,9 +34,7 @@ public partial class LoginPage
 
         try
         {
-            var token = await LocalStorage.GetItemAsync<string>("token");
-
-            if (string.IsNullOrWhiteSpace(token))
+            if (!await AuthService.IsLoggedInAsync())
             {
                 NavigationManager.NavigateTo("/login");
             }
