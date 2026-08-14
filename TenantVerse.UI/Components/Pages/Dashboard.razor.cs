@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Components;
 using TenantVerse.UI.Models.Property;
 using TenantVerse.UI.Services;
 using Blazored.LocalStorage;
-
 namespace TenantVerse.UI.Components.Pages;
 
 public partial class Dashboard
@@ -14,10 +13,10 @@ public partial class Dashboard
     protected StateContainer _StateContainer {get; set;} = default;
 
     [Inject]
-private ILocalStorageService LocalStorage { get; set; } = default!;
+    private ILocalStorageService LocalStorage { get; set; } = default!;
 
-[Inject]
-private NavigationManager NavigationManager { get; set; } = default!;
+    [Inject]
+    private NavigationManager NavigationManager { get; set; } = default!;
     
     private bool IsLoading = true;
 
@@ -25,12 +24,7 @@ private NavigationManager NavigationManager { get; set; } = default!;
     private int TotalFlats;
     private int ActiveTenants;
     private decimal PendingPayments;
-
     private List<PropertyDto> _properties = new();
-
-
-    
-
     #region Lifecycle Methods
     // protected override async Task OnInitializedAsync()
     // {
@@ -60,12 +54,6 @@ private NavigationManager NavigationManager { get; set; } = default!;
         IsLoading = true;
         try
         {
-            // var token = await LocalStorage.GetItemAsync<string>("token");
-            // if (string.IsNullOrWhiteSpace(token))
-            // {
-            //     NavigationManager.NavigateTo("/login");
-            //     return;
-            // }
             if (!_StateContainer.Property.IsLoaded)
             {
                 await Task.Delay(1000); 
@@ -82,10 +70,10 @@ private NavigationManager NavigationManager { get; set; } = default!;
     }
 
     private void CalculateDashboardStatistics()
-{
-    TotalProperties = _properties.Count;
-    TotalFlats = _properties.Sum(x => x.TotalFlats);
-    ActiveTenants = 0;
-    PendingPayments = 0;
-}
+    {
+        TotalProperties = _properties.Count;
+        TotalFlats = _properties.Sum(x => x.TotalFlats);
+        ActiveTenants = 0;
+        PendingPayments = 0;
+    }
 }

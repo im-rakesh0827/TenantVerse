@@ -18,6 +18,7 @@ namespace TenantVerse.Application
             services.AddScoped<IHealthService, HealthService>();
             services.AddScoped<IPropertyService, PropertyService>();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IUnitService, UnitService>();
 
             return services;
         }

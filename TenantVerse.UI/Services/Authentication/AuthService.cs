@@ -15,16 +15,6 @@ public class AuthService
     private const string BaseUrl = "http://localhost:5168/api/Auth";
     private const string TokenKey = "token";
 
-    // public AuthService(
-    // HttpClient httpClient,
-    // ILocalStorageService localStorage,
-    // JwtAuthenticationStateProvider authenticationStateProvider)
-    // {
-    //     _httpClient = httpClient;
-    //     _localStorage = localStorage;
-    //     _authenticationStateProvider = authenticationStateProvider;
-    // }
-
     public AuthService(
     HttpClient httpClient,
     TokenService tokenService,
@@ -51,23 +41,12 @@ public class AuthService
     public async Task<ApiResponse<LoginResponse>?> LoginAsync(LoginRequest request)
     {
         var response = await _httpClient.PostAsJsonAsync($"{BaseUrl}/login", request);
-
-        // var result = await response.Content.ReadFromJsonAsync<ApiResponse<LoginResponse>>();
-        // if (result is not null &&
-        //     result.IsSuccess &&
-        //     !string.IsNullOrWhiteSpace(result.Data?.Token))
-        // {
-        //     await _localStorage.SetItemAsync(TokenKey, result.Data.Token);
-        // }
-        // return result;
-
         var result =
         await response.Content.ReadFromJsonAsync<ApiResponse<LoginResponse>>();
         if (result is not null &&
             result.IsSuccess &&
             !string.IsNullOrWhiteSpace(result.Data?.Token))
         {
-            // await _localStorage.SetItemAsync(TokenKey, result.Data.Token);
             await _tokenService.SaveTokenAsync(result.Data.Token);
             var claims = JwtHelper.GetClaims(result.Data.Token);
             _authenticationStateProvider.MarkUserAsAuthenticated(claims);
@@ -81,7 +60,6 @@ public class AuthService
 
     public async Task LogoutAsync()
     {
-        // await _localStorage.RemoveItemAsync(TokenKey);
         await _tokenService.RemoveTokenAsync();
         _authenticationStateProvider.MarkUserAsLoggedOut();
     }
@@ -92,7 +70,6 @@ public class AuthService
 
     public async Task<string?> GetTokenAsync()
     {
-        // return await _localStorage.GetItemAsync<string>(TokenKey);
         return await _tokenService.GetTokenAsync();
     }
 

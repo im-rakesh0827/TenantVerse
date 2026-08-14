@@ -99,7 +99,7 @@ builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<AuthService>();
 
 builder.Services.AddScoped<PropertyService>();
-
+builder.Services.AddScoped<UnitService>();
 builder.Services.AddScoped<StateContainer>();
 
 

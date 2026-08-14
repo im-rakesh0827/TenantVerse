@@ -1,0 +1,328 @@
+@page "/flat"
+
+@using MudBlazor
+@using TenantVerse.Shared.Models.Unit
+
+<PageTitle>Flats</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.False">
+
+    <!-- HEADER -->
+    <MudStack Row="true"
+              Justify="Justify.SpaceBetween"
+              AlignItems="AlignItems.Center"
+              Class="mb-6">
+
+        <div>
+
+            <MudText Typo="Typo.h6">
+                Flats - @_units.Count()
+            </MudText>
+
+            <MudText Typo="Typo.body2"
+                     Color="Color.Secondary">
+
+                Manage flats and units across your properties
+
+            </MudText>
+
+        </div>
+
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   StartIcon="@Icons.Material.Filled.Add"
+                   OnClick="AddUnit">
+
+            Add Flat
+
+        </MudButton>
+
+    </MudStack>
+
+
+    <!-- LOADING -->
+
+    @if (_isLoading)
+    {
+        <CustomLoaderComponent/>
+    }
+
+
+    <!-- ERROR -->
+    @if (!_isLoading &&
+         !string.IsNullOrWhiteSpace(_errorMessage))
+    {
+        <MudAlert Severity="Severity.Error"
+                  Variant="Variant.Outlined"
+                  Class="mb-4">
+
+            @_errorMessage
+
+        </MudAlert>
+    }
+
+
+    <!-- EMPTY -->
+
+    @if (!_isLoading &&
+         string.IsNullOrWhiteSpace(_errorMessage) &&
+         _units.Count == 0)
+    {
+        <MudPaper Elevation="1"
+                  Class="pa-10">
+
+            <MudStack AlignItems="AlignItems.Center"
+                      Justify="Justify.Center"
+                      Spacing="3">
+
+                <MudIcon Icon="@Icons.Material.Filled.Apartment"
+                         Size="Size.Large"
+                         Color="Color.Secondary" />
+
+                <MudText Typo="Typo.h6">
+
+                    No flats found
+
+                </MudText>
+
+                <MudText Typo="Typo.body2"
+                         Color="Color.Secondary">
+
+                    There are currently no active flats.
+
+                </MudText>
+
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           StartIcon="@Icons.Material.Filled.Add"
+                           OnClick="AddUnit">
+
+                    Add Flat
+
+                </MudButton>
+
+            </MudStack>
+
+        </MudPaper>
+    }
+
+
+    <!-- DATA -->
+
+    @if (!_isLoading &&
+         string.IsNullOrWhiteSpace(_errorMessage) &&
+         _units.Count > 0)
+    {
+        <MudPaper Elevation="1"
+                  Class="overflow-hidden">
+
+            <MudTable T="UnitModel"
+                      Items="_units"
+                      Hover="true"
+                      Striped="true"
+                      Dense="true"
+                      Breakpoint="Breakpoint.Sm">
+
+                <HeaderContent>
+
+                    <MudTh>Unit</MudTh>
+                    <MudTh>Property</MudTh>
+                    <MudTh>Type</MudTh>
+                    <MudTh>Floor</MudTh>
+                    <MudTh>Bedrooms</MudTh>
+                    <MudTh>Bathrooms</MudTh>
+                    <MudTh>Area</MudTh>
+                    <MudTh>Monthly Rent</MudTh>
+                    <MudTh>Status</MudTh>
+                    <MudTh>Actions</MudTh>
+                </HeaderContent>
+
+
+                <RowTemplate Context="unit">
+
+                    <!-- UNIT -->
+
+                    <MudTd DataLabel="Unit">
+
+                        <MudText Typo="Typo.body1">
+
+                            <b>@unit.UnitNumber</b>
+
+                        </MudText>
+
+                    </MudTd>
+
+
+                    <!-- PROPERTY -->
+
+                    <MudTd DataLabel="Property">
+
+                        @(string.IsNullOrWhiteSpace(unit.PropertyName)
+                            ? "-"
+                            : unit.PropertyName)
+
+                    </MudTd>
+
+
+                    <!-- TYPE -->
+
+                    <MudTd DataLabel="Type">
+
+                        @(string.IsNullOrWhiteSpace(unit.UnitType)
+                            ? "-"
+                            : unit.UnitType)
+
+                    </MudTd>
+
+
+                    <!-- FLOOR -->
+
+                    <MudTd DataLabel="Floor">
+
+                        @(unit.FloorNumber?.ToString() ?? "-")
+
+                    </MudTd>
+
+
+                    <!-- BEDROOMS -->
+
+                    <MudTd DataLabel="Bedrooms">
+
+                        @(unit.Bedrooms?.ToString() ?? "-")
+
+                    </MudTd>
+
+
+                    <!-- BATHROOMS -->
+
+                    <MudTd DataLabel="Bathrooms">
+
+                        @(unit.Bathrooms?.ToString() ?? "-")
+
+                    </MudTd>
+
+
+                    <!-- AREA -->
+
+                    <MudTd DataLabel="Area">
+
+                        @if (unit.Area.HasValue)
+                        {
+                            <span>
+                                @unit.Area.Value.ToString("N0") sq.ft
+                            </span>
+                        }
+                        else
+                        {
+                            <span>-</span>
+                        }
+
+                    </MudTd>
+
+
+                    <!-- RENT -->
+
+                    <MudTd DataLabel="Monthly Rent">
+
+                        @if (unit.MonthlyRent.HasValue)
+                        {
+                            <span>
+                                ₹@unit.MonthlyRent.Value.ToString("N0")
+                            </span>
+                        }
+                        else
+                        {
+                            <span>-</span>
+                        }
+
+                    </MudTd>
+
+
+                    <!-- STATUS -->
+
+                    <MudTd DataLabel="Status">
+
+                        @if (IsAvailable(unit.Status))
+                        {
+                            <MudChip T="string"
+                                     Color="Color.Success"
+                                     Size="Size.Small">
+
+                                Available
+
+                            </MudChip>
+                        }
+                        else if (IsOccupied(unit.Status))
+                        {
+                            <MudChip T="string"
+                                     Color="Color.Error"
+                                     Size="Size.Small">
+
+                                Occupied
+
+                            </MudChip>
+                        }
+                        else
+                        {
+                            <MudChip T="string"
+                                     Color="Color.Warning"
+                                     Size="Size.Small">
+
+                                @(string.IsNullOrWhiteSpace(unit.Status)
+                                    ? "Unknown"
+                                    : unit.Status)
+
+                            </MudChip>
+                        }
+
+                    </MudTd>
+
+
+                    <!-- ACTIONS -->
+
+                    <MudTd DataLabel="Actions">
+
+                        <MudStack Row="true"
+                                  Spacing="0">
+
+                            <MudTooltip Text="View">
+
+                                <MudIconButton Icon="@Icons.Material.Filled.Visibility"
+                                               Color="Color.Info"
+                                               Size="Size.Small"
+                                               OnClick="@(() => ViewUnit(unit.UnitId))" />
+
+                            </MudTooltip>
+
+
+                            <MudTooltip Text="Edit">
+
+                                <MudIconButton Icon="@Icons.Material.Filled.Edit"
+                                               Color="Color.Primary"
+                                               Size="Size.Small"
+                                               OnClick="@(() => EditUnit(unit.UnitId))" />
+
+                            </MudTooltip>
+
+
+                            <MudTooltip Text="Deactivate">
+
+                                <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                               Color="Color.Error"
+                                               Size="Size.Small"
+                                               OnClick="@(() => DeleteUnit(unit.UnitId))" />
+
+                            </MudTooltip>
+
+                        </MudStack>
+
+                    </MudTd>
+
+                </RowTemplate>
+
+            </MudTable>
+
+        </MudPaper>
+    }
+
+</MudContainer>
