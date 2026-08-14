@@ -2,22 +2,19 @@ using Microsoft.AspNetCore.Components;
 using TenantVerse.UI.Models.Property;
 using TenantVerse.UI.Services;
 using Blazored.LocalStorage;
+using TenantVerse.Shared.Models.Unit;
 namespace TenantVerse.UI.Components.Pages;
 
 public partial class Dashboard
 {
     [Inject]
     protected PropertyService PropertyService { get; set; } = default!;
-
     [Inject]
     protected StateContainer _StateContainer {get; set;} = default;
-
     [Inject]
     private ILocalStorageService LocalStorage { get; set; } = default!;
-
     [Inject]
     private NavigationManager NavigationManager { get; set; } = default!;
-
     [Inject]
     protected UnitService UnitService { get; set; } = default!;
     
@@ -27,8 +24,10 @@ public partial class Dashboard
     private int TotalFlats;
     private int ActiveTenants;
     private int TotalActiveFlats{get; set;} = 100;
+    private int TotalPropertiesCount{get; set;} = 0;
     private decimal PendingPayments;
     private List<PropertyDto> _properties = new();
+    private List<UnitModel> _units = new();
     #region Lifecycle Methods
     // protected override async Task OnInitializedAsync()
     // {
@@ -56,8 +55,6 @@ public partial class Dashboard
     protected override async Task OnInitializedAsync()
     {
         await LoadDashboardData();
-        await CalculateDashboardStatistics();
-
     }
     private async Task LoadDashboardData(){
         try{
@@ -65,17 +62,21 @@ public partial class Dashboard
             if (!_StateContainer.Property.IsLoaded)
             {
                 await Task.Delay(1000); 
-                var data = await PropertyService.GetAllAsync();
-                _StateContainer.Property.SetProperties(data);
+                var response = await PropertyService.GetAllAsync();
+                _StateContainer.Property.SetProperties(response);
             }
-
             if(!_StateContainer.Unit.IsLoaded)
             {
                 var response = await UnitService.GetAllAsync();
                 _StateContainer.Unit.SetUnits(response.Data.ToList());
             }
-            TotalActiveFlats = _StateContainer.Unit.Units.ToList().Count();
-            _properties = _StateContainer.Property.Properties;
+            var _allUnitList = _StateContainer.Unit.Units;
+            _units = _allUnitList.Take(5).ToList();
+            TotalActiveFlats = _allUnitList.Count();
+            var _allPropertiesList = _StateContainer.Property.Properties;
+            TotalProperties = _allPropertiesList.Count();
+            TotalFlats = _allPropertiesList.Sum(x => x.TotalFlats);
+            _properties = _allPropertiesList.Take(5).ToList();
         }
         catch(Exception ex){
             throw;
@@ -83,13 +84,5 @@ public partial class Dashboard
         finally{
             IsLoading = false;
         }
-    }
-
-    private async Task CalculateDashboardStatistics()
-    {
-        TotalProperties = _properties.Count;
-        TotalFlats = _properties.Sum(x => x.TotalFlats);
-        ActiveTenants = 0;
-        PendingPayments = 0;
     }
 }

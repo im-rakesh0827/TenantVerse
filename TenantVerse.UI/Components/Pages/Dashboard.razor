@@ -20,34 +20,27 @@ else
             <MudPaper Elevation="1"
                     Class="pa-4">
                 <MudGrid>
-
-                    <!-- PROPERTIES -->
                     <MudItem xs="6">
-
                         <MudText Typo="Typo.subtitle2"
                                 Color="Color.Secondary">
                             Properties
                         </MudText>
-
-                        <MudText Typo="Typo.h4"
+                        <MudText Typo="Typo.h5"
                                 Class="mt-1">
-                            @TotalProperties
+                            @TotalProperties.ToString("N0")
                         </MudText>
-
                     </MudItem>
 
 
-                    <!-- FLATS -->
                     <MudItem xs="6">
-
                         <MudText Typo="Typo.subtitle2"
                                 Color="Color.Secondary">
                             Flats
                         </MudText>
 
-                        <MudText Typo="Typo.h4"
+                        <MudText Typo="Typo.h5"
                                 Class="mt-1">
-                            @TotalFlats
+                            @TotalFlats.ToString("N0")
                         </MudText>
                     </MudItem>
                 </MudGrid>
@@ -62,8 +55,8 @@ else
                     Active Flats
                 </MudText>
 
-                <MudText Typo="Typo.h4">
-                    @TotalActiveFlats
+                <MudText Typo="Typo.h5">
+                    @TotalActiveFlats.ToString("N0")
                 </MudText>
 
             </MudPaper>
@@ -77,7 +70,7 @@ else
                     Active Tenants
                 </MudText>
 
-                <MudText Typo="Typo.h4">
+                <MudText Typo="Typo.h5">
                     @ActiveTenants
                 </MudText>
 
@@ -92,7 +85,7 @@ else
                     Pending Payments
                 </MudText>
 
-                <MudText Typo="Typo.h4">
+                <MudText Typo="Typo.h5">
                     ₹@PendingPayments.ToString("N0")
                 </MudText>
 
@@ -117,7 +110,7 @@ else
                   Dense="true"
                   Striped="true"
                   Bordered="true"
-                  RowsPerPage="20">
+                  RowsPerPage="5">
 
             <HeaderContent>
 
@@ -146,7 +139,57 @@ else
             </NoRecordsContent>
 
             <PagerContent>
-               <MudTablePager PageSizeOptions="new int[] { 5, 10, 20, 50, 100, 200, 500 }" />
+               @* <MudTablePager PageSizeOptions="new int[] { 5, 10, 20, 50, 100, 200, 500 }" /> *@
+                <MudTablePager PageSizeOptions="new int[] { 5 }" />
+          </PagerContent>
+
+        </MudTable>
+
+    </MudPaper>
+
+
+
+    <MudPaper Class="pa-4">
+
+        <MudText Typo="Typo.h6" Class="mb-3">
+            Recent Flats/Units
+        </MudText>
+
+        
+
+        <MudTable Items="_units"
+                  Hover="true"
+                  Dense="true"
+                  Striped="true"
+                  Bordered="true"
+                  RowsPerPage="5">
+
+            <HeaderContent>
+                <MudTh>Name</MudTh>
+                <MudTh>Type</MudTh>
+                <MudTh>Area(SqFt)</MudTh>
+                <MudTh>Rent(₹)</MudTh>
+            </HeaderContent>
+
+            <RowTemplate>
+                <MudTd>@context.PropertyName</MudTd>
+                <MudTd>@context.UnitType</MudTd>
+                <MudTd>@context.Area</MudTd>
+                <MudTd>@context.MonthlyRent</MudTd>
+            </RowTemplate>
+
+            <NoRecordsContent>
+
+                <MudText Class="pa-4">
+                    No properties found.
+                </MudText>
+
+            </NoRecordsContent>
+
+            <PagerContent>
+               @* <MudTablePager PageSizeOptions="new int[] { 5, 10, 20, 50, 100, 200, 500 }" /> *@
+               <MudTablePager PageSizeOptions="new int[] { 5 }" />
+
           </PagerContent>
 
         </MudTable>
