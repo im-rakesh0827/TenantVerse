@@ -69,8 +69,9 @@ namespace TenantVerse.UI.Components.Pages.Property
                     var isDeleted = await PropertyService.DeleteAsync(propertyId,userName);
                     if (isDeleted)
                     {                        
-                         _StateContainer.Property.Properties.RemoveAll(x => x.PropertyId == propertyId);
+                         // _StateContainer.Property.Properties.RemoveAll(x => x.PropertyId == propertyId);
                          Snackbar.Add("Property deleted successfully.", Severity.Success);
+                         _StateContainer.Property.ResetLoaded();
                          await LoadProperties();
                     }
                     else

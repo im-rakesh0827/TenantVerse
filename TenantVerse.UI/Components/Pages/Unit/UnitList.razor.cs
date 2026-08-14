@@ -3,6 +3,7 @@ using MudBlazor;
 using TenantVerse.Shared.Models;
 using TenantVerse.Shared.Models.Unit;
 using TenantVerse.UI.Services;
+using TenantVerse.Shared.Helpers;
 
 namespace TenantVerse.UI.Components.Pages.Unit;
 
@@ -14,41 +15,44 @@ public partial class UnitList
     protected ISnackbar Snackbar { get; set; } = default!;
     [Inject]
     protected NavigationManager Navigation { get; set; } = default!;
+    [Inject]
+    protected StateContainer _StateContainer { get; set; } = default!;
     protected List<UnitModel> _units = new();
     protected bool _isLoading;
     protected string? _errorMessage;
+    private string _searchString = string.Empty;
+
     protected override async Task OnInitializedAsync()
     {
         await LoadUnitsAsync();
     }
     protected async Task LoadUnitsAsync()
     {
-        _isLoading = true;
         _errorMessage = null;
-
         try
         {
-            await Task.Delay(1000);
-            var response = await UnitService.GetAllAsync();
-            if (response == null)
+            if(!_StateContainer.Unit.IsLoaded)
             {
-                _errorMessage =
-                    "Unable to load flats. No response received from the API.";
-
-                return;
+                _isLoading = true;
+                await Task.Delay(1000);
+                var response = await UnitService.GetAllAsync();
+                if (response == null)
+                {
+                    _errorMessage =
+                        "Unable to load flats. No response received from the API.";
+                    return;
+                }
+                if (!response.IsSuccess)
+                {
+                    _errorMessage =
+                        string.IsNullOrWhiteSpace(response.Message)
+                            ? "Unable to load flats."
+                            : response.Message;
+                    return;
+                }
+                _StateContainer.Unit.SetUnits(response.Data.ToList());
             }
-
-            if (!response.IsSuccess)
-            {
-                _errorMessage =
-                    string.IsNullOrWhiteSpace(response.Message)
-                        ? "Unable to load flats."
-                        : response.Message;
-
-                return;
-            }
-
-            _units = response.Data ?? new List<UnitModel>();
+            _units = _StateContainer.Unit.Units;
         }
         catch (HttpRequestException)
         {
@@ -72,16 +76,19 @@ public partial class UnitList
         Navigation.NavigateTo("/flat/add");
     }
 
-
-    protected void ViewUnit(int unitId)
+    protected void EditOrViewUnit(int unitId, string mode)
     {
-        Navigation.NavigateTo($"/flat/view/{unitId}");
-    }
-
-
-    protected void EditUnit(int unitId)
-    {
-        Navigation.NavigateTo($"/flat/edit/{unitId}");
+        try
+        {
+            var _SelectedUnit = _StateContainer.Unit.Units.FirstOrDefault(x=>x.UnitId==unitId);
+            _StateContainer.Unit.SetSelectedUnit(_SelectedUnit);
+            _StateContainer.Unit.SetPropertyId(_SelectedUnit.PropertyId);
+            Navigation.NavigateTo($"/flat/{mode}/{unitId}");
+        }
+        catch (System.Exception)
+        {
+            throw;
+        }
     }
 
     private async Task DeleteUnit(int unitId)
@@ -89,23 +96,20 @@ public partial class UnitList
         try
         {
             _isLoading = true;
-    
             var response = await UnitService.DeleteAsync(unitId);
-    
             if (!response.IsSuccess)
             {
                 Snackbar.Add(
                     response.Message,
                     Severity.Error);
-    
+
                 return;
             }
-    
-            Snackbar.Add(
-                "Flat deactivated successfully.",
-                Severity.Success);
-    
+            Snackbar.Add("Flat deactivated successfully.",Severity.Success);
+            // _StateContainer.Unit.Units.RemoveAll(x => x.UnitId == unitId);
+            _StateContainer.Unit.ResetLoaded();
             await LoadUnitsAsync();
+            await InvokeAsync(StateHasChanged);
         }
         catch (Exception ex)
         {
@@ -136,4 +140,75 @@ public partial class UnitList
             "Occupied",
             StringComparison.OrdinalIgnoreCase);
     }
+
+    private bool FilterUnit(UnitModel unit)
+    {
+        if (string.IsNullOrWhiteSpace(_searchString))
+            return true;
+
+        return
+            (unit.UnitNumber?.Contains(
+                _searchString,
+                StringComparison.OrdinalIgnoreCase) ?? false)
+
+            ||
+
+            (unit.PropertyName?.Contains(
+                _searchString,
+                StringComparison.OrdinalIgnoreCase) ?? false)
+
+            ||
+
+            (unit.UnitType?.Contains(
+                _searchString,
+                StringComparison.OrdinalIgnoreCase) ?? false)
+
+            ||
+
+            (unit.FloorNumber?.ToString().Contains(
+                _searchString,
+                StringComparison.OrdinalIgnoreCase) ?? false)
+
+            ||
+
+            (unit.Bedrooms?.ToString().Contains(
+                _searchString,
+                StringComparison.OrdinalIgnoreCase) ?? false)
+
+            ||
+
+            (unit.Bathrooms?.ToString().Contains(
+                _searchString,
+                StringComparison.OrdinalIgnoreCase) ?? false)
+
+            ||
+
+            (unit.Area?.ToString().Contains(
+                _searchString,
+                StringComparison.OrdinalIgnoreCase) ?? false)
+
+            ||
+
+            (unit.MonthlyRent?.ToString().Contains(
+                _searchString,
+                StringComparison.OrdinalIgnoreCase) ?? false)
+
+            ||
+
+            (unit.SecurityDeposit?.ToString().Contains(
+                _searchString,
+                StringComparison.OrdinalIgnoreCase) ?? false)
+
+            ||
+
+            (unit.Status?.Contains(
+                _searchString,
+                StringComparison.OrdinalIgnoreCase) ?? false);
+    }
+
+    protected IEnumerable<UnitModel> FilteredUnits =>
+        string.IsNullOrWhiteSpace(_searchString)
+            ? _units
+            : _units.Where(FilterUnit);
+    
 }

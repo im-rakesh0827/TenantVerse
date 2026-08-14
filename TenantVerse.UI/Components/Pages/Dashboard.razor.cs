@@ -17,12 +17,16 @@ public partial class Dashboard
 
     [Inject]
     private NavigationManager NavigationManager { get; set; } = default!;
+
+    [Inject]
+    protected UnitService UnitService { get; set; } = default!;
     
     private bool IsLoading = true;
 
     private int TotalProperties;
     private int TotalFlats;
     private int ActiveTenants;
+    private int TotalActiveFlats{get; set;} = 100;
     private decimal PendingPayments;
     private List<PropertyDto> _properties = new();
     #region Lifecycle Methods
@@ -51,25 +55,37 @@ public partial class Dashboard
 
     protected override async Task OnInitializedAsync()
     {
-        IsLoading = true;
-        try
-        {
+        await LoadDashboardData();
+        await CalculateDashboardStatistics();
+
+    }
+    private async Task LoadDashboardData(){
+        try{
+            IsLoading = true;
             if (!_StateContainer.Property.IsLoaded)
             {
                 await Task.Delay(1000); 
                 var data = await PropertyService.GetAllAsync();
                 _StateContainer.Property.SetProperties(data);
             }
+
+            if(!_StateContainer.Unit.IsLoaded)
+            {
+                var response = await UnitService.GetAllAsync();
+                _StateContainer.Unit.SetUnits(response.Data.ToList());
+            }
+            TotalActiveFlats = _StateContainer.Unit.Units.ToList().Count();
             _properties = _StateContainer.Property.Properties;
-            CalculateDashboardStatistics();
         }
-        finally
-        {
+        catch(Exception ex){
+            throw;
+        }
+        finally{
             IsLoading = false;
         }
     }
 
-    private void CalculateDashboardStatistics()
+    private async Task CalculateDashboardStatistics()
     {
         TotalProperties = _properties.Count;
         TotalFlats = _properties.Sum(x => x.TotalFlats);

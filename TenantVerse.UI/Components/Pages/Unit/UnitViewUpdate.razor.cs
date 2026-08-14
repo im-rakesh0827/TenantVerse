@@ -20,6 +20,8 @@ public partial class UnitViewUpdate
     protected PropertyService PropertyService { get; set; } = default!;
     [Inject]
     protected ISnackbar Snackbar { get; set; } = default!;
+    [Inject]
+    protected StateContainer _StateContainer { get; set; } = default!;
     protected MudForm? _form;
     protected UpdateUnitRequest _model = new();
     protected List<PropertyDto> properties = new();
@@ -34,15 +36,9 @@ public partial class UnitViewUpdate
           {
               _isLoading = true;
               _errorMessage = null;
-
               await LoadPropertiesAsync();
-              await LoadUnitAsync();
-
-              if (string.IsNullOrWhiteSpace(_errorMessage)
-                  && _model.PropertyId > 0)
-              {
-                  await LoadFloorsAsync(_model.PropertyId);
-              }
+              await LoadUnitByIdAsync();
+              await LoadFloorsAsync(_StateContainer.Unit.SelectedUnit.PropertyId);
           }
           catch (Exception ex)
           {
@@ -56,42 +52,38 @@ public partial class UnitViewUpdate
 
     private async Task LoadPropertiesAsync()
     {
-        var response = await PropertyService.GetAllAsync();
 
-        if (response == null)
-        {
-            properties = new();
-            return;
-        }
-
-        properties = response.ToList();
+         if(_StateContainer.Property.Properties.Count()>0)
+          {
+               properties = _StateContainer.Property.Properties;
+          }
+          else
+          {
+               var response = await PropertyService.GetAllAsync();
+               if (response == null)
+               {
+                    properties = new();
+                    return;
+               }
+               properties = response.ToList();
+               _StateContainer.Property.Clear();
+               _StateContainer.Property.SetProperties(properties);
+          }
+        
     }
 
-
-     private async Task LoadUnitAsync()
+      private async Task LoadUnitByIdAsync()
      {
-          var response = await UnitService.GetByIdAsync(Id);
-
-          if (response == null)
+          var unit = new UnitModel();
+          if(_StateContainer.Unit.SelectedUnit is not null && _StateContainer.Unit.SelectedUnit.UnitId>0)
           {
-              _errorMessage = "Unable to load flat details.";
-              return;
+               unit = _StateContainer.Unit.SelectedUnit;
           }
-
-          if (!response.IsSuccess)
+          else
           {
-              _errorMessage = response.Message;
-              return;
+               var response = await UnitService.GetByIdAsync(Id);
+               unit = response.Data;
           }
-
-          if (response.Data == null)
-          {
-              _errorMessage = "Flat details were not found.";
-              return;
-          }
-
-          var unit = response.Data;
-
           _model = new UpdateUnitRequest
           {
               UnitId = unit.UnitId,
@@ -107,7 +99,6 @@ public partial class UnitViewUpdate
               Status = unit.Status
           };
      }
-
 
     protected async Task OnPropertyChanged(int propertyId)
     {
@@ -146,21 +137,19 @@ public partial class UnitViewUpdate
         try
         {
             _isLoading = true;
-
             var result = await UnitService.UpdateAsync(_model);
-
             if (result == null)
             {
                Snackbar.Add("Unable to update flat.",Severity.Error);
                 return;
             }
-
             if (!result.IsSuccess)
             {
                 Snackbar.Add(result.Message,Severity.Error);
                 return;
             }
-            await Task.Delay(1000);
+            await Task.Delay(500);
+            _StateContainer.Unit.Clear();
             Snackbar.Add("Flat updated successfully.",Severity.Success);
             Navigation.NavigateTo("/flat");
         }
@@ -173,7 +162,6 @@ public partial class UnitViewUpdate
           _isLoading = false;
         }
     }
-
 
     protected void GoBack()
     {

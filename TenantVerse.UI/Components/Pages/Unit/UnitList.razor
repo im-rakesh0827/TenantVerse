@@ -1,32 +1,32 @@
 @page "/flat"
-
 @using MudBlazor
 @using TenantVerse.Shared.Models.Unit
 
 <PageTitle>Flats</PageTitle>
 
-<MudContainer MaxWidth="MaxWidth.False">
+<MudText Typo="Typo.h6" Class="mb-2">
+    Flat List - @FilteredUnits.ToList().Count()
+</MudText>
 
-    <!-- HEADER -->
+<MudPaper Class="pa-2">
+
     <MudStack Row="true"
               Justify="Justify.SpaceBetween"
-              AlignItems="AlignItems.Center"
-              Class="mb-6">
+              AlignItems="AlignItems.Center">
 
-        <div>
+        <MudItem xs="12" sm="6" md="4">
 
-            <MudText Typo="Typo.h6">
-                Flats - @_units.Count()
-            </MudText>
+            <MudTextField T="string"
+                          Label="Search"
+                          Placeholder="Search Flat..."
+                          Variant="Variant.Outlined"
+                          Margin="Margin.Dense"
+                          Immediate="true"
+                          Adornment="Adornment.Start"
+                          AdornmentIcon="@Icons.Material.Filled.Search"
+                          @bind-Value="_searchString" />
 
-            <MudText Typo="Typo.body2"
-                     Color="Color.Secondary">
-
-                Manage flats and units across your properties
-
-            </MudText>
-
-        </div>
+        </MudItem>
 
         <MudButton Variant="Variant.Filled"
                    Color="Color.Primary"
@@ -39,290 +39,211 @@
 
     </MudStack>
 
+</MudPaper>
 
-    <!-- LOADING -->
+
+<MudPaper Class="mt-4 pa-2">
 
     @if (_isLoading)
     {
-        <CustomLoaderComponent/>
+        <CustomLoaderComponent />
     }
-
-
-    <!-- ERROR -->
-    @if (!_isLoading &&
-         !string.IsNullOrWhiteSpace(_errorMessage))
+    else if (!string.IsNullOrWhiteSpace(_errorMessage))
     {
         <MudAlert Severity="Severity.Error"
                   Variant="Variant.Outlined"
-                  Class="mb-4">
+                  Class="ma-2">
 
             @_errorMessage
 
         </MudAlert>
     }
-
-
-    <!-- EMPTY -->
-
-    @if (!_isLoading &&
-         string.IsNullOrWhiteSpace(_errorMessage) &&
-         _units.Count == 0)
+    else
     {
-        <MudPaper Elevation="1"
-                  Class="pa-10">
+        <MudTable T="UnitModel"
+                  Items="FilteredUnits"
+                  Hover="true"
+                  Dense="true"
+                  Striped="true"
+                  Bordered="true"
+                  RowsPerPage="20">
 
-            <MudStack AlignItems="AlignItems.Center"
-                      Justify="Justify.Center"
-                      Spacing="3">
+            <HeaderContent>
 
-                <MudIcon Icon="@Icons.Material.Filled.Apartment"
-                         Size="Size.Large"
-                         Color="Color.Secondary" />
+                <MudTh>Flat</MudTh>
+                <MudTh>Property</MudTh>
+                <MudTh>Type</MudTh>
+                <MudTh>Floor</MudTh>
+                <MudTh>Bedrooms</MudTh>
+                <MudTh>Bathrooms</MudTh>
+                <MudTh>Area</MudTh>
+                <MudTh>Rent</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Actions</MudTh>
 
-                <MudText Typo="Typo.h6">
-
-                    No flats found
-
-                </MudText>
-
-                <MudText Typo="Typo.body2"
-                         Color="Color.Secondary">
-
-                    There are currently no active flats.
-
-                </MudText>
-
-                <MudButton Variant="Variant.Filled"
-                           Color="Color.Primary"
-                           StartIcon="@Icons.Material.Filled.Add"
-                           OnClick="AddUnit">
-
-                    Add Flat
-
-                </MudButton>
-
-            </MudStack>
-
-        </MudPaper>
-    }
+            </HeaderContent>
 
 
-    <!-- DATA -->
+            <RowTemplate>
 
-    @if (!_isLoading &&
-         string.IsNullOrWhiteSpace(_errorMessage) &&
-         _units.Count > 0)
-    {
-        <MudPaper Elevation="1"
-                  Class="overflow-hidden">
+                <!-- FLAT -->
 
-            <MudTable T="UnitModel"
-                      Items="_units"
-                      Hover="true"
-                      Striped="true"
-                      Dense="true"
-                      Breakpoint="Breakpoint.Sm">
+                <MudTd DataLabel="Flat">
 
-                <HeaderContent>
+                    <MudText Typo="Typo.body2">
+                        <b>@context.UnitNumber</b>
+                    </MudText>
 
-                    <MudTh>Unit</MudTh>
-                    <MudTh>Property</MudTh>
-                    <MudTh>Type</MudTh>
-                    <MudTh>Floor</MudTh>
-                    <MudTh>Bedrooms</MudTh>
-                    <MudTh>Bathrooms</MudTh>
-                    <MudTh>Area</MudTh>
-                    <MudTh>Monthly Rent</MudTh>
-                    <MudTh>Status</MudTh>
-                    <MudTh>Actions</MudTh>
-                </HeaderContent>
+                </MudTd>
 
 
-                <RowTemplate Context="unit">
+                <!-- PROPERTY -->
 
-                    <!-- UNIT -->
+                <MudTd DataLabel="Property">
 
-                    <MudTd DataLabel="Unit">
+                    @(string.IsNullOrWhiteSpace(context.PropertyName)
+                        ? "-"
+                        : context.PropertyName)
 
-                        <MudText Typo="Typo.body1">
+                </MudTd>
 
-                            <b>@unit.UnitNumber</b>
 
+                <!-- TYPE -->
+
+                <MudTd DataLabel="Type">
+
+                    @(string.IsNullOrWhiteSpace(context.UnitType)
+                        ? "-"
+                        : context.UnitType)
+
+                </MudTd>
+
+
+                <!-- FLOOR -->
+
+                <MudTd DataLabel="Floor">
+
+                    @if (context.FloorNumber.HasValue)
+                    {
+                        @if (context.FloorNumber.Value == 0)
+                        {
+                            <span>G</span>
+                        }
+                        else
+                        {
+                            <span>
+                                @context.FloorNumber.Value
+                            </span>
+                        }
+                    }
+                    else
+                    {
+                        <span>-</span>
+                    }
+
+                </MudTd>
+
+
+                <!-- BEDROOMS -->
+
+                <MudTd DataLabel="Bedrooms">
+
+                    @(context.Bedrooms?.ToString() ?? "-")
+
+                </MudTd>
+
+
+                <!-- BATHROOMS -->
+
+                <MudTd DataLabel="Bathrooms">
+
+                    @(context.Bathrooms?.ToString() ?? "-")
+
+                </MudTd>
+
+
+                <!-- AREA -->
+
+                <MudTd DataLabel="Area">
+
+                    @(context.Area.HasValue
+                        ? $"{context.Area.Value:N0} sq.ft"
+                        : "-")
+
+                </MudTd>
+
+
+                <!-- RENT -->
+
+                <MudTd DataLabel="Rent">
+
+                    @(context.MonthlyRent.HasValue
+                        ? $"₹{context.MonthlyRent.Value:N0}"
+                        : "-")
+
+                </MudTd>
+
+
+                <!-- STATUS -->
+
+                <MudTd DataLabel="Status">
+
+                    @if (context.Status == "Available")
+                    {
+                        <MudText Color="Color.Success">
+                            ● Available
                         </MudText>
-
-                    </MudTd>
-
-
-                    <!-- PROPERTY -->
-
-                    <MudTd DataLabel="Property">
-
-                        @(string.IsNullOrWhiteSpace(unit.PropertyName)
-                            ? "-"
-                            : unit.PropertyName)
-
-                    </MudTd>
-
-
-                    <!-- TYPE -->
-
-                    <MudTd DataLabel="Type">
-
-                        @(string.IsNullOrWhiteSpace(unit.UnitType)
-                            ? "-"
-                            : unit.UnitType)
-
-                    </MudTd>
-
-
-                    <!-- FLOOR -->
-
-                    <MudTd DataLabel="Floor">
-
-                        @(unit.FloorNumber?.ToString() ?? "-")
-
-                    </MudTd>
-
-
-                    <!-- BEDROOMS -->
-
-                    <MudTd DataLabel="Bedrooms">
-
-                        @(unit.Bedrooms?.ToString() ?? "-")
-
-                    </MudTd>
-
-
-                    <!-- BATHROOMS -->
-
-                    <MudTd DataLabel="Bathrooms">
-
-                        @(unit.Bathrooms?.ToString() ?? "-")
-
-                    </MudTd>
-
-
-                    <!-- AREA -->
-
-                    <MudTd DataLabel="Area">
-
-                        @if (unit.Area.HasValue)
-                        {
-                            <span>
-                                @unit.Area.Value.ToString("N0") sq.ft
-                            </span>
-                        }
-                        else
-                        {
-                            <span>-</span>
-                        }
-
-                    </MudTd>
-
-
-                    <!-- RENT -->
-
-                    <MudTd DataLabel="Monthly Rent">
-
-                        @if (unit.MonthlyRent.HasValue)
-                        {
-                            <span>
-                                ₹@unit.MonthlyRent.Value.ToString("N0")
-                            </span>
-                        }
-                        else
-                        {
-                            <span>-</span>
-                        }
-
-                    </MudTd>
-
-
-                    <!-- STATUS -->
-
-                    <MudTd DataLabel="Status">
-
-                        @if (IsAvailable(unit.Status))
-                        {
-                            <MudChip T="string"
-                                     Color="Color.Success"
-                                     Size="Size.Small">
-
-                                Available
-
-                            </MudChip>
-                        }
-                        else if (IsOccupied(unit.Status))
-                        {
-                            <MudChip T="string"
-                                     Color="Color.Error"
-                                     Size="Size.Small">
-
-                                Occupied
-
-                            </MudChip>
-                        }
-                        else
-                        {
-                            <MudChip T="string"
-                                     Color="Color.Warning"
-                                     Size="Size.Small">
-
-                                @(string.IsNullOrWhiteSpace(unit.Status)
-                                    ? "Unknown"
-                                    : unit.Status)
-
-                            </MudChip>
-                        }
-
-                    </MudTd>
-
-
-                    <!-- ACTIONS -->
-
-                    <MudTd DataLabel="Actions">
-
-                        <MudStack Row="true"
-                                  Spacing="0">
-
-                            <MudTooltip Text="View">
-
-                                <MudIconButton Icon="@Icons.Material.Filled.Visibility"
-                                               Color="Color.Info"
-                                               Size="Size.Small"
-                                               OnClick="@(() => ViewUnit(unit.UnitId))" />
-
-                            </MudTooltip>
-
-
-                            <MudTooltip Text="Edit">
-
-                                <MudIconButton Icon="@Icons.Material.Filled.Edit"
-                                               Color="Color.Primary"
-                                               Size="Size.Small"
-                                               OnClick="@(() => EditUnit(unit.UnitId))" />
-
-                            </MudTooltip>
-
-
-                            <MudTooltip Text="Deactivate">
-
-                                <MudIconButton Icon="@Icons.Material.Filled.Delete"
-                                               Color="Color.Error"
-                                               Size="Size.Small"
-                                               OnClick="@(() => DeleteUnit(unit.UnitId))" />
-
-                            </MudTooltip>
-
-                        </MudStack>
-
-                    </MudTd>
-
-                </RowTemplate>
-
-            </MudTable>
-
-        </MudPaper>
+                    }
+                    else if (context.Status == "Occupied")
+                    {
+                        <MudText Color="Color.Error">
+                            ● Occupied
+                        </MudText>
+                    }
+                    else if (context.Status == "Maintenance")
+                    {
+                        <MudText Color="Color.Warning">
+                            ● Maintenance
+                        </MudText>
+                    }
+                    else
+                    {
+                        <MudText Color="Color.Default">
+                            ● @(string.IsNullOrWhiteSpace(context.Status)
+                                ? "Unknown"
+                                : context.Status)
+                        </MudText>
+                    }
+
+                </MudTd>
+
+
+                <!-- ACTIONS -->
+
+                <MudTd DataLabel="Actions">
+
+                    <MudIconButton Icon="@Icons.Material.Filled.Visibility"
+                                   Color="Color.Info"
+                                   OnClick="@(() => EditOrViewUnit(context.UnitId, "view"))" />
+
+                    <MudIconButton Icon="@Icons.Material.Filled.Edit"
+                                   Color="Color.Primary"
+                                   OnClick="@(() => EditOrViewUnit(context.UnitId, "edit"))" />
+
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                   Color="Color.Error"
+                                   OnClick="@(() => DeleteUnit(context.UnitId))" />
+                </MudTd>
+
+            </RowTemplate>
+
+            <PagerContent>
+
+                <MudTablePager PageSizeOptions="new int[] { 5, 10, 20, 50, 100, 200, 500 }" />
+
+            </PagerContent>
+
+        </MudTable>
     }
 
-</MudContainer>
+</MudPaper>

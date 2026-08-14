@@ -12,106 +12,86 @@ namespace TenantVerse.UI.Components.Pages.Property
 {
     public partial class UpdateOrViewProperty
     {
-          [Inject]
-          protected PropertyService PropertyService { get; set; } = default!;
+        [Inject]
+        protected PropertyService PropertyService { get; set; } = default!;
+        [Inject]
+        protected NavigationManager Navigation { get; set; } = default!;
+        [Inject]
+        protected ISnackbar Snackbar { get; set; } = default!;
+        [Inject]
+        protected HttpClient Http { get; set; } = default!;
+        [Inject]
+        protected StateContainer _StateContainer{get; set;} = default;
+        [Parameter]
+        public int Id { get; set; }
+        [Parameter]
+        public string Mode { get; set; } = string.Empty;
+        // [SupplyParameterFromQuery]
+        public bool IsEditMode { get; set; }
+        public string Title{get; set;} = "Edit Property";
+        public bool IsDisabled {get; set;} = false;
+        protected bool IsLoading{get; set;} = false;
+        PropertyDto propertyModel { get; set; } = new PropertyDto();
+        protected override async Task OnInitializedAsync()
+        {
+            IsDisabled = !(Mode == "edit");
+            Title = Mode== "edit" ? "Edit Property" : "View Property";
+            await LoadProperty();
+        }
 
-          [Inject]
-          protected NavigationManager Navigation { get; set; } = default!;
-
-          [Inject]
-          protected ISnackbar Snackbar { get; set; } = default!;
-
-          [Inject]
-          protected HttpClient Http { get; set; } = default!;
-        
-          [Inject]
-          protected StateContainer _StateContainer{get; set;} = default;
-          [Parameter]
-          public int Id { get; set; }
-          [Parameter]
-          public string Mode { get; set; } = string.Empty;
-          // [SupplyParameterFromQuery]
-           public bool IsEditMode { get; set; }
-           public string Title{get; set;} = "Edit Property";
-           public bool IsDisabled {get; set;} = false;
-
-            protected bool IsLoading{get; set;} = false;
-            PropertyDto propertyModel { get; set; } = new PropertyDto();
-            protected override async Task OnInitializedAsync(){
-                // try{
-                //     IsLoading = true;
-                //     if (_StateContainer.Property.SelectedProperty == null && string.IsNullOrWhiteSpace(_StateContainer.Property.SelectedProperty.Email))
-                //     {
-                //         propertyModel = await PropertyService.GetByIdAsync(Id);
-                //     }                
-                //     else{
-                //         propertyModel = _StateContainer.Property.SelectedProperty;
-                //     }
-                //     IsEditMode = _StateContainer.Property.IsEditMode;
-                //     IsDisabled = !IsEditMode;
-                //     Title = IsEditMode ? "Edit Property" : "View Property";
-                // }
-                // catch(Exception ex){
-                //     Console.WriteLine(ex.Message);
-                // }
-                // finally{
-                //     IsLoading = false;
-                //     await InvokeAsync(StateHasChanged);
-                // }
-                IsDisabled = !(Mode == "edit");
-                Title = Mode== "edit" ? "Edit Property" : "View Property";
-                await LoadProperty();
+        private async Task LoadProperty()
+        {
+            IsLoading = true;
+            try
+            {
+                // var property = await PropertyService.GetByIdAsync(Id);
+                // var property = _StateContainer.Property.Properties.FirstOrDefault(x => x.PropertyId == Id);
+                var property = _StateContainer.Property.SelectedProperty;
+                if (property is not null)
+                {
+                    propertyModel = property;
+                }
             }
+            finally
+            {
+                IsLoading = false;
+            }
+        }
 
-            private async Task LoadProperty()
+        public void Cancel()
+        {
+            Navigation.NavigateTo("/property");
+        }
+
+        public async Task UpdateProperty()
+        {
+            try
             {
                 IsLoading = true;
-                try
-                {
-                    var property = await PropertyService.GetByIdAsync(Id);
-                    if (property is not null)
-                    {
-                        propertyModel = property;
-                    }
+                var result = await PropertyService.UpdateAsync(propertyModel);
+                if(result){
+                    _StateContainer.Property.Clear();
+                    var data = await PropertyService.GetAllAsync();
+                    _StateContainer.Property.SetProperties(data);
+                    // _StateContainer.Property.ResetLoaded();
+                    await Task.Delay(1000);
+                    Snackbar.Add("Property updated successfully.", Severity.Success);
+                    Navigation.NavigateTo("/property");
                 }
-                finally
-                {
-                    IsLoading = false;
+                else{
+                    Snackbar.Add("Failed to update property.", Severity.Error);
                 }
             }
-
-            public void Cancel()
-            {
-                Navigation.NavigateTo("/property");
+            catch(Exception ex){
+                Console.WriteLine(ex.Message);
+                Snackbar.Add("An error occurred while updating the property.", Severity.Error);
+            }
+            finally{
+                IsLoading = false;
+                await InvokeAsync(StateHasChanged);
             }
 
-            public async Task UpdateProperty(){
-
-                try{
-                    IsLoading = true;
-                    var result = await PropertyService.UpdateAsync(propertyModel);
-                    if(result){
-                        _StateContainer.Property.Clear();
-                        var data = await PropertyService.GetAllAsync();
-                        _StateContainer.Property.SetProperties(data);
-                        await Task.Delay(1000);
-                        Snackbar.Add("Property updated successfully.", Severity.Success);
-                        Navigation.NavigateTo("/property");
-                    }
-                    else{
-                        Snackbar.Add("Failed to update property.", Severity.Error);
-                    }
-                }
-                catch(Exception ex){
-                    Console.WriteLine(ex.Message);
-                    Snackbar.Add("An error occurred while updating the property.", Severity.Error);
-                }
-                finally{
-                    IsLoading = false;
-                    await InvokeAsync(StateHasChanged);
-                }
-
-            }
+        }
         
     }
 }
