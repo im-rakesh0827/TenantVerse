@@ -26,7 +26,8 @@ BEGIN
         U.IsActive = 1
         AND P.IsActive = 1
     ORDER BY
-        P.PropertyName,
-        U.UnitNumber;
+        -- P.PropertyName,
+        -- U.UnitNumber;
+        U.CreatedDate DESC
 END;
 GO

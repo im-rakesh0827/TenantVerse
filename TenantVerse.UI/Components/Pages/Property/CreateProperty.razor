@@ -410,6 +410,10 @@
 
         </EditForm>
 
+        @if (IsLoading)
+        {
+          <CustomLoaderComponent />
+        }
     </MudPaper>
 
 </MudContainer>

@@ -146,34 +146,22 @@
 
 
                 <!-- STATUS -->
-                <MudItem xs="12" md="6">
+                <MudItem xs="12" sm="6">
                     <MudSelect T="string"
-                               Label="Status"
-                               Variant="Variant.Outlined"
-                               @bind-Value="_model.Status"
-                               Disabled="@IsViewMode">
-
-                        <MudSelectItem T="string"
-                                       Value="@("Available")">
-                            Available
-                        </MudSelectItem>
-
-                        <MudSelectItem T="string"
-                                       Value="@("Occupied")">
-                            Occupied
-                        </MudSelectItem>
-
-                        <MudSelectItem T="string"
-                                       Value="@("Maintenance")">
-                            Maintenance
-                        </MudSelectItem>
-
+                         Label="Status"
+                         Variant="Variant.Outlined"
+                         @bind-Value="_model.Status">
+                         @foreach (var status in UnitStatus.StatusList)
+                         {
+                              <MudSelectItem T="string"
+                                             Value="@status">
+                                   @status
+                              </MudSelectItem>
+                         }
                     </MudSelect>
                 </MudItem>
 
             </MudGrid>
-
-
             <MudDivider Class="my-6" />
 
 

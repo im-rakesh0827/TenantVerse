@@ -29,7 +29,7 @@ public partial class UnitAdd
     [Inject]
     protected StateContainer _StateContainer{get; set;} = default;
     protected List<PropertyDto> properties = new();
-    protected bool _isLoading = true;
+    protected bool IsLoading = true;
     protected int TotalPropertyCount {get; set;} = 0;
     protected string SearchString = string.Empty;
 
@@ -39,26 +39,25 @@ public partial class UnitAdd
         Status = "Available"
     };
 
-    protected bool _isSaving;
     protected string? _errorMessage;
     protected override async Task OnInitializedAsync()
     {
         await LoadProperties();
-        StateHasChanged();
+        // StateHasChanged();
     }
 
     private async Task LoadProperties()
     {
-        _isLoading = true;
-        if (!_StateContainer.Property.IsLoaded)
+        IsLoading = true;
+        // Console.WriteLine($"Properties count {_StateContainer.Property.Properties.Count()}");
+        if(_StateContainer.Property.Properties.Count()==0)
         {
-            await Task.Delay(500);
             var data = await PropertyService.GetAllAsync();
             _StateContainer.Property.SetProperties(data);
         }
         properties = _StateContainer.Property.Properties;
         TotalPropertyCount =properties.Count();
-        _isLoading = false;
+        IsLoading = false;
     }
 
     protected async Task SaveAsync()
@@ -79,9 +78,7 @@ public partial class UnitAdd
 
             return;
         }
-
-        _isSaving = true;
-
+        IsLoading=true;
         try
         {
             var result = await UnitService.GetByPropertyIdAsync(_model.PropertyId);
@@ -107,6 +104,7 @@ public partial class UnitAdd
 
                 return;
             }
+            await Task.Delay(1000);
             Snackbar.Add("Flat created successfully.",Severity.Success);
             _StateContainer.Unit.ResetLoaded();
             Navigation.NavigateTo("/flat");
@@ -125,7 +123,7 @@ public partial class UnitAdd
         }
         finally
         {
-            _isSaving = false;
+            IsLoading = true;
         }
     }
 

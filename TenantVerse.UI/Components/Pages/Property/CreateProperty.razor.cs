@@ -21,21 +21,24 @@ namespace TenantVerse.UI.Components.Pages.Property
         [Inject]
         protected StateContainer _StateContainer {get; set;} = default;
         protected CreatePropertyRequest _model = new();
-
+        protected bool IsLoading {get; set;} = false;
         protected async Task Save()
         {
+            IsLoading = true;
             var propertyId = await PropertyService.CreateAsync(_model);
-
             if (propertyId > 0)
             {
+                await Task.Delay(1000);
                 Snackbar.Add("Property created successfully.", Severity.Success);
-                _StateContainer.Property.ResetLoaded();
+                var properties = await PropertyService.GetAllAsync();
+                _StateContainer.Property.SetProperties(properties);
                 Navigation.NavigateTo("/property");
             }
             else
             {
                 Snackbar.Add("Failed to create property.", Severity.Error);
             }
+            IsLoading = false;
         }
 
         protected void Cancel()
