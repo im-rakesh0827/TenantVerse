@@ -1,187 +1,163 @@
-@* @page "/property/edit/{Id:int}" *@
 @page "/property/{mode}/{Id:int}"
-@* @attribute [Authorize] *@
-
 <PageTitle>Edit Property</PageTitle>
 
 <MudPaper Class="pa-6">
-
     <MudText Typo="Typo.h4" Class="mb-6">
         @Title
     </MudText>
+    <EditForm Model="propertyModel" OnValidSubmit="UpdateProperty">
+        <DataAnnotationsValidator />
 
-    
-        <EditForm Model="propertyModel" OnValidSubmit="UpdateProperty">
-            <DataAnnotationsValidator />
+        <MudGrid>
 
-            <MudGrid>
+            <!-- Property Code -->
+            <MudItem xs="12" md="6">
+                <MudTextField Label="Property Code"
+                                @bind-Value="propertyModel.PropertyCode"
+                                Variant="Variant.Outlined"
+                                Required="true" 
+                                Disabled="@IsDisabled"/>
+            </MudItem>
 
-                <!-- Property Code -->
-                <MudItem xs="12" md="6">
-                    <MudTextField Label="Property Code"
-                                  @bind-Value="propertyModel.PropertyCode"
-                                  Variant="Variant.Outlined"
-                                  Required="true" 
-                                  Disabled="@IsDisabled"/>
-                </MudItem>
+            <!-- Property Name -->
+            <MudItem xs="12" md="6">
+                <MudTextField Label="Property Name"
+                                @bind-Value="propertyModel.PropertyName"
+                                Variant="Variant.Outlined"
+                                Required="true" 
+                                Disabled="@IsDisabled"/>
+            </MudItem>
 
-                <!-- Property Name -->
-                <MudItem xs="12" md="6">
-                    <MudTextField Label="Property Name"
-                                  @bind-Value="propertyModel.PropertyName"
-                                  Variant="Variant.Outlined"
-                                  Required="true" 
-                                  Disabled="@IsDisabled"/>
-                </MudItem>
+            <!-- Owner -->
+            <MudItem xs="12" md="6">
+                <MudTextField Label="Owner Name"
+                                @bind-Value="propertyModel.OwnerName"
+                                Variant="Variant.Outlined"
+                                Required="true" 
+                                Disabled="@IsDisabled"/>
+            </MudItem>
 
-                <!-- Owner -->
-                <MudItem xs="12" md="6">
-                    <MudTextField Label="Owner Name"
-                                  @bind-Value="propertyModel.OwnerName"
-                                  Variant="Variant.Outlined"
-                                  Required="true" 
-                                  Disabled="@IsDisabled"/>
-                </MudItem>
+            <!-- Email -->
+            <MudItem xs="12" md="6">
+                <MudTextField Label="Email"
+                                @bind-Value="propertyModel.Email"
+                                Variant="Variant.Outlined" 
+                                Disabled="@IsDisabled"/>
+            </MudItem>
 
-                <!-- Email -->
-                <MudItem xs="12" md="6">
-                    <MudTextField Label="Email"
-                                  @bind-Value="propertyModel.Email"
-                                  Variant="Variant.Outlined" 
-                                  Disabled="@IsDisabled"/>
-                </MudItem>
+            <!-- Phone -->
+            <MudItem xs="12" md="6">
+                <MudTextField Label="Phone Number"
+                                @bind-Value="propertyModel.PhoneNumber"
+                                Variant="Variant.Outlined" 
+                                Disabled="@IsDisabled"/>
+            </MudItem>
 
-                <!-- Phone -->
-                <MudItem xs="12" md="6">
-                    <MudTextField Label="Phone Number"
-                                  @bind-Value="propertyModel.PhoneNumber"
-                                  Variant="Variant.Outlined" 
-                                  Disabled="@IsDisabled"/>
-                </MudItem>
+            <!-- Address 1 -->
+            <MudItem xs="12">
+                <MudTextField Label="Address Line 1"
+                                @bind-Value="propertyModel.AddressLine1"
+                                Variant="Variant.Outlined"
+                                Required="true" 
+                                Disabled="@IsDisabled"/>
+            </MudItem>
 
-                <!-- Address 1 -->
-                <MudItem xs="12">
-                    <MudTextField Label="Address Line 1"
-                                  @bind-Value="propertyModel.AddressLine1"
-                                  Variant="Variant.Outlined"
-                                  Required="true" 
-                                  Disabled="@IsDisabled"/>
-                </MudItem>
+            <!-- Address 2 -->
+            <MudItem xs="12">
+                <MudTextField Label="Address Line 2"
+                                @bind-Value="propertyModel.AddressLine2"
+                                Variant="Variant.Outlined" 
+                                Disabled="@IsDisabled"/>
+            </MudItem>
 
-                <!-- Address 2 -->
-                <MudItem xs="12">
-                    <MudTextField Label="Address Line 2"
-                                  @bind-Value="propertyModel.AddressLine2"
-                                  Variant="Variant.Outlined" 
-                                  Disabled="@IsDisabled"/>
-                </MudItem>
+            <!-- City -->
+            <MudItem xs="12" md="4">
+                <MudTextField Label="City"
+                                @bind-Value="propertyModel.City"
+                                Variant="Variant.Outlined"
+                                Required="true" 
+                                Disabled="@IsDisabled"/>
+            </MudItem>
 
-                <!-- City -->
-                <MudItem xs="12" md="4">
-                    <MudTextField Label="City"
-                                  @bind-Value="propertyModel.City"
-                                  Variant="Variant.Outlined"
-                                  Required="true" 
-                                  Disabled="@IsDisabled"/>
-                </MudItem>
+            <!-- State -->
+            <MudItem xs="12" md="4">
+                <MudTextField Label="State"
+                                @bind-Value="propertyModel.State"
+                                Variant="Variant.Outlined"
+                                Required="true" 
+                                Disabled="@IsDisabled"/>
+            </MudItem>
 
-                <!-- State -->
-                <MudItem xs="12" md="4">
-                    <MudTextField Label="State"
-                                  @bind-Value="propertyModel.State"
-                                  Variant="Variant.Outlined"
-                                  Required="true" 
-                                  Disabled="@IsDisabled"/>
-                </MudItem>
+            <!-- Postal Code -->
+            <MudItem xs="12" md="4">
+                <MudTextField Label="Postal Code"
+                                @bind-Value="propertyModel.PostalCode"
+                                Variant="Variant.Outlined"
+                                Required="true" 
+                                Disabled="@IsDisabled"/>
+            </MudItem>
 
-                <!-- Postal Code -->
-                <MudItem xs="12" md="4">
-                    <MudTextField Label="Postal Code"
-                                  @bind-Value="propertyModel.PostalCode"
-                                  Variant="Variant.Outlined"
-                                  Required="true" 
-                                  Disabled="@IsDisabled"/>
-                </MudItem>
+            <!-- Country -->
+            <MudItem xs="12" md="6">
+                <MudTextField Label="Country"
+                                @bind-Value="propertyModel.Country"
+                                Variant="Variant.Outlined" 
+                                Disabled="@IsDisabled"/>
+            </MudItem>
 
-                <!-- Country -->
-                <MudItem xs="12" md="6">
-                    <MudTextField Label="Country"
-                                  @bind-Value="propertyModel.Country"
-                                  Variant="Variant.Outlined" 
-                                  Disabled="@IsDisabled"/>
-                </MudItem>
+            <!-- Floors -->
+            <MudItem xs="12" md="3">
+                <MudNumericField T="int"
+                                    Label="Total Floors"
+                                    @bind-Value="propertyModel.TotalFloors"
+                                    Variant="Variant.Outlined" 
+                                    Disabled="@IsDisabled"/>
+            </MudItem>
 
-                <!-- Floors -->
-                <MudItem xs="12" md="3">
-                    <MudNumericField T="int"
-                                     Label="Total Floors"
-                                     @bind-Value="propertyModel.TotalFloors"
-                                     Variant="Variant.Outlined" 
-                                     Disabled="@IsDisabled"/>
-                </MudItem>
+            <!-- Flats -->
+            <MudItem xs="12" md="3">
+                <MudNumericField T="int"
+                                    Label="Total Flats"
+                                    @bind-Value="propertyModel.TotalFlats"
+                                    Variant="Variant.Outlined" 
+                                    Disabled="@IsDisabled"/>
+            </MudItem>
 
-                <!-- Flats -->
-                <MudItem xs="12" md="3">
-                    <MudNumericField T="int"
-                                     Label="Total Flats"
-                                     @bind-Value="propertyModel.TotalFlats"
-                                     Variant="Variant.Outlined" 
-                                     Disabled="@IsDisabled"/>
-                </MudItem>
+            <!-- Description -->
+            <MudItem xs="12">
+                <MudTextField Label="Description"
+                                Lines="4"
+                                Variant="Variant.Outlined"
+                                @bind-Value="propertyModel.Description" 
+                                Disabled="@IsDisabled"/>
+            </MudItem>
 
-                <!-- Description -->
-                <MudItem xs="12">
-                    <MudTextField Label="Description"
-                                  Lines="4"
-                                  Variant="Variant.Outlined"
-                                  @bind-Value="propertyModel.Description" 
-                                  Disabled="@IsDisabled"/>
-                </MudItem>
+        </MudGrid>
 
-            </MudGrid>
+        <MudDivider Class="my-6"/>
 
-            <MudDivider Class="my-6"/>
+        <MudStack Row="true"
+                    Justify="Justify.FlexEnd"
+                    Spacing="2">
 
-            <MudStack Row="true"
-                      Justify="Justify.FlexEnd"
-                      Spacing="2">
+            <MudButton Variant="Variant.Outlined"
+                        Color="Color.Secondary"
+                        Disabled="@(IsLoading)"
+                        OnClick="Cancel">
+                Cancel
+            </MudButton>
 
-                <MudButton Variant="Variant.Outlined"
-                           Color="Color.Secondary"
-                           OnClick="Cancel">
+            <MudButton Variant="Variant.Filled"
+                        Color="Color.Primary"
+                        ButtonType="ButtonType.Submit"
+                        Disabled="@(IsDisabled || IsLoading)">
+            Update Property
+            </MudButton>
 
-                    Cancel
-
-                </MudButton>
-
-                @* <MudButton Variant="Variant.Filled"
-                           Color="Color.Primary"
-                           ButtonType="ButtonType.Submit"
-                           Disabled="_saving">
-
-                    @if (_saving)
-                    {
-                        <MudProgressCircular
-                            Indeterminate="true"
-                            Size="Size.Small"
-                            Class="me-2" />
-                    }
-                    Update Property
-                </MudButton> *@
-
-
-                <MudButton Variant="Variant.Filled"
-                         Color="Color.Primary"
-                         ButtonType="ButtonType.Submit"
-                         Disabled="@(IsDisabled || IsLoading)">
-               Update Property
-               </MudButton>
-
-            </MudStack>
-
-        </EditForm>
-@if(IsLoading)
-{
-    <CustomLoaderComponent/>
-}
+        </MudStack>
+    </EditForm>
+    @if(IsLoading)
+    {
+        <CustomLoaderComponent/>
+    }
 </MudPaper>

@@ -1,12 +1,17 @@
 @page "/flat"
+
 @using MudBlazor
 @using TenantVerse.Shared.Models.Unit
 
 <PageTitle>Flats</PageTitle>
 
 <MudText Typo="Typo.h6" Class="mb-2">
-    Flat List - @FilteredUnits.ToList().Count()
+    Flat List - @FilteredUnits.Count()
 </MudText>
+
+<!-- =========================
+     HEADER / SEARCH
+     ========================= -->
 
 <MudPaper Class="pa-2">
 
@@ -14,7 +19,9 @@
               Justify="Justify.SpaceBetween"
               AlignItems="AlignItems.Center">
 
-        <MudItem xs="12" sm="6" md="4">
+        <MudItem xs="12"
+                 sm="6"
+                 md="4">
 
             <MudTextField T="string"
                           Label="Search"
@@ -42,13 +49,18 @@
 </MudPaper>
 
 
-<MudPaper Class="mt-4 pa-2">
+<!-- =========================
+     GRID CONTAINER
+     ========================= -->
 
-    @if (_isLoading)
-    {
-        <CustomLoaderComponent />
-    }
-    else if (!string.IsNullOrWhiteSpace(_errorMessage))
+<MudPaper Class="mt-4 pa-2"
+          Style="position:relative;">
+
+    <!-- =========================
+         ERROR
+         ========================= -->
+
+    @if (!string.IsNullOrWhiteSpace(_errorMessage))
     {
         <MudAlert Severity="Severity.Error"
                   Variant="Variant.Outlined"
@@ -58,7 +70,13 @@
 
         </MudAlert>
     }
-    else
+
+
+    <!-- =========================
+         GRID
+         ========================= -->
+
+    @if (string.IsNullOrWhiteSpace(_errorMessage))
     {
         <MudTable T="UnitModel"
                   Items="FilteredUnits"
@@ -123,23 +141,11 @@
 
                 <MudTd DataLabel="Floor">
 
-                    @if (context.FloorNumber.HasValue)
-                    {
-                        @if (context.FloorNumber.Value == 0)
-                        {
-                            <span>G</span>
-                        }
-                        else
-                        {
-                            <span>
-                                @context.FloorNumber.Value
-                            </span>
-                        }
-                    }
-                    else
-                    {
-                        <span>-</span>
-                    }
+                    @(context.FloorNumber.HasValue
+                        ? context.FloorNumber.Value == 0
+                            ? "G"
+                            : context.FloorNumber.Value.ToString()
+                        : "-")
 
                 </MudTd>
 
@@ -224,26 +230,51 @@
 
                     <MudIconButton Icon="@Icons.Material.Filled.Visibility"
                                    Color="Color.Info"
-                                   OnClick="@(() => EditOrViewUnit(context.UnitId, "view"))" />
+                                   Size="Size.Small"
+                                   OnClick="@(() => EditOrViewUnit(
+                                       context.UnitId,
+                                       "view"))" />
 
                     <MudIconButton Icon="@Icons.Material.Filled.Edit"
                                    Color="Color.Primary"
-                                   OnClick="@(() => EditOrViewUnit(context.UnitId, "edit"))" />
+                                   Size="Size.Medium"
+                                   OnClick="@(() => EditOrViewUnit(
+                                       context.UnitId,
+                                       "edit"))" />
 
                     <MudIconButton Icon="@Icons.Material.Filled.Delete"
                                    Color="Color.Error"
-                                   OnClick="@(() => DeleteUnit(context.UnitId))" />
+                                   Size="Size.Medium"
+                                   OnClick="@(() => DeleteUnit(
+                                       context.UnitId))" />
+
                 </MudTd>
 
             </RowTemplate>
 
+
+            <!-- =========================
+                 PAGINATION
+                 ========================= -->
+
             <PagerContent>
 
-                <MudTablePager PageSizeOptions="new int[] { 5, 10, 20, 50, 100, 200, 500 }" />
+                <MudTablePager PageSizeOptions="new int[]
+                {5, 10, 20, 50, 100, 200, 500}" />
 
             </PagerContent>
 
         </MudTable>
+    }
+
+
+    <!-- =========================
+         LOADING OVERLAY
+         ========================= -->
+
+    @if (IsLoading)
+    {
+      <CustomLoaderComponent />
     }
 
 </MudPaper>

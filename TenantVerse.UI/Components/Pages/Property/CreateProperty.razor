@@ -3,163 +3,413 @@
 
 <PageTitle>Create Property</PageTitle>
 
-<MudPaper Class="pa-6">
+<MudContainer MaxWidth="MaxWidth.False"
+              Class="pa-0">
 
-    <MudText Typo="Typo.h4" GutterBottom="true">
-        Create Property
-    </MudText>
+    <!-- =========================
+         HEADER
+         ========================= -->
 
-    <MudDivider Class="mb-4"/>
+    <MudStack Row="true"
+              Justify="Justify.SpaceBetween"
+              AlignItems="AlignItems.Center"
+              Class="mb-6">
 
-    <EditForm Model="_model" OnValidSubmit="Save">
+        <div>
+            <MudText Typo="Typo.h5">
+                Create Property
+            </MudText>
 
-        <DataAnnotationsValidator />
+            <MudText Typo="Typo.body2"
+                     Color="Color.Secondary">
 
-        <MudGrid>
+                Add a new property and configure its basic details.
 
-            <!-- Property Code -->
-            <MudItem xs="12" md="6">
-                <MudTextField T="string"
-                              Label="Property Code"
-                              @bind-Value="_model.PropertyCode"
-                              Variant="Variant.Outlined"
-                              Required="true"/>
-            </MudItem>
+            </MudText>
+        </div>
 
-            <!-- Property Name -->
-            <MudItem xs="12" md="6">
-                <MudTextField T="string"
-                              Label="Property Name"
-                              @bind-Value="_model.PropertyName"
-                              Variant="Variant.Outlined"
-                              Required="true"/>
-            </MudItem>
+        @* <MudButton Variant="Variant.Outlined"
+                   Color="Color.Default"
+                   StartIcon="@Icons.Material.Filled.ArrowBack"
+                   OnClick="Cancel">
+            Back
+        </MudButton> *@
 
-            <!-- Owner -->
-            <MudItem xs="12" md="6">
-                <MudTextField T="string"
-                              Label="Owner Name"
-                              @bind-Value="_model.OwnerName"
-                              Variant="Variant.Outlined"
-                              Required="true"/>
-            </MudItem>
+    </MudStack>
 
-            <!-- Email -->
-            <MudItem xs="12" md="6">
-                <MudTextField T="string"
-                              Label="Email"
-                              InputType="InputType.Email"
-                              @bind-Value="_model.Email"
-                              Variant="Variant.Outlined"/>
-            </MudItem>
 
-            <!-- Phone -->
-            <MudItem xs="12" md="6">
-                <MudTextField T="string"
-                              Label="Phone Number"
-                              @bind-Value="_model.PhoneNumber"
-                              Variant="Variant.Outlined"/>
-            </MudItem>
+    <!-- =========================
+         FORM
+         ========================= -->
 
-            <!-- Address Line 1 -->
-            <MudItem xs="12">
-                <MudTextField T="string"
-                              Label="Address Line 1"
-                              @bind-Value="_model.AddressLine1"
-                              Variant="Variant.Outlined"
-                              Required="true"/>
-            </MudItem>
+    <MudPaper Elevation="1"
+              Class="pa-6">
 
-            <!-- Address Line 2 -->
-            <MudItem xs="12">
-                <MudTextField T="string"
-                              Label="Address Line 2"
-                              @bind-Value="_model.AddressLine2"
-                              Variant="Variant.Outlined"/>
-            </MudItem>
+        <EditForm Model="_model"
+                  OnValidSubmit="Save">
 
-            <!-- City -->
-            <MudItem xs="12" md="4">
-                <MudTextField T="string"
-                              Label="City"
-                              @bind-Value="_model.City"
-                              Variant="Variant.Outlined"
-                              Required="true"/>
-            </MudItem>
+            <DataAnnotationsValidator />
 
-            <!-- State -->
-            <MudItem xs="12" md="4">
-                <MudTextField T="string"
-                              Label="State"
-                              @bind-Value="_model.State"
-                              Variant="Variant.Outlined"
-                              Required="true"/>
-            </MudItem>
 
-            <!-- Postal Code -->
-            <MudItem xs="12" md="4">
-                <MudTextField T="string"
-                              Label="Postal Code"
-                              @bind-Value="_model.PostalCode"
-                              Variant="Variant.Outlined"
-                              Required="true"/>
-            </MudItem>
+            <!-- =========================
+                 BASIC INFORMATION
+                 ========================= -->
 
-            <!-- Country -->
-            <MudItem xs="12" md="6">
-                <MudTextField T="string"
-                              Label="Country"
-                              @bind-Value="_model.Country"
-                              Variant="Variant.Outlined"/>
-            </MudItem>
+            <MudText Typo="Typo.subtitle1"
+                     Class="mb-1">
 
-            <!-- Floors -->
-            <MudItem xs="12" md="3">
-                <MudNumericField T="int"
-                                 Label="Total Floors"
-                                 @bind-Value="_model.TotalFloors"
-                                 Variant="Variant.Outlined"/>
-            </MudItem>
+                Basic Information
 
-            <!-- Flats -->
-            <MudItem xs="12" md="3">
-                <MudNumericField T="int"
-                                 Label="Total Flats"
-                                 @bind-Value="_model.TotalFlats"
-                                 Variant="Variant.Outlined"/>
-            </MudItem>
+            </MudText>
 
-            <!-- Description -->
-            <MudItem xs="12">
-                <MudTextField T="string"
-                              Label="Description"
-                              Lines="4"
-                              AutoGrow="true"
-                              @bind-Value="_model.Description"
-                              Variant="Variant.Outlined"/>
-            </MudItem>
+            <MudText Typo="Typo.body2"
+                     Color="Color.Secondary"
+                     Class="mb-4">
 
-        </MudGrid>
+                Enter the basic information about the property.
 
-        <MudDivider Class="my-4"/>
-        <MudStack Row="true"
+            </MudText>
+
+
+            <MudGrid Spacing="3">
+
+                <!-- PROPERTY CODE -->
+
+                <MudItem xs="12"
+                         md="6">
+
+                    <MudTextField T="string"
+                                  Label="Property Code"
+                                  Placeholder="Example: PROP-001"
+                                  @bind-Value="_model.PropertyCode"
+                                  Variant="Variant.Outlined"
+                                  Required="true"
+                                  RequiredError="Property code is required."
+                                  FullWidth="true" />
+
+                </MudItem>
+
+
+                <!-- PROPERTY NAME -->
+
+                <MudItem xs="12"
+                         md="6">
+
+                    <MudTextField T="string"
+                                  Label="Property Name"
+                                  Placeholder="Enter property name"
+                                  @bind-Value="_model.PropertyName"
+                                  Variant="Variant.Outlined"
+                                  Required="true"
+                                  RequiredError="Property name is required."
+                                  FullWidth="true" />
+
+                </MudItem>
+
+
+                <!-- OWNER -->
+
+                <MudItem xs="12"
+                         md="6">
+
+                    <MudTextField T="string"
+                                  Label="Owner Name"
+                                  Placeholder="Enter owner name"
+                                  @bind-Value="_model.OwnerName"
+                                  Variant="Variant.Outlined"
+                                  Required="true"
+                                  RequiredError="Owner name is required."
+                                  FullWidth="true" />
+
+                </MudItem>
+
+
+                <!-- EMAIL -->
+
+                <MudItem xs="12"
+                         md="6">
+
+                    <MudTextField T="string"
+                                  Label="Email"
+                                  Placeholder="owner@example.com"
+                                  InputType="InputType.Email"
+                                  @bind-Value="_model.Email"
+                                  Variant="Variant.Outlined"
+                                  FullWidth="true" />
+
+                </MudItem>
+
+
+                <!-- PHONE -->
+
+                <MudItem xs="12"
+                         md="6">
+
+                    <MudTextField T="string"
+                                  Label="Phone Number"
+                                  Placeholder="Enter phone number"
+                                  @bind-Value="_model.PhoneNumber"
+                                  Variant="Variant.Outlined"
+                                  FullWidth="true" />
+
+                </MudItem>
+
+            </MudGrid>
+
+
+            <!-- =========================
+                 ADDRESS
+                 ========================= -->
+
+            <MudDivider Class="my-6" />
+
+            <MudText Typo="Typo.subtitle1"
+                     Class="mb-1">
+
+                Property Address
+
+            </MudText>
+
+            <MudText Typo="Typo.body2"
+                     Color="Color.Secondary"
+                     Class="mb-4">
+
+                Provide the complete address of the property.
+
+            </MudText>
+
+
+            <MudGrid Spacing="3">
+
+                <!-- ADDRESS LINE 1 -->
+
+                <MudItem xs="12"
+                         md="6">
+
+                    <MudTextField T="string"
+                                  Label="Address Line 1"
+                                  Placeholder="House / Building / Street"
+                                  @bind-Value="_model.AddressLine1"
+                                  Variant="Variant.Outlined"
+                                  Required="true"
+                                  RequiredError="Address is required."
+                                  FullWidth="true" />
+
+                </MudItem>
+
+
+                <!-- ADDRESS LINE 2 -->
+
+                <MudItem xs="12"
+                         md="6">
+
+                    <MudTextField T="string"
+                                  Label="Address Line 2"
+                                  Placeholder="Apartment / Landmark"
+                                  @bind-Value="_model.AddressLine2"
+                                  Variant="Variant.Outlined"
+                                  FullWidth="true" />
+
+                </MudItem>
+
+
+                <!-- CITY -->
+
+                <MudItem xs="12"
+                         md="4">
+
+                    <MudTextField T="string"
+                                  Label="City"
+                                  Placeholder="Enter city"
+                                  @bind-Value="_model.City"
+                                  Variant="Variant.Outlined"
+                                  Required="true"
+                                  RequiredError="City is required."
+                                  FullWidth="true" />
+
+                </MudItem>
+
+
+                <!-- STATE -->
+
+                <MudItem xs="12"
+                         md="4">
+
+                    <MudTextField T="string"
+                                  Label="State"
+                                  Placeholder="Enter state"
+                                  @bind-Value="_model.State"
+                                  Variant="Variant.Outlined"
+                                  Required="true"
+                                  RequiredError="State is required."
+                                  FullWidth="true" />
+
+                </MudItem>
+
+
+                <!-- POSTAL CODE -->
+
+                <MudItem xs="12"
+                         md="4">
+
+                    <MudTextField T="string"
+                                  Label="Postal Code"
+                                  Placeholder="Enter postal code"
+                                  @bind-Value="_model.PostalCode"
+                                  Variant="Variant.Outlined"
+                                  Required="true"
+                                  RequiredError="Postal code is required."
+                                  FullWidth="true" />
+
+                </MudItem>
+
+
+                <!-- COUNTRY -->
+
+                <MudItem xs="12"
+                         md="4">
+
+                    <MudTextField T="string"
+                                  Label="Country"
+                                  @bind-Value="_model.Country"
+                                  Variant="Variant.Outlined"
+                                  FullWidth="true" />
+
+                </MudItem>
+
+            </MudGrid>
+
+
+            <!-- =========================
+                 PROPERTY CONFIGURATION
+                 ========================= -->
+
+            <MudDivider Class="my-6" />
+
+            <MudText Typo="Typo.subtitle1"
+                     Class="mb-1">
+
+                Property Configuration
+
+            </MudText>
+
+            <MudText Typo="Typo.body2"
+                     Color="Color.Secondary"
+                     Class="mb-4">
+
+                Define the number of floors and flats available in this property.
+
+            </MudText>
+
+
+            <MudGrid Spacing="3">
+
+                <!-- TOTAL FLOORS -->
+
+                <MudItem xs="12"
+                         sm="6"
+                         md="3">
+
+                    <MudNumericField T="int"
+                                     Label="Total Floors"
+                                     @bind-Value="_model.TotalFloors"
+                                     Variant="Variant.Outlined"
+                                     Min="0"
+                                     FullWidth="true" />
+
+                </MudItem>
+
+
+                <!-- TOTAL FLATS -->
+
+                <MudItem xs="12"
+                         sm="6"
+                         md="3">
+
+                    <MudNumericField T="int"
+                                     Label="Total Flats"
+                                     @bind-Value="_model.TotalFlats"
+                                     Variant="Variant.Outlined"
+                                     Min="0"
+                                     FullWidth="true" />
+
+                </MudItem>
+
+            </MudGrid>
+
+
+            <!-- =========================
+                 DESCRIPTION
+                 ========================= -->
+
+            <MudDivider Class="my-6" />
+
+            <MudText Typo="Typo.subtitle1"
+                     Class="mb-1">
+
+                Additional Information
+
+            </MudText>
+
+            <MudText Typo="Typo.body2"
+                     Color="Color.Secondary"
+                     Class="mb-4">
+
+                Add any additional information about the property.
+
+            </MudText>
+
+
+            <MudGrid>
+
+                <MudItem xs="12">
+
+                    <MudTextField T="string"
+                                  Label="Description"
+                                  Placeholder="Enter property description..."
+                                  Lines="4"
+                                  AutoGrow="true"
+                                  @bind-Value="_model.Description"
+                                  Variant="Variant.Outlined"
+                                  FullWidth="true" />
+
+                </MudItem>
+
+            </MudGrid>
+
+
+            <!-- =========================
+                 ACTIONS
+                 ========================= -->
+
+            <MudDivider Class="my-6" />
+
+            <MudStack Row="true"
                       Justify="Justify.FlexEnd"
                       Spacing="2">
 
                 <MudButton Variant="Variant.Outlined"
-                           Color="Color.Secondary"
+                           Color="Color.Default"
                            OnClick="Cancel">
+
                     Cancel
+
                 </MudButton>
+
+
                 <MudButton ButtonType="ButtonType.Submit"
                            Variant="Variant.Filled"
-                           Color="Color.Primary">
+                           Color="Color.Primary"
+                           StartIcon="@Icons.Material.Filled.Save">
+
                     Save Property
+
                 </MudButton>
 
             </MudStack>
 
-    </EditForm>
+        </EditForm>
 
-</MudPaper>
+    </MudPaper>
 
+</MudContainer>

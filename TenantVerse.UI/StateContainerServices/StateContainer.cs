@@ -17,7 +17,6 @@ public class PropertyStateContainer
     public List<PropertyDto> Properties { get; private set; } = new();
     public PropertyDto? SelectedProperty { get; private set; }
     public int PropertyId { get; private set; }
-    public bool IsEditMode { get; private set; }
     public bool IsLoaded { get; private set; }
 
     public void SetProperties(List<PropertyDto> properties)
@@ -35,12 +34,6 @@ public class PropertyStateContainer
     {
         PropertyId = propertyId;
     }
-
-    public void SetEditMode(bool isEditMode)
-    {
-        IsEditMode = isEditMode;
-    }
-
     public void ResetLoaded()
     {
         IsLoaded = false;
@@ -51,7 +44,6 @@ public class PropertyStateContainer
         Properties.Clear();
         SelectedProperty = null;
         PropertyId = 0;
-        IsEditMode = false;
         IsLoaded = false;
     }
 }
@@ -59,22 +51,14 @@ public class PropertyStateContainer
 public class UnitStateContainer
 {
     public List<UnitModel> Units { get; private set; } = new();
-
     public UnitModel? SelectedUnit { get; private set; }
-
     public int UnitId { get; private set; }
-
     public int PropertyId { get; private set; }
-
-    public bool IsEditMode { get; private set; }
-
     public bool IsLoaded { get; private set; }
-
 
     public void SetUnits(List<UnitModel> units)
     {
         Units = units;
-
         IsLoaded = true;
     }
 
@@ -97,12 +81,6 @@ public class UnitStateContainer
     }
 
 
-    public void SetEditMode(bool isEditMode)
-    {
-        IsEditMode = isEditMode;
-    }
-
-
     public void ResetLoaded()
     {
         IsLoaded = false;
@@ -115,7 +93,6 @@ public class UnitStateContainer
         SelectedUnit = null;
         UnitId = 0;
         PropertyId = 0;
-        IsEditMode = false;
         IsLoaded = false;
     }
 }

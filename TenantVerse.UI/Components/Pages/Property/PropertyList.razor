@@ -1,109 +1,187 @@
 @page "/property"
-@* @attribute [Authorize] *@
+
+@using MudBlazor
+
 @inject IDialogService DialogService
-@* @attribute [Authorize] *@
+
 <PageTitle>Properties</PageTitle>
 
 <MudText Typo="Typo.h6" Class="mb-2">
     Property List - @FilteredProperties.Count()
 </MudText>
 
-<MudPaper Class="pa-2">
-    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
-        <MudItem xs="12" sm="6" md="4">
 
-                    <MudTextField T="string"
-                                   Label="Search"
-                                   Placeholder="Search Property..."
-                                   Variant="Variant.Outlined"
-                                   Margin="Margin.Dense"
-                                   Immediate="true"
-                                   Adornment="Adornment.Start"
-                                   AdornmentIcon="@Icons.Material.Filled.Search"
-                                   @bind-Value="SearchString" />
-               </MudItem>
+<!-- =========================
+     TOOLBAR
+     ========================= -->
+
+<MudPaper Class="pa-2">
+
+    <MudStack Row="true"
+              Justify="Justify.SpaceBetween"
+              AlignItems="AlignItems.Center">
+
+        <MudItem xs="12"
+                 sm="6"
+                 md="4">
+
+            <MudTextField T="string"
+                          Label="Search"
+                          Placeholder="Search Property..."
+                          Variant="Variant.Outlined"
+                          Margin="Margin.Dense"
+                          Immediate="true"
+                          Adornment="Adornment.Start"
+                          AdornmentIcon="@Icons.Material.Filled.Search"
+                          @bind-Value="SearchString" />
+
+        </MudItem>
+
+
         <MudButton Variant="Variant.Filled"
-               Color="Color.Primary"
-               StartIcon="@Icons.Material.Filled.Add"
-               OnClick="NavigateToCreate">
-               Add Property
-          </MudButton>
+                   Color="Color.Primary"
+                   StartIcon="@Icons.Material.Filled.Add"
+                   OnClick="NavigateToCreate">
+
+            Add Property
+
+        </MudButton>
+
     </MudStack>
+
 </MudPaper>
 
-<MudPaper Class="mt-4 pa-2">
+
+<!-- =========================
+     TABLE
+     ========================= -->
+
+<MudPaper Class="mt-4 pa-2"
+          Style="position:relative; min-height:300px;">
+
+
+    <!-- =========================
+         LOADER OVERLAY
+         ========================= -->
 
     @if (IsLoading)
     {
-          @* <LoaderComponent Text="Loading Properties..."
-                    Size="Size.Medium" />     *@
-                        <CustomLoaderComponent/>
-
+        <CustomLoaderComponent />
     }
-    else
+
+
+    <!-- =========================
+         ERROR
+         ========================= -->
+
+    @if (!IsLoading &&
+         !string.IsNullOrWhiteSpace(_errorMessage))
+    {
+        <MudAlert Severity="Severity.Error"
+                  Variant="Variant.Outlined"
+                  Class="ma-2">
+
+            @_errorMessage
+
+        </MudAlert>
+    }
+
+
+    <!-- =========================
+         TABLE
+         ========================= -->
+
+    @if (string.IsNullOrWhiteSpace(_errorMessage))
     {
         <MudTable Items="FilteredProperties"
-                    Hover="true"
-                    Dense="true"
-                    Striped="true"
-                    Bordered="true"
-                    RowsPerPage="20">
-          <HeaderContent>
-               <MudTh>Code</MudTh>
-               <MudTh>Name</MudTh>
-               <MudTh>Owner</MudTh>
-               <MudTh>City</MudTh>
-               <MudTh>Floors</MudTh>
-               <MudTh>Flats</MudTh>
-               <MudTh>Email</MudTh>
-               <MudTh>Status</MudTh>
+                  Hover="true"
+                  Dense="true"
+                  Striped="true"
+                  Bordered="true"
+                  RowsPerPage="20">
 
-               <MudTh>Actions</MudTh>
-          </HeaderContent>
-          <RowTemplate>
-
-               <MudTd>@context.PropertyCode</MudTd>
-               <MudTd>@context.PropertyName</MudTd>
-               <MudTd>@context.OwnerName</MudTd>
-               <MudTd>@context.City</MudTd>
-               <MudTd>@context.TotalFloors</MudTd>
-               <MudTd>@context.TotalFlats</MudTd>
-               <MudTd>@context.Email</MudTd>
-
-               <MudTd>
+            <HeaderContent>
+                <MudTh>Code</MudTh>
+                <MudTh>Name</MudTh>
+                <MudTh>Owner</MudTh>
+                <MudTh>City</MudTh>
+                <MudTh>Floors</MudTh>
+                <MudTh>Flats</MudTh>
+                <MudTh>Email</MudTh>
+                <MudTh>Status</MudTh>
+                <MudTh>Actions</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Code">
+                    @context.PropertyCode
+                </MudTd>
+                <MudTd DataLabel="Name">
+                    @context.PropertyName
+                </MudTd>
+                <MudTd DataLabel="Owner">
+                    @context.OwnerName
+                </MudTd>
+                <MudTd DataLabel="City">
+                    @context.City
+                </MudTd>
+                <MudTd DataLabel="Floors">
+                    @context.TotalFloors
+                </MudTd>
+                <MudTd DataLabel="Flats">
+                    @context.TotalFlats
+                </MudTd>
+                <MudTd DataLabel="Email">
+                    @context.Email
+                </MudTd>
+                <MudTd DataLabel="Status">
                     @if (context.IsActive)
                     {
-                         <MudText Color="Color.Success">
-                              ● Active
-                         </MudText>
+                        <MudText Color="Color.Success">
+                            ● Active
+                        </MudText>
                     }
                     else
                     {
-                         <MudText Color="Color.Error">
-                              ● Inactive
-                         </MudText>
+                        <MudText Color="Color.Error">
+                            ● Inactive
+                        </MudText>
                     }
-               </MudTd>
 
-               <MudTd>
-
+                </MudTd>
+                <MudTd DataLabel="Actions">
                     <MudIconButton Icon="@Icons.Material.Filled.Visibility"
                                    Color="Color.Info"
-                                   OnClick="@(() => UpdateOrView(context.PropertyId, "view"))" />
+                                   OnClick="@(() => UpdateOrView(
+                                       context.PropertyId,
+                                       "view"))" />
+
 
                     <MudIconButton Icon="@Icons.Material.Filled.Edit"
                                    Color="Color.Primary"
-                                   OnClick="@(() => UpdateOrView(context.PropertyId, "edit"))" />
+                                   OnClick="@(() => UpdateOrView(
+                                       context.PropertyId,
+                                       "edit"))" />
+
 
                     <MudIconButton Icon="@Icons.Material.Filled.Delete"
                                    Color="Color.Error"
-                                   OnClick="@(() => DeleteProperty(context.PropertyId))" />
-               </MudTd>
-          </RowTemplate>
-          <PagerContent>
-               <MudTablePager PageSizeOptions="new int[] { 5, 10, 20, 50, 100, 200, 500 }" />
-          </PagerContent>
-     </MudTable>
+                                   OnClick="@(() => DeleteProperty(
+                                       context.PropertyId))" />
+
+                </MudTd>
+
+            </RowTemplate>
+
+
+            <!-- =========================
+                 PAGINATION
+                 ========================= -->
+
+            <PagerContent>
+                <MudTablePager PageSizeOptions="new int[]
+                {5, 10, 20, 50, 100, 200, 500}" />
+            </PagerContent>
+
+        </MudTable>
     }
 </MudPaper>
-

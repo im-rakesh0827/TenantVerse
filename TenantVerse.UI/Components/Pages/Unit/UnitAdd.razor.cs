@@ -32,7 +32,6 @@ public partial class UnitAdd
     protected bool _isLoading = true;
     protected int TotalPropertyCount {get; set;} = 0;
     protected string SearchString = string.Empty;
-    // protected IEnumerable<PropertyDto> FilteredProperties =>string.IsNullOrWhiteSpace(SearchString)? properties:properties.Where(FilterProperty);
 
     protected MudForm? _form;
     protected CreateUnitRequest _model = new()
@@ -53,7 +52,7 @@ public partial class UnitAdd
         _isLoading = true;
         if (!_StateContainer.Property.IsLoaded)
         {
-            await Task.Delay(1000);
+            await Task.Delay(500);
             var data = await PropertyService.GetAllAsync();
             _StateContainer.Property.SetProperties(data);
         }
@@ -108,11 +107,8 @@ public partial class UnitAdd
 
                 return;
             }
-
-            Snackbar.Add(
-                "Flat created successfully.",
-                Severity.Success);
-
+            Snackbar.Add("Flat created successfully.",Severity.Success);
+            _StateContainer.Unit.ResetLoaded();
             Navigation.NavigateTo("/flat");
         }
         catch (HttpRequestException)

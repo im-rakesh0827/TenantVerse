@@ -18,7 +18,8 @@ namespace TenantVerse.UI.Components.Pages.Property
         protected NavigationManager Navigation { get; set; } = default!;
         [Inject]
         protected ISnackbar Snackbar { get; set; } = default!;
-        
+        [Inject]
+        protected StateContainer _StateContainer {get; set;} = default;
         protected CreatePropertyRequest _model = new();
 
         protected async Task Save()
@@ -28,6 +29,7 @@ namespace TenantVerse.UI.Components.Pages.Property
             if (propertyId > 0)
             {
                 Snackbar.Add("Property created successfully.", Severity.Success);
+                _StateContainer.Property.ResetLoaded();
                 Navigation.NavigateTo("/property");
             }
             else

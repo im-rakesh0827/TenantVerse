@@ -12,6 +12,8 @@ public partial class UnitViewUpdate
 {
     [Parameter]
     public int Id { get; set; }
+    [Parameter]
+    public string Mode { get; set; } = string.Empty;
     [Inject]
     protected NavigationManager Navigation { get; set; } = default!;
     [Inject]
@@ -26,19 +28,18 @@ public partial class UnitViewUpdate
     protected UpdateUnitRequest _model = new();
     protected List<PropertyDto> properties = new();
     protected Dictionary<string, int> _floors = new();
-    protected bool _isLoading = true;
-    protected bool IsFloorDisabled { get; set; } = true;
+    protected bool IsLoading = true;
+    protected bool IsFloorDisabled { get; set; } = false;
     protected string? _errorMessage;
     protected bool IsViewMode => Navigation.Uri.Contains($"/flat/view/{Id}",StringComparison.OrdinalIgnoreCase);
     protected override async Task OnInitializedAsync()
     {
           try
           {
-              _isLoading = true;
+              IsLoading = true;
               _errorMessage = null;
               await LoadPropertiesAsync();
               await LoadUnitByIdAsync();
-              await LoadFloorsAsync(_StateContainer.Unit.SelectedUnit.PropertyId);
           }
           catch (Exception ex)
           {
@@ -46,7 +47,7 @@ public partial class UnitViewUpdate
           }
           finally
           {
-              _isLoading = false;
+              IsLoading = false;
           }
     }
 
@@ -69,10 +70,9 @@ public partial class UnitViewUpdate
                _StateContainer.Property.Clear();
                _StateContainer.Property.SetProperties(properties);
           }
-        
     }
 
-      private async Task LoadUnitByIdAsync()
+     private async Task LoadUnitByIdAsync()
      {
           var unit = new UnitModel();
           if(_StateContainer.Unit.SelectedUnit is not null && _StateContainer.Unit.SelectedUnit.UnitId>0)
@@ -83,7 +83,9 @@ public partial class UnitViewUpdate
           {
                var response = await UnitService.GetByIdAsync(Id);
                unit = response.Data;
+               _StateContainer.Unit.SetSelectedUnit(unit);
           }
+          await LoadFloorsAsync(unit.PropertyId);
           _model = new UpdateUnitRequest
           {
               UnitId = unit.UnitId,
@@ -106,25 +108,21 @@ public partial class UnitViewUpdate
             return;
         _model.PropertyId = propertyId;
         _model.FloorNumber = null;
-        _floors.Clear();
-        IsFloorDisabled = true;
-
-       await LoadFloorsAsync(propertyId);
+        await LoadFloorsAsync(propertyId);
     }
 
 
     private async Task LoadFloorsAsync(int propertyId)
     {
-        var selectedProperty = properties
-            .FirstOrDefault(x => x.PropertyId == propertyId);
-        if (selectedProperty == null)
-            return;
-          _floors.Clear();
-          for (var i = 0; i <= selectedProperty.TotalFloors; i++)
-          {
-               _floors.Add(FloorHelper.GetFloorName(i), i);
-          }
-          IsFloorDisabled = false;
+        _floors.Clear();
+         IsFloorDisabled = true;
+        var selectedProperty = properties.FirstOrDefault(x => x.PropertyId == propertyId);
+        if (selectedProperty == null) return;
+        for (var i = 0; i <= selectedProperty.TotalFloors; i++)
+        {
+          _floors.Add(FloorHelper.GetFloorName(i), i);
+        }
+        IsFloorDisabled = false;
     }
 
     protected async Task UpdateAsync()
@@ -136,7 +134,7 @@ public partial class UnitViewUpdate
             return;
         try
         {
-            _isLoading = true;
+            IsLoading = true;
             var result = await UnitService.UpdateAsync(_model);
             if (result == null)
             {
@@ -145,11 +143,12 @@ public partial class UnitViewUpdate
             }
             if (!result.IsSuccess)
             {
-                Snackbar.Add(result.Message,Severity.Error);
-                return;
+               Snackbar.Add(result.Message,Severity.Error);
+               return;
             }
-            await Task.Delay(500);
-            _StateContainer.Unit.Clear();
+           var response = await UnitService.GetAllAsync();
+           _StateContainer.Unit.SetUnits(response.Data.ToList());
+            await Task.Delay(1000);
             Snackbar.Add("Flat updated successfully.",Severity.Success);
             Navigation.NavigateTo("/flat");
         }
@@ -159,10 +158,10 @@ public partial class UnitViewUpdate
         }
         finally
         {
-          _isLoading = false;
+          IsLoading = false;
+          await InvokeAsync(StateHasChanged);
         }
     }
-
     protected void GoBack()
     {
         Navigation.NavigateTo("/flat");

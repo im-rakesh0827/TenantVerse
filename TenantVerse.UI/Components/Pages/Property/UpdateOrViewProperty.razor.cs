@@ -44,12 +44,17 @@ namespace TenantVerse.UI.Components.Pages.Property
             IsLoading = true;
             try
             {
-                // var property = await PropertyService.GetByIdAsync(Id);
                 // var property = _StateContainer.Property.Properties.FirstOrDefault(x => x.PropertyId == Id);
                 var property = _StateContainer.Property.SelectedProperty;
                 if (property is not null)
                 {
                     propertyModel = property;
+                }
+                else
+                {
+                    property = await PropertyService.GetByIdAsync(Id);
+                    propertyModel = property;
+                    // Console.WriteLine($"Selected Property Name : {_StateContainer.Property.SelectedProperty.PropertyId}");
                 }
             }
             finally

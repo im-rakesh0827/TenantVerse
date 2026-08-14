@@ -11,7 +11,6 @@ namespace TenantVerse.UI.Components.Pages.Property
 {
     public partial class PropertyList
     {
-
           [Inject]
           protected PropertyService PropertyService { get; set; } = default!;
           [Inject]
@@ -26,15 +25,23 @@ namespace TenantVerse.UI.Components.Pages.Property
           protected List<PropertyDto> properties = new();
           protected bool IsLoading = true;
           protected int TotalPropertyCount {get; set;} = 0;
-
-
+          private string? _errorMessage;
           protected string SearchString = string.Empty;
           protected IEnumerable<PropertyDto> FilteredProperties =>string.IsNullOrWhiteSpace(SearchString)? properties:properties.Where(FilterProperty);
 
           protected override async Task OnInitializedAsync()
           {
-               StateHasChanged();
-               await LoadProperties();
+               try
+               {
+                    _errorMessage = null;
+                    StateHasChanged();
+                    await LoadProperties();
+               }
+               catch (Exception ex)
+               {
+                    _errorMessage = ex.Message;
+                    throw;
+               }
           }
           private void NavigateToCreate()
           {
@@ -99,11 +106,8 @@ namespace TenantVerse.UI.Components.Pages.Property
           {   
                var property = _StateContainer.Property.Properties.FirstOrDefault(x=>x.PropertyId==id);
                _StateContainer.Property.SetSelectedProperty(property);
-               _StateContainer.Property.SetEditMode(mode == "edit");
                _StateContainer.Property.SetPropertyId(id);
                Navigation.NavigateTo($"/property/{mode}/{id}");
-               // Navigation.NavigateTo($"/property/edit/{id}");
-
           }
 
           private bool FilterProperty(PropertyDto property)

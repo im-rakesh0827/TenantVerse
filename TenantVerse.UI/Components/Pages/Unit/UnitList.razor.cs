@@ -18,7 +18,7 @@ public partial class UnitList
     [Inject]
     protected StateContainer _StateContainer { get; set; } = default!;
     protected List<UnitModel> _units = new();
-    protected bool _isLoading;
+    protected bool IsLoading;
     protected string? _errorMessage;
     private string _searchString = string.Empty;
 
@@ -33,7 +33,7 @@ public partial class UnitList
         {
             if(!_StateContainer.Unit.IsLoaded)
             {
-                _isLoading = true;
+                IsLoading = true;
                 await Task.Delay(1000);
                 var response = await UnitService.GetAllAsync();
                 if (response == null)
@@ -66,7 +66,7 @@ public partial class UnitList
         }
         finally
         {
-            _isLoading = false;
+            IsLoading = false;
         }
     }
 
@@ -95,7 +95,7 @@ public partial class UnitList
     {
         try
         {
-            _isLoading = true;
+            IsLoading = true;
             var response = await UnitService.DeleteAsync(unitId);
             if (!response.IsSuccess)
             {
@@ -119,7 +119,7 @@ public partial class UnitList
         }
         finally
         {
-            _isLoading = false;
+            IsLoading = false;
         }
     }
 

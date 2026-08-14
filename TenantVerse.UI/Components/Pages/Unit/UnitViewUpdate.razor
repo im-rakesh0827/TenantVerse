@@ -1,365 +1,205 @@
-@page "/flat/edit/{Id:int}"
-@page "/flat/view/{Id:int}"
-
+@page "/flat/{mode}/{Id:int}"
 @using MudBlazor
 
 <PageTitle>
     @(IsViewMode ? "View Flat" : "Edit Flat")
 </PageTitle>
 
-<MudContainer MaxWidth="MaxWidth.False"
-              Class="pa-6">
+<MudPaper Class="pa-6 flat-page-container">
 
-    @* =========================================================
-       LOADING STATE
-       ========================================================= *@
+    <MudText Typo="Typo.h4" Class="mb-6">
+        @(IsViewMode ? "View Flat" : "Edit Flat")
+    </MudText>
+    <div class="flat-content">
+        <MudForm @ref="_form">
+            <MudGrid Spacing="3">
 
-    @if (_isLoading)
-    {
-        <CustomLoaderComponent/>
-    }
+                <!-- PROPERTY -->
+                <MudItem xs="12" md="6">
+                    <MudSelect T="int"
+                               Label="Property"
+                               Variant="Variant.Outlined"
+                               Value="_model.PropertyId"
+                               ValueChanged="OnPropertyChanged"
+                               Disabled="@IsViewMode"
+                               Required="true"
+                               RequiredError="Property is required.">
 
+                        @foreach (var property in properties)
+                        {
+                            <MudSelectItem T="int"
+                                           Value="@property.PropertyId">
 
-    @* =========================================================
-       ERROR STATE
-       ========================================================= *@
+                                @property.PropertyName
 
-    @if (!_isLoading && !string.IsNullOrWhiteSpace(_errorMessage))
-    {
-        <MudContainer MaxWidth="MaxWidth.False"
-                      Class="pa-0">
+                            </MudSelectItem>
+                        }
 
-            <MudAlert Severity="Severity.Error"
-                      Variant="Variant.Outlined"
-                      Class="mb-4">
-
-                @_errorMessage
-
-            </MudAlert>
-
-            @* <MudButton Variant="Variant.Outlined"
-                       StartIcon="@Icons.Material.Filled.ArrowBack"
-                       OnClick="GoBack">
-
-                Back
-            </MudButton> *@
-
-        </MudContainer>
-    }
+                    </MudSelect>
+                </MudItem>
 
 
-    @* =========================================================
-       CONTENT STATE
-       ========================================================= *@
+                <!-- FLAT NUMBER -->
+                <MudItem xs="12" md="6">
+                    <MudTextField T="string"
+                                  Label="Flat Number"
+                                  Variant="Variant.Outlined"
+                                  @bind-Value="_model.UnitNumber"
+                                  Disabled="@IsViewMode"
+                                  Required="true"
+                                  RequiredError="Flat number is required." />
+                </MudItem>
 
-    @if (!_isLoading && string.IsNullOrWhiteSpace(_errorMessage))
-    {
-        <MudContainer MaxWidth="MaxWidth.False"
-                      Class="pa-0">
 
-            <!-- HEADER -->
+                <!-- FLAT TYPE -->
+                <MudItem xs="12" md="6">
+                    <MudTextField T="string"
+                                  Label="Flat Type"
+                                  Variant="Variant.Outlined"
+                                  Placeholder="Example: 2BHK"
+                                  @bind-Value="_model.UnitType"
+                                  Disabled="@IsViewMode" />
+                </MudItem>
 
+
+                <!-- FLOOR -->
+                <MudItem xs="12" md="6">
+                    <MudSelect T="int?"
+                               Label="Floor Number"
+                               Variant="Variant.Outlined"
+                               @bind-Value="_model.FloorNumber"
+                               Disabled="@(IsViewMode || IsFloorDisabled)"
+                               Required="true"
+                               RequiredError="Floor number is required.">
+
+                        @foreach (var floor in _floors)
+                        {
+                            <MudSelectItem T="int?"
+                                           Value="@((int?)floor.Value)">
+
+                                @floor.Key
+
+                            </MudSelectItem>
+                        }
+
+                    </MudSelect>
+                </MudItem>
+
+
+                <!-- BEDROOMS -->
+                <MudItem xs="12" md="6">
+                    <MudNumericField T="int?"
+                                     Label="Bedrooms"
+                                     Variant="Variant.Outlined"
+                                     @bind-Value="_model.Bedrooms"
+                                     Disabled="@IsViewMode"
+                                     Min="0" />
+                </MudItem>
+
+
+                <!-- BATHROOMS -->
+                <MudItem xs="12" md="6">
+                    <MudNumericField T="int?"
+                                     Label="Bathrooms"
+                                     Variant="Variant.Outlined"
+                                     @bind-Value="_model.Bathrooms"
+                                     Disabled="@IsViewMode"
+                                     Min="0" />
+                </MudItem>
+
+
+                <!-- AREA -->
+                <MudItem xs="12" md="6">
+                    <MudNumericField T="decimal?"
+                                     Label="Area (sq.ft)"
+                                     Variant="Variant.Outlined"
+                                     @bind-Value="_model.Area"
+                                     Disabled="@IsViewMode"
+                                     Min="0" />
+                </MudItem>
+
+
+                <!-- MONTHLY RENT -->
+                <MudItem xs="12" md="6">
+                    <MudNumericField T="decimal?"
+                                     Label="Monthly Rent"
+                                     Variant="Variant.Outlined"
+                                     Adornment="Adornment.Start"
+                                     AdornmentText="₹"
+                                     @bind-Value="_model.MonthlyRent"
+                                     Disabled="@IsViewMode"
+                                     Min="0" />
+                </MudItem>
+
+
+                <!-- SECURITY DEPOSIT -->
+                <MudItem xs="12" md="6">
+                    <MudNumericField T="decimal?"
+                                     Label="Security Deposit"
+                                     Variant="Variant.Outlined"
+                                     Adornment="Adornment.Start"
+                                     AdornmentText="₹"
+                                     @bind-Value="_model.SecurityDeposit"
+                                     Disabled="@IsViewMode"
+                                     Min="0" />
+                </MudItem>
+
+
+                <!-- STATUS -->
+                <MudItem xs="12" md="6">
+                    <MudSelect T="string"
+                               Label="Status"
+                               Variant="Variant.Outlined"
+                               @bind-Value="_model.Status"
+                               Disabled="@IsViewMode">
+
+                        <MudSelectItem T="string"
+                                       Value="@("Available")">
+                            Available
+                        </MudSelectItem>
+
+                        <MudSelectItem T="string"
+                                       Value="@("Occupied")">
+                            Occupied
+                        </MudSelectItem>
+
+                        <MudSelectItem T="string"
+                                       Value="@("Maintenance")">
+                            Maintenance
+                        </MudSelectItem>
+
+                    </MudSelect>
+                </MudItem>
+
+            </MudGrid>
+
+
+            <MudDivider Class="my-6" />
+
+
+            <!-- ACTIONS -->
             <MudStack Row="true"
-                      AlignItems="AlignItems.Center"
-                      Justify="Justify.SpaceBetween"
-                      Class="mb-6">
+                      Justify="Justify.FlexEnd"
+                      Spacing="2">
 
-                <div>
-
-                    <MudText Typo="Typo.h4">
-
-                        @(IsViewMode
-                            ? "View Flat"
-                            : "Edit Flat")
-
-                    </MudText>
-
-                    <MudText Typo="Typo.body2"
-                             Color="Color.Secondary">
-
-                        @(IsViewMode
-                            ? "View flat details"
-                            : "Update flat details")
-
-                    </MudText>
-
-                </div>
-
-
-                @* <MudButton Variant="Variant.Outlined"
-                           StartIcon="@Icons.Material.Filled.ArrowBack"
+                <MudButton Variant="Variant.Outlined"
+                           Color="Color.Secondary"
+                           Disabled="@(IsLoading)"
                            OnClick="GoBack">
-                    Back
-                </MudButton> *@
-
+                    Cancel
+                </MudButton>
+                <MudButton Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               Disabled="@(IsLoading || IsViewMode)"
+                               StartIcon="@Icons.Material.Filled.Save"
+                               OnClick="UpdateAsync">
+                        Update Flat
+                    </MudButton>
             </MudStack>
-
-
-            <!-- FORM -->
-
-            <MudPaper Elevation="1"
-                      Class="pa-6"
-                      Width="100%">
-
-                <MudForm @ref="_form">
-
-                    <MudGrid Spacing="3">
-
-
-                        <!-- PROPERTY -->
-
-                        <MudItem xs="12"
-                                 md="6">
-
-                            <MudSelect T="int"
-                                       Label="Property"
-                                       Variant="Variant.Outlined"
-                                       Value="_model.PropertyId"
-                                       ValueChanged="OnPropertyChanged"
-                                       Disabled="@IsViewMode"
-                                       Required="true"
-                                       RequiredError="Property is required.">
-
-                                @foreach (var property in properties)
-                                {
-                                    <MudSelectItem T="int"
-                                                   Value="@property.PropertyId">
-
-                                        @property.PropertyName
-
-                                    </MudSelectItem>
-                                }
-
-                            </MudSelect>
-
-                        </MudItem>
-
-
-                        <!-- FLAT NUMBER -->
-
-                        <MudItem xs="12"
-                                 md="6">
-
-                            <MudTextField T="string"
-                                          Label="Flat Number"
-                                          Variant="Variant.Outlined"
-                                          @bind-Value="_model.UnitNumber"
-                                          Disabled="@IsViewMode"
-                                          Required="true"
-                                          RequiredError="Flat number is required." />
-
-                        </MudItem>
-
-
-                        <!-- FLAT TYPE -->
-
-                        <MudItem xs="12"
-                                 md="6">
-
-                            <MudTextField T="string"
-                                          Label="Flat Type"
-                                          Variant="Variant.Outlined"
-                                          Placeholder="Example: 2BHK"
-                                          @bind-Value="_model.UnitType"
-                                          Disabled="@IsViewMode" />
-
-                        </MudItem>
-
-
-                        <!-- FLOOR -->
-
-                        <MudItem xs="12"
-                                 md="6">
-
-                            <MudSelect T="int?"
-                                       Label="Floor Number"
-                                       Variant="Variant.Outlined"
-                                       @bind-Value="_model.FloorNumber"
-                                       Disabled="@(IsViewMode || IsFloorDisabled)"
-                                       Required="true"
-                                       RequiredError="Floor number is required.">
-
-                                @foreach (var floor in _floors)
-                                {
-                                    <MudSelectItem T="int?"
-                                                   Value="@((int?)floor.Value)">
-
-                                        @floor.Key
-
-                                    </MudSelectItem>
-                                }
-
-                            </MudSelect>
-
-                        </MudItem>
-
-
-                        <!-- BEDROOMS -->
-
-                        <MudItem xs="12"
-                                 md="6">
-
-                            <MudNumericField T="int?"
-                                             Label="Bedrooms"
-                                             Variant="Variant.Outlined"
-                                             @bind-Value="_model.Bedrooms"
-                                             Disabled="@IsViewMode"
-                                             Min="0" />
-
-                        </MudItem>
-
-
-                        <!-- BATHROOMS -->
-
-                        <MudItem xs="12"
-                                 md="6">
-
-                            <MudNumericField T="int?"
-                                             Label="Bathrooms"
-                                             Variant="Variant.Outlined"
-                                             @bind-Value="_model.Bathrooms"
-                                             Disabled="@IsViewMode"
-                                             Min="0" />
-
-                        </MudItem>
-
-
-                        <!-- AREA -->
-
-                        <MudItem xs="12"
-                                 md="6">
-
-                            <MudNumericField T="decimal?"
-                                             Label="Area (sq.ft)"
-                                             Variant="Variant.Outlined"
-                                             @bind-Value="_model.Area"
-                                             Disabled="@IsViewMode"
-                                             Min="0" />
-
-                        </MudItem>
-
-
-                        <!-- MONTHLY RENT -->
-
-                        <MudItem xs="12"
-                                 md="6">
-
-                            <MudNumericField T="decimal?"
-                                             Label="Monthly Rent"
-                                             Variant="Variant.Outlined"
-                                             Adornment="Adornment.Start"
-                                             AdornmentText="₹"
-                                             @bind-Value="_model.MonthlyRent"
-                                             Disabled="@IsViewMode"
-                                             Min="0" />
-
-                        </MudItem>
-
-
-                        <!-- SECURITY DEPOSIT -->
-
-                        <MudItem xs="12"
-                                 md="6">
-
-                            <MudNumericField T="decimal?"
-                                             Label="Security Deposit"
-                                             Variant="Variant.Outlined"
-                                             Adornment="Adornment.Start"
-                                             AdornmentText="₹"
-                                             @bind-Value="_model.SecurityDeposit"
-                                             Disabled="@IsViewMode"
-                                             Min="0" />
-
-                        </MudItem>
-
-
-                        <!-- STATUS -->
-
-                        <MudItem xs="12"
-                                 md="6">
-
-                            <MudSelect T="string"
-                                       Label="Status"
-                                       Variant="Variant.Outlined"
-                                       @bind-Value="_model.Status"
-                                       Disabled="@IsViewMode">
-
-                                <MudSelectItem T="string"
-                                               Value="@("Available")">
-
-                                    Available
-
-                                </MudSelectItem>
-
-                                <MudSelectItem T="string"
-                                               Value="@("Occupied")">
-
-                                    Occupied
-
-                                </MudSelectItem>
-
-                                <MudSelectItem T="string"
-                                               Value="@("Maintenance")">
-
-                                    Maintenance
-
-                                </MudSelectItem>
-
-                            </MudSelect>
-
-                        </MudItem>
-
-
-                        <!-- ACTIONS -->
-
-                        <MudItem xs="12">
-
-                            <MudDivider Class="my-4" />
-
-                            <MudStack Row="true"
-                                      Justify="Justify.FlexEnd"
-                                      Spacing="2">
-
-                                <MudButton Variant="Variant.Outlined"
-                                           Color="Color.Default"
-                                           OnClick="GoBack">
-
-                                    Back
-
-                                </MudButton>
-
-
-                                @if (!IsViewMode)
-                                {
-                                    <MudButton Variant="Variant.Filled"
-                                               Color="Color.Primary"
-                                               Disabled="@_isLoading"
-                                               StartIcon="@Icons.Material.Filled.Save"
-                                               OnClick="UpdateAsync">
-
-                                        @if (_isLoading)
-                                        {
-                                            <MudProgressCircular Size="Size.Small"
-                                                                 Indeterminate="true"
-                                                                 Class="me-2" />
-                                        }
-
-                                        Update Flat
-
-                                    </MudButton>
-                                }
-
-                            </MudStack>
-
-                        </MudItem>
-
-                    </MudGrid>
-
-                </MudForm>
-
-            </MudPaper>
-
-        </MudContainer>
-    }
-
-</MudContainer>
+        </MudForm>
+        @if (IsLoading)
+        {
+          <CustomLoaderComponent />
+        }
+    </div>
+</MudPaper>
