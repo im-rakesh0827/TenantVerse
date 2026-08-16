@@ -133,17 +133,14 @@ public partial class TenantCreate
               _message = null;
               if(!_StateContainer.Unit.IsLoaded)
               {
-                    await Task.Delay(500);
+                    await Task.Delay(1000);
                     var response = await UnitService.GetByPropertyIdAsync(propertyId);
                     if (response.IsSuccess && response.Data is not null)
                     {
                         _availableUnits = response.Data
                             .Where(x =>
                                 x.IsActive &&
-                                string.Equals(
-                                    x.Status,
-                                    "Available",
-                                    StringComparison.OrdinalIgnoreCase))
+                                string.Equals(x.Status,UnitStatus.Available,StringComparison.OrdinalIgnoreCase))
                             .ToList();
                     }
                     else

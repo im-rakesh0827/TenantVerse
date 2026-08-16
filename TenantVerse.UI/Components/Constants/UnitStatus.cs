@@ -1,7 +1,7 @@
 namespace TenantVerse.UI.Components.Constants;
 public static class UnitStatus
 {
-    // public const string Available = "Available";
+    public const string Available = "Available";
     // public const string Occupied = "Occupied";
     // public const string Maintenance = "Maintenance";
     // public static readonly List<string> StatusList =

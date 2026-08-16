@@ -115,28 +115,65 @@ public class UnitService
     }
 
 
+    // public async Task<ApiResponse<int>> UpdateAsync(UpdateUnitRequest request)
+    // {
+    //     var response = await Client.PutAsJsonAsync(
+    //         $"{baseUrl}/update",
+    //         request);
+
+    //     if (!response.IsSuccessStatusCode)
+    //     {
+    //         return new ApiResponse<int>
+    //         {
+    //             IsSuccess = false,
+    //             Message = $"Unable to update unit. Status: {response.StatusCode}"
+    //         };
+    //     }
+
+    //     return await response.Content
+    //         .ReadFromJsonAsync<ApiResponse<int>>()
+    //         ?? new ApiResponse<int>
+    //         {
+    //             IsSuccess = false,
+    //             Message = "Invalid response from server."
+    //         };
+    // }
+
+
     public async Task<ApiResponse<int>> UpdateAsync(UpdateUnitRequest request)
     {
-        var response = await Client.PutAsJsonAsync(
-            $"{baseUrl}/update",
-            request);
+        try
+        {
+            var response = await Client.PutAsJsonAsync(
+                $"{baseUrl}/update",
+                request);
 
-        if (!response.IsSuccessStatusCode)
+            // Read the API response body even when
+            // the API returns 400 BadRequest or 500.
+            var result = await response.Content
+                .ReadFromJsonAsync<ApiResponse<int>>();
+
+            if (result is not null)
+            {
+                return result;
+            }
+
+            return new ApiResponse<int>
+            {
+                IsSuccess = false,
+                Message = $"Unable to update unit. Status: {response.StatusCode}",
+                Data = 0
+            };
+        }
+        catch (Exception ex)
         {
             return new ApiResponse<int>
             {
                 IsSuccess = false,
-                Message = $"Unable to update unit. Status: {response.StatusCode}"
+                Message = ex.Message,
+                Data = 0
             };
         }
-
-        return await response.Content
-            .ReadFromJsonAsync<ApiResponse<int>>()
-            ?? new ApiResponse<int>
-            {
-                IsSuccess = false,
-                Message = "Invalid response from server."
-            };
     }
 
     public async Task<ApiResponse<int>> DeleteAsync(int unitId)

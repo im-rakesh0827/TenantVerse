@@ -15,3 +15,9 @@ CREATE UNIQUE INDEX UX_tbl_Unit_PropertyId_UnitNumber
 ON dbo.tbl_Unit(PropertyId, UnitNumber)
 WHERE IsDeleted = 0;
 GO
+
+
+CREATE UNIQUE INDEX UX_tbl_Tenant_Active_Unit
+ON dbo.tbl_Tenant(UnitId)
+WHERE IsActive = 1;
+GO
