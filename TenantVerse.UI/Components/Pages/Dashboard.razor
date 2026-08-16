@@ -5,194 +5,169 @@
 <MudText Typo="Typo.h4" Class="mb-4">
     Dashboard
 </MudText>
-
-@if (IsLoading)
-{
-    @* <LoaderComponent Text="Loading Dashboard..." IsVisible="@IsLoading" /> *@
-    <CustomLoaderComponent/>
-}
-else
-{
-    <!-- Dashboard Cards -->
-    <MudGrid>
-        <!-- Total Properties -->
-        <MudItem xs="12" sm="6" md="3">
-            <MudPaper Elevation="1"
-                    Class="pa-4">
-                <MudGrid>
-                    <MudItem xs="6">
-                        <MudText Typo="Typo.subtitle2"
-                                Color="Color.Secondary">
-                            Properties
-                        </MudText>
-                        <MudText Typo="Typo.h5"
-                                Class="mt-1">
-                            @TotalProperties.ToString("N0")
-                        </MudText>
-                    </MudItem>
+<!-- Dashboard Cards -->
+<MudGrid>
+    <!-- Total Properties -->
+    <MudItem xs="12" sm="6" md="3">
+        <MudPaper Elevation="1"
+                Class="pa-4">
+            <MudGrid>
+                <MudItem xs="6">
+                    <MudText Typo="Typo.subtitle2"
+                            Color="Color.Secondary">
+                        Properties
+                    </MudText>
+                    <MudText Typo="Typo.h5"
+                            Class="mt-1">
+                        @TotalProperties.ToString("N0")
+                    </MudText>
+                </MudItem>
 
 
-                    <MudItem xs="6">
-                        <MudText Typo="Typo.subtitle2"
-                                Color="Color.Secondary">
-                            Flats
-                        </MudText>
+                <MudItem xs="6">
+                    <MudText Typo="Typo.subtitle2"
+                            Color="Color.Secondary">
+                        Flats
+                    </MudText>
 
-                        <MudText Typo="Typo.h5"
-                                Class="mt-1">
-                            @TotalFlats.ToString("N0")
-                        </MudText>
-                    </MudItem>
-                </MudGrid>
-            </MudPaper>
-        </MudItem>
+                    <MudText Typo="Typo.h5"
+                            Class="mt-1">
+                        @TotalFlats.ToString("N0")
+                    </MudText>
+                </MudItem>
+            </MudGrid>
+        </MudPaper>
+    </MudItem>
 
-        <!-- Total Flats -->
-        <MudItem xs="12" sm="6" md="3">
-            <MudPaper Class="pa-4">
+    <!-- Total Flats -->
+    <MudItem xs="12" sm="6" md="3">
+        <MudPaper Class="pa-4">
 
-                <MudText Typo="Typo.subtitle2" Color="Color.Secondary">
-                    Active Flats
-                </MudText>
+            <MudText Typo="Typo.subtitle2" Color="Color.Secondary">
+                Active Flats
+            </MudText>
 
-                <MudText Typo="Typo.h5">
-                    @TotalActiveFlats.ToString("N0")
-                </MudText>
+            <MudText Typo="Typo.h5">
+                @TotalActiveFlats.ToString("N0")
+            </MudText>
 
-            </MudPaper>
-        </MudItem>
+        </MudPaper>
+    </MudItem>
 
-        <!-- Active Tenants -->
-        <MudItem xs="12" sm="6" md="3">
-            <MudPaper Class="pa-4">
+    <!-- Active Tenants -->
+    <MudItem xs="12" sm="6" md="3">
+        <MudPaper Class="pa-4">
 
-                <MudText Typo="Typo.subtitle2" Color="Color.Secondary">
-                    Active Tenants
-                </MudText>
+            <MudText Typo="Typo.subtitle2" Color="Color.Secondary">
+                Active Tenants
+            </MudText>
 
-                <MudText Typo="Typo.h5">
-                    @ActiveTenants
-                </MudText>
+            <MudText Typo="Typo.h5">
+                @ActiveTenants
+            </MudText>
 
-            </MudPaper>
-        </MudItem>
+        </MudPaper>
+    </MudItem>
 
-        <!-- Pending Payments -->
-        <MudItem xs="12" sm="6" md="3">
-            <MudPaper Class="pa-4">
+    <!-- Pending Payments -->
+    <MudItem xs="12" sm="6" md="3">
+        <MudPaper Class="pa-4">
 
-                <MudText Typo="Typo.subtitle2" Color="Color.Secondary">
-                    Pending Payments
-                </MudText>
+            <MudText Typo="Typo.subtitle2" Color="Color.Secondary">
+                Pending Payments
+            </MudText>
 
-                <MudText Typo="Typo.h5">
-                    ₹@PendingPayments.ToString("N0")
-                </MudText>
+            <MudText Typo="Typo.h5">
+                ₹@PendingPayments.ToString("N0")
+            </MudText>
 
-            </MudPaper>
-        </MudItem>
+        </MudPaper>
+    </MudItem>
 
-    </MudGrid>
+</MudGrid>
 
-    <MudDivider Class="my-6" />
+<MudDivider Class="my-6" />
 
-    <!-- Recent Properties -->
-    <MudPaper Class="pa-4">
+<!-- Recent Properties -->
+<MudPaper Class="pa-4">
+    <MudText Typo="Typo.h6" Class="mb-3">
+        Recent Properties(Top 5)
+    </MudText>
+    <MudTable Items="_properties"
+                Hover="true"
+                Dense="true"
+                Striped="true"
+                Bordered="true"
+                RowsPerPage="5">
 
-        <MudText Typo="Typo.h6" Class="mb-3">
-            Recent Properties
-        </MudText>
+        <HeaderContent>
+            <MudTh>Code</MudTh>
+            <MudTh>Name</MudTh>
+            <MudTh>Owner</MudTh>
+            <MudTh>City</MudTh>
+        </HeaderContent>
 
-        
+        <RowTemplate>
+            <MudTd>@context.PropertyCode</MudTd>
+            <MudTd>@context.PropertyName</MudTd>
+            <MudTd>@context.OwnerName</MudTd>
+            <MudTd>@context.City</MudTd>
+        </RowTemplate>
 
-        <MudTable Items="_properties"
-                  Hover="true"
-                  Dense="true"
-                  Striped="true"
-                  Bordered="true"
-                  RowsPerPage="5">
+        <NoRecordsContent>
+            <MudText Class="pa-4">
+                No properties found.
+            </MudText>
+        </NoRecordsContent>
 
-            <HeaderContent>
+        <PagerContent>
+            @* <MudTablePager PageSizeOptions="new int[] { 5, 10, 20, 50, 100, 200, 500 }" /> *@
+            <MudTablePager PageSizeOptions="new int[] { 5 }" />
+        </PagerContent>
 
-                <MudTh>Code</MudTh>
-                <MudTh>Name</MudTh>
-                <MudTh>Owner</MudTh>
-                <MudTh>City</MudTh>
-
-            </HeaderContent>
-
-            <RowTemplate>
-
-                <MudTd>@context.PropertyCode</MudTd>
-                <MudTd>@context.PropertyName</MudTd>
-                <MudTd>@context.OwnerName</MudTd>
-                <MudTd>@context.City</MudTd>
-
-            </RowTemplate>
-
-            <NoRecordsContent>
-
-                <MudText Class="pa-4">
-                    No properties found.
-                </MudText>
-
-            </NoRecordsContent>
-
-            <PagerContent>
-               @* <MudTablePager PageSizeOptions="new int[] { 5, 10, 20, 50, 100, 200, 500 }" /> *@
-                <MudTablePager PageSizeOptions="new int[] { 5 }" />
-          </PagerContent>
-
-        </MudTable>
-
-    </MudPaper>
+    </MudTable>
+</MudPaper>
 
 
 
-    <MudPaper Class="pa-4">
+<MudPaper Class="pa-4">
+    <MudText Typo="Typo.h6" Class="mb-3">
+        Recent Flats/Units(Top 5)
+    </MudText>
+    <MudTable Items="_units"
+                Hover="true"
+                Dense="true"
+                Striped="true"
+                Bordered="true"
+                RowsPerPage="5">
+        <HeaderContent>
+            <MudTh>Name</MudTh>
+            <MudTh>Type</MudTh>
+            <MudTh>Area(SqFt)</MudTh>
+            <MudTh>Rent(₹)</MudTh>
+        </HeaderContent>
 
-        <MudText Typo="Typo.h6" Class="mb-3">
-            Recent Flats/Units
-        </MudText>
+        <RowTemplate>
+            <MudTd>@context.PropertyName</MudTd>
+            <MudTd>@context.UnitType</MudTd>
+            <MudTd>@context.Area</MudTd>
+            <MudTd>@context.MonthlyRent</MudTd>
+        </RowTemplate>
 
-        
+        <NoRecordsContent>
 
-        <MudTable Items="_units"
-                  Hover="true"
-                  Dense="true"
-                  Striped="true"
-                  Bordered="true"
-                  RowsPerPage="5">
+            <MudText Class="pa-4">
+                No properties found.
+            </MudText>
+        </NoRecordsContent>
+        <PagerContent>
+            @* <MudTablePager PageSizeOptions="new int[] { 5, 10, 20, 50, 100, 200, 500 }" /> *@
+            <MudTablePager PageSizeOptions="new int[] { 5 }" />
+        </PagerContent>
+    </MudTable>
+    @if (IsLoading)
+    {
+        <CustomLoaderComponent />
+    }
+</MudPaper>
 
-            <HeaderContent>
-                <MudTh>Name</MudTh>
-                <MudTh>Type</MudTh>
-                <MudTh>Area(SqFt)</MudTh>
-                <MudTh>Rent(₹)</MudTh>
-            </HeaderContent>
-
-            <RowTemplate>
-                <MudTd>@context.PropertyName</MudTd>
-                <MudTd>@context.UnitType</MudTd>
-                <MudTd>@context.Area</MudTd>
-                <MudTd>@context.MonthlyRent</MudTd>
-            </RowTemplate>
-
-            <NoRecordsContent>
-
-                <MudText Class="pa-4">
-                    No properties found.
-                </MudText>
-
-            </NoRecordsContent>
-
-            <PagerContent>
-               @* <MudTablePager PageSizeOptions="new int[] { 5, 10, 20, 50, 100, 200, 500 }" /> *@
-               <MudTablePager PageSizeOptions="new int[] { 5 }" />
-
-          </PagerContent>
-
-        </MudTable>
-
-    </MudPaper>
-}

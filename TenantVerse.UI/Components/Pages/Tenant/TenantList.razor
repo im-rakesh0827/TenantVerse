@@ -1,13 +1,10 @@
-@page "/flat"
-
-@using MudBlazor
-@using TenantVerse.Shared.Models.Unit
-
-<PageTitle>Flats</PageTitle>
+@page "/tenant"
+<PageTitle>Tenants</PageTitle>
 
 <MudText Typo="Typo.h6" Class="mb-2">
-    Flat List - @FilteredUnits.Count()
+    Tenant List - @FilteredTenants.Count()
 </MudText>
+
 
 <!-- =========================
      HEADER / SEARCH
@@ -25,7 +22,7 @@
 
             <MudTextField T="string"
                           Label="Search"
-                          Placeholder="Search Flat..."
+                          Placeholder="Search Tenant..."
                           Variant="Variant.Outlined"
                           Margin="Margin.Dense"
                           Immediate="true"
@@ -38,9 +35,9 @@
         <MudButton Variant="Variant.Filled"
                    Color="Color.Primary"
                    StartIcon="@Icons.Material.Filled.Add"
-                   OnClick="AddUnit">
+                   OnClick="AddTenant">
 
-            Add Flat
+            Add Tenant
 
         </MudButton>
 
@@ -60,13 +57,13 @@
          ERROR
          ========================= -->
 
-    @if (!string.IsNullOrWhiteSpace(_errorMessage))
+    @if (!string.IsNullOrWhiteSpace(_message))
     {
         <MudAlert Severity="Severity.Error"
                   Variant="Variant.Outlined"
                   Class="ma-2">
 
-            @_errorMessage
+            @_message
 
         </MudAlert>
     }
@@ -76,10 +73,10 @@
          GRID
          ========================= -->
 
-    @if (string.IsNullOrWhiteSpace(_errorMessage))
+    @if (string.IsNullOrWhiteSpace(_message))
     {
-        <MudTable T="UnitModel"
-                  Items="FilteredUnits"
+        <MudTable T="TenantVerse.Shared.Models.Tenant.TenantModel"
+                  Items="FilteredTenants"
                   Hover="true"
                   Dense="true"
                   Striped="true"
@@ -88,13 +85,12 @@
 
             <HeaderContent>
 
-                <MudTh>Flat</MudTh>
+                <MudTh>Tenant</MudTh>
                 <MudTh>Property</MudTh>
-                <MudTh>Type</MudTh>
-                <MudTh>Floor</MudTh>
-                <MudTh>Bedrooms</MudTh>
-                <MudTh>Bathrooms</MudTh>
-                <MudTh>Area</MudTh>
+                <MudTh>Flat</MudTh>
+                <MudTh>Phone</MudTh>
+                <MudTh>Email</MudTh>
+                <MudTh>Lease Start</MudTh>
                 <MudTh>Rent</MudTh>
                 <MudTh>Status</MudTh>
                 <MudTh>Actions</MudTh>
@@ -104,12 +100,15 @@
 
             <RowTemplate>
 
-                <!-- FLAT -->
+                <!-- TENANT -->
 
-                <MudTd DataLabel="Flat">
+                <MudTd DataLabel="Tenant">
 
                     <MudText Typo="Typo.body2">
-                        <b>@context.UnitNumber</b>
+                        <b>
+                            @context.FirstName
+                            @context.LastName
+                        </b>
                     </MudText>
 
                 </MudTd>
@@ -126,55 +125,47 @@
                 </MudTd>
 
 
-                <!-- TYPE -->
+                <!-- FLAT -->
 
-                <MudTd DataLabel="Type">
+                <MudTd DataLabel="Flat">
 
-                    @(string.IsNullOrWhiteSpace(context.UnitType)
+                    @(string.IsNullOrWhiteSpace(context.UnitNumber)
                         ? "-"
-                        : context.UnitType)
+                        : context.UnitNumber)
 
                 </MudTd>
 
 
-                <!-- FLOOR -->
+                <!-- PHONE -->
 
-                <MudTd DataLabel="Floor">
+                <MudTd DataLabel="Phone">
 
-                    @(context.FloorNumber.HasValue
-                        ? context.FloorNumber.Value == 0
-                            ? "G"
-                            : context.FloorNumber.Value.ToString()
+                    @(string.IsNullOrWhiteSpace(context.PhoneNumber)
+                        ? "-"
+                        : context.PhoneNumber)
+
+                </MudTd>
+
+
+                <!-- EMAIL -->
+
+                <MudTd DataLabel="Email">
+
+                    @(string.IsNullOrWhiteSpace(context.Email)
+                        ? "-"
+                        : context.Email)
+
+                </MudTd>
+
+
+                <!-- LEASE START -->
+
+                <MudTd DataLabel="Lease Start">
+
+                    @(context.LeaseStartDate.HasValue
+                        ? context.LeaseStartDate.Value.ToString("dd MMM yyyy")
                         : "-")
 
-                </MudTd>
-
-
-                <!-- BEDROOMS -->
-
-                <MudTd DataLabel="Bedrooms">
-
-                    @(context.Bedrooms?.ToString() ?? "-")
-
-                </MudTd>
-
-
-                <!-- BATHROOMS -->
-
-                <MudTd DataLabel="Bathrooms">
-
-                    @(context.Bathrooms?.ToString() ?? "-")
-
-                </MudTd>
-
-
-                <!-- AREA -->
-
-                <MudTd DataLabel="Area">
-
-                    @(context.Area.HasValue
-                        ? $"{context.Area.Value:N0} sq.ft"
-                        : "-")
 
                 </MudTd>
 
@@ -194,22 +185,22 @@
 
                 <MudTd DataLabel="Status">
 
-                    @if (context.Status == "Available")
+                    @if (context.Status == "Active")
                     {
                         <MudText Color="Color.Success">
-                            ● Available
+                            ● Active
                         </MudText>
                     }
-                    else if (context.Status == "Occupied")
-                    {
-                        <MudText Color="Color.Error">
-                            ● Occupied
-                        </MudText>
-                    }
-                    else if (context.Status == "Maintenance")
+                    else if (context.Status == "Pending")
                     {
                         <MudText Color="Color.Warning">
-                            ● Maintenance
+                            ● Pending
+                        </MudText>
+                    }
+                    else if (context.Status == "Inactive")
+                    {
+                        <MudText Color="Color.Error">
+                            ● Inactive
                         </MudText>
                     }
                     else
@@ -231,23 +222,21 @@
                     <MudIconButton Icon="@Icons.Material.Filled.Visibility"
                                    Color="Color.Info"
                                    Size="Size.Small"
-                                   OnClick="@(() => EditOrViewUnit(
-                                       context.UnitId,
+                                   OnClick="@(() => EditOrViewTenant(
+                                       context.TenantId,
                                        "view"))" />
 
                     <MudIconButton Icon="@Icons.Material.Filled.Edit"
                                    Color="Color.Primary"
                                    Size="Size.Small"
-                                   OnClick="@(() => EditOrViewUnit(
-                                       context.UnitId,
+                                   OnClick="@(() => EditOrViewTenant(
+                                       context.TenantId,
                                        "edit"))" />
 
                     <MudIconButton Icon="@Icons.Material.Filled.Delete"
                                    Color="Color.Error"
                                    Size="Size.Small"
-                                   OnClick="@(() => DeleteUnit(
-                                       context.UnitId))" />
-
+                                   OnClick="@(() => DeleteTenant(context.TenantId))" />
                 </MudTd>
 
             </RowTemplate>
@@ -274,7 +263,7 @@
 
     @if (IsLoading)
     {
-      <CustomLoaderComponent />
+        <CustomLoaderComponent />
     }
 
 </MudPaper>

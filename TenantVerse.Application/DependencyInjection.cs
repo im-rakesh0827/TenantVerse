@@ -19,6 +19,7 @@ namespace TenantVerse.Application
             services.AddScoped<IPropertyService, PropertyService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IUnitService, UnitService>();
+            services.AddScoped<ITenantService, TenantService>();
 
             return services;
         }

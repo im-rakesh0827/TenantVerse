@@ -150,6 +150,7 @@
                     <MudSelect T="string"
                          Label="Status"
                          Variant="Variant.Outlined"
+                         Disabled="@IsViewMode"
                          @bind-Value="_model.Status">
                          @foreach (var status in UnitStatus.StatusList)
                          {

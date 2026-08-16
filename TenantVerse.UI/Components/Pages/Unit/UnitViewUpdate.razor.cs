@@ -40,6 +40,8 @@ public partial class UnitViewUpdate
               _errorMessage = null;
               await LoadPropertiesAsync();
               await LoadUnitByIdAsync();
+              await InvokeAsync(StateHasChanged);
+
           }
           catch (Exception ex)
           {

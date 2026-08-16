@@ -1,0 +1,410 @@
+@page "/tenant/{mode}/{TenantId:int}"
+
+@using MudBlazor
+@using TenantVerse.Shared.Models.Tenant
+@using TenantVerse.Shared.Models.Unit
+
+<PageTitle>@(IsReadOnly ? "View Tenant" : "Edit Tenant")</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.False">
+
+    <!-- =========================
+         HEADER
+         ========================= -->
+
+    <MudStack Row="true"
+              AlignItems="AlignItems.Center"
+              Class="mb-6">
+
+        @* <MudIconButton Icon="@Icons.Material.Filled.ArrowBack"
+                       Color="Color.Default"
+                       Disabled="@_isSaving"
+                       OnClick="GoBack" /> *@
+
+        <div>
+
+            <MudText Typo="Typo.h4">
+                @(IsReadOnly ? "View Tenant" : "Edit Tenant")
+            </MudText>
+
+            <MudText Typo="Typo.body2"
+                     Color="Color.Secondary">
+
+                @(IsReadOnly
+                    ? "View tenant details"
+                    : "Update tenant information")
+
+            </MudText>
+
+        </div>
+
+    </MudStack>
+
+
+    <!-- =========================
+         ERROR
+         ========================= -->
+
+    @if (!string.IsNullOrWhiteSpace(_message))
+    {
+        <MudAlert Severity="Severity.Error"
+                  Variant="Variant.Outlined"
+                  Class="mb-4">
+
+            @_message
+
+        </MudAlert>
+    }
+
+
+    <!-- =========================
+         MAIN FORM
+         ========================= -->
+
+    <MudPaper Elevation="1"
+              Class="pa-6"
+              Style="position:relative;">
+            <MudForm @ref="_form">
+
+                <MudGrid Spacing="3">
+
+                    <!-- =========================
+                         PROPERTY
+                         ========================= -->
+
+                    <MudItem xs="12" sm="6">
+
+                        <MudSelect T="int"
+                                   Label="Property"
+                                   Variant="Variant.Outlined"
+                                   Value="_model.PropertyId"
+                                   ValueChanged="OnPropertyChanged"
+                                   Disabled="@IsReadOnly"
+                                   Required="true"
+                                   RequiredError="Property is required.">
+
+                            <MudSelectItem T="int"
+                                           Value="0"
+                                           Disabled="true">
+
+                                Select Property
+
+                            </MudSelectItem>
+
+                            @foreach (var property in _properties)
+                            {
+                                <MudSelectItem T="int"
+                                               Value="@property.PropertyId">
+
+                                    @property.PropertyName
+
+                                </MudSelectItem>
+                            }
+
+                        </MudSelect>
+
+                    </MudItem>
+
+
+                    <!-- =========================
+                         FLAT
+                         ========================= -->
+
+                    <MudItem xs="12" sm="6">
+
+                        <MudSelect T="int"
+                                   Label="Flat"
+                                   Variant="Variant.Outlined"
+                                   Value="_model.UnitId"
+                                   ValueChanged="OnUnitChanged"
+                                   Disabled="@(IsReadOnly || _isLoadingFlats || _model.PropertyId <= 0)"
+                                   Required="true"
+                                   RequiredError="Flat is required.">
+
+                            <MudSelectItem T="int"
+                                           Value="0"
+                                           Disabled="true">
+
+                                @(_isLoadingFlats
+                                    ? "Loading flats..."
+                                    : "Select Flat")
+
+                            </MudSelectItem>
+
+                            @foreach (var unit in _units)
+                            {
+                                <MudSelectItem T="int"
+                                               Value="@unit.UnitId">
+
+                                    @unit.UnitNumber
+
+                                </MudSelectItem>
+                            }
+
+                        </MudSelect>
+
+                    </MudItem>
+
+
+                    <!-- =========================
+                         PERSONAL INFORMATION
+                         ========================= -->
+
+                    <MudItem xs="12">
+
+                        <MudDivider Class="my-3" />
+
+                        <MudText Typo="Typo.h6">
+                            Personal Information
+                        </MudText>
+
+                    </MudItem>
+
+
+                    <!-- FIRST NAME -->
+
+                    <MudItem xs="12" sm="6">
+
+                        <MudTextField T="string"
+                                      Label="First Name"
+                                      Variant="Variant.Outlined"
+                                      @bind-Value="_model.FirstName"
+                                      Disabled="@IsReadOnly"
+                                      Required="true"
+                                      RequiredError="First name is required." />
+
+                    </MudItem>
+
+
+                    <!-- LAST NAME -->
+
+                    <MudItem xs="12" sm="6">
+
+                        <MudTextField T="string"
+                                      Label="Last Name"
+                                      Variant="Variant.Outlined"
+                                      @bind-Value="_model.LastName"
+                                      Disabled="@IsReadOnly" />
+
+                    </MudItem>
+
+
+                    <!-- EMAIL -->
+
+                    <MudItem xs="12" sm="6">
+
+                        <MudTextField T="string"
+                                      Label="Email"
+                                      Variant="Variant.Outlined"
+                                      InputType="InputType.Email"
+                                      @bind-Value="_model.Email"
+                                      Disabled="@IsReadOnly" />
+
+                    </MudItem>
+
+
+                    <!-- PHONE -->
+
+                    <MudItem xs="12" sm="6">
+
+                        <MudTextField T="string"
+                                      Label="Phone Number"
+                                      Variant="Variant.Outlined"
+                                      @bind-Value="_model.PhoneNumber"
+                                      Disabled="@IsReadOnly" />
+
+                    </MudItem>
+
+
+                    <!-- =========================
+                         EMERGENCY CONTACT
+                         ========================= -->
+
+                    <MudItem xs="12">
+
+                        <MudDivider Class="my-3" />
+
+                        <MudText Typo="Typo.h6">
+                            Emergency Contact
+                        </MudText>
+
+                    </MudItem>
+
+
+                    <!-- EMERGENCY NAME -->
+
+                    <MudItem xs="12" sm="6">
+
+                        <MudTextField T="string"
+                                      Label="Emergency Contact Name"
+                                      Variant="Variant.Outlined"
+                                      @bind-Value="_model.EmergencyContactName"
+                                      Disabled="@IsReadOnly" />
+
+                    </MudItem>
+
+
+                    <!-- EMERGENCY PHONE -->
+
+                    <MudItem xs="12" sm="6">
+
+                        <MudTextField T="string"
+                                      Label="Emergency Contact Phone"
+                                      Variant="Variant.Outlined"
+                                      @bind-Value="_model.EmergencyContactPhone"
+                                      Disabled="@IsReadOnly" />
+
+                    </MudItem>
+
+
+                    <!-- =========================
+                         LEASE INFORMATION
+                         ========================= -->
+
+                    <MudItem xs="12">
+
+                        <MudDivider Class="my-3" />
+
+                        <MudText Typo="Typo.h6">
+                            Lease Information
+                        </MudText>
+
+                    </MudItem>
+
+
+                    <!-- LEASE START -->
+
+                    <MudItem xs="12" sm="6">
+
+                        <MudDatePicker Label="Lease Start Date"
+                                       Variant="Variant.Outlined"
+                                       @bind-Date="_model.LeaseStartDate"
+                                       Disabled="@IsReadOnly" />
+
+                    </MudItem>
+
+
+                    <!-- LEASE END -->
+
+                    <MudItem xs="12" sm="6">
+
+                        <MudDatePicker Label="Lease End Date"
+                                       Variant="Variant.Outlined"
+                                       @bind-Date="_model.LeaseEndDate"
+                                       Disabled="@IsReadOnly" />
+
+                    </MudItem>
+
+
+                    <!-- MONTHLY RENT -->
+
+                    <MudItem xs="12" sm="6">
+
+                        <MudNumericField T="decimal?"
+                                         Label="Monthly Rent"
+                                         Variant="Variant.Outlined"
+                                         Adornment="Adornment.Start"
+                                         AdornmentText="₹"
+                                         @bind-Value="_model.MonthlyRent"
+                                         Disabled="@IsReadOnly"
+                                         Min="0" />
+
+                    </MudItem>
+
+
+                    <!-- SECURITY DEPOSIT -->
+
+                    <MudItem xs="12" sm="6">
+
+                        <MudNumericField T="decimal?"
+                                         Label="Security Deposit"
+                                         Variant="Variant.Outlined"
+                                         Adornment="Adornment.Start"
+                                         AdornmentText="₹"
+                                         @bind-Value="_model.SecurityDeposit"
+                                         Disabled="@IsReadOnly"
+                                         Min="0" />
+
+                    </MudItem>
+
+
+                    <!-- STATUS -->
+
+                    <MudItem xs="12" sm="6">
+
+                        <MudSelect T="string"
+                                   Label="Status"
+                                   Variant="Variant.Outlined"
+                                   @bind-Value="_model.Status"
+                                   Disabled="@IsReadOnly"
+                                   Required="true"
+                                   RequiredError="Status is required.">
+
+                            @foreach (var status in _tenantStatuses)
+                            {
+                                <MudSelectItem T="string"
+                                               Value="@status">
+
+                                    @status
+
+                                </MudSelectItem>
+                            }
+
+                        </MudSelect>
+
+                    </MudItem>
+
+
+                    <!-- =========================
+                         ACTIONS
+                         ========================= -->
+
+                    <MudItem xs="12">
+
+                        <MudDivider Class="my-4" />
+
+                        <MudStack Row="true"
+                                  Justify="Justify.FlexEnd"
+                                  Spacing="2">
+
+                            <MudButton Variant="Variant.Outlined"
+                                       Color="Color.Default"
+                                       Disabled="@_isSaving"
+                                       OnClick="GoBack">
+
+                                @(IsReadOnly ? "Back" : "Cancel")
+
+                            </MudButton>
+
+
+                            <MudButton Variant="Variant.Filled"
+                                           Color="Color.Primary"
+                                           Disabled="@(_isSaving || IsLoading || IsReadOnly)"
+                                           StartIcon="@Icons.Material.Filled.Save"
+                                           OnClick="SaveAsync">
+
+                                    Update Tenant
+
+                              </MudButton>
+
+
+                            
+
+                        </MudStack>
+
+                    </MudItem>
+
+                </MudGrid>
+
+            </MudForm>
+        <!-- =========================
+             SAVE LOADER
+             ========================= -->
+
+        @if (_isSaving || IsLoading)
+        {
+            <CustomLoaderComponent />
+        }
+    </MudPaper>
+
+</MudContainer>

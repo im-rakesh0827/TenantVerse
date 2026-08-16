@@ -80,12 +80,9 @@
         <MudAlert Severity="Severity.Error"
                   Variant="Variant.Outlined"
                   Class="ma-2">
-
             @_errorMessage
-
         </MudAlert>
     }
-
 
     <!-- =========================
          TABLE
@@ -151,6 +148,7 @@
                 <MudTd DataLabel="Actions">
                     <MudIconButton Icon="@Icons.Material.Filled.Visibility"
                                    Color="Color.Info"
+                                   Size="Size.Small"
                                    OnClick="@(() => UpdateOrView(
                                        context.PropertyId,
                                        "view"))" />
@@ -158,6 +156,7 @@
 
                     <MudIconButton Icon="@Icons.Material.Filled.Edit"
                                    Color="Color.Primary"
+                                   Size="Size.Small"
                                    OnClick="@(() => UpdateOrView(
                                        context.PropertyId,
                                        "edit"))" />
@@ -165,13 +164,11 @@
 
                     <MudIconButton Icon="@Icons.Material.Filled.Delete"
                                    Color="Color.Error"
+                                   Size="Size.Small"
                                    OnClick="@(() => DeleteProperty(
                                        context.PropertyId))" />
-
                 </MudTd>
-
             </RowTemplate>
-
 
             <!-- =========================
                  PAGINATION

@@ -11,8 +11,6 @@ public static class UnitStatus
     //     Maintenance
     // ];
 
-
-
     private static readonly string[] StatusArray =
     {
         "Available",
