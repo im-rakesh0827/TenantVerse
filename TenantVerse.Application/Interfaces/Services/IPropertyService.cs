@@ -1,5 +1,5 @@
 using TenantVerse.Application.DTOs.Property;
-
+using TenantVerse.Shared.Models;
 namespace TenantVerse.Application.Interfaces.Services;
 
 public interface IPropertyService
@@ -12,6 +12,7 @@ public interface IPropertyService
 
     Task<bool> UpdateAsync(UpdatePropertyRequest request);
 
-    Task<bool> DeleteAsync(int propertyId, string updatedBy);
+    // Task<bool> DeleteAsync(int propertyId, string updatedBy);
+    Task<ApiResponse<int>> DeleteAsync(int propertyId, string updatedBy);
 }
 

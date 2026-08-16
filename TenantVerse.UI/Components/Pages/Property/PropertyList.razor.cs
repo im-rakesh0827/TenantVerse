@@ -9,8 +9,8 @@ using MudBlazor;
 
 namespace TenantVerse.UI.Components.Pages.Property
 {
-    public partial class PropertyList
-    {
+     public partial class PropertyList
+     {
           [Inject]
           protected PropertyService PropertyService { get; set; } = default!;
           [Inject]
@@ -48,14 +48,71 @@ namespace TenantVerse.UI.Components.Pages.Property
                Navigation.NavigateTo("/property/create");
           }
 
-          private async Task DeleteProperty(int propertyId){
-               string name = properties.FirstOrDefault(p => p.PropertyId == propertyId)?.PropertyName ?? "this property";
+          // private async Task DeleteProperty(int propertyId){
+          //      string name = properties.FirstOrDefault(p => p.PropertyId == propertyId)?.PropertyName ?? "this property";
+          //      string userName = "TestUser";
+          //      var parameters = new DialogParameters
+          //      {
+          //           { nameof(ConfirmDialog.Title), "Delete Confirmation" },
+          //           { nameof(ConfirmDialog.Message), $"Are you sure you want to delete '{name}'?" },
+          //           { nameof(ConfirmDialog.ConfirmButtonText), "Delete" }
+          //      };
+
+          //      var options = new DialogOptions
+          //      {
+          //           CloseOnEscapeKey = true,
+          //           MaxWidth = MaxWidth.ExtraSmall,
+          //           FullWidth = true
+          //      };
+
+          //      var dialog = await DialogService.ShowAsync<ConfirmDialog>("", parameters, options);
+          //      var result = await dialog.Result;
+
+          //      if (result is not null && !result.Canceled)
+          //      {
+          //           IsLoading = true;
+          //           await InvokeAsync(StateHasChanged);
+          //           await Task.Delay(1000);
+          //           var isDeleted = await PropertyService.DeleteAsync(propertyId,userName);
+          //           if (isDeleted)
+          //           {                        
+          //                // _StateContainer.Property.Properties.RemoveAll(x => x.PropertyId == propertyId);
+          //                Snackbar.Add("Property deleted successfully.", Severity.Success);
+          //                _StateContainer.Property.ResetLoaded();
+          //                await LoadProperties();
+          //           }
+          //           else
+          //           {
+          //                Snackbar.Add("Failed to delete property.", Severity.Error);
+          //           }
+          //      }
+          // }
+
+
+
+
+          private async Task DeleteProperty(int propertyId)
+          {
+               string name = properties
+                    .FirstOrDefault(p => p.PropertyId == propertyId)?
+                    .PropertyName ?? "this property";
+
                string userName = "TestUser";
+
                var parameters = new DialogParameters
                {
-                    { nameof(ConfirmDialog.Title), "Delete Confirmation" },
-                    { nameof(ConfirmDialog.Message), $"Are you sure you want to delete '{name}'?" },
-                    { nameof(ConfirmDialog.ConfirmButtonText), "Delete" }
+                    {
+                         nameof(ConfirmDialog.Title),
+                         "Delete Confirmation"
+                    },
+                    {
+                         nameof(ConfirmDialog.Message),
+                         $"Are you sure you want to delete '{name}'?"
+                    },
+                    {
+                         nameof(ConfirmDialog.ConfirmButtonText),
+                         "Delete"
+                    }
                };
 
                var options = new DialogOptions
@@ -65,26 +122,65 @@ namespace TenantVerse.UI.Components.Pages.Property
                     FullWidth = true
                };
 
-               var dialog = await DialogService.ShowAsync<ConfirmDialog>("", parameters, options);
+               var dialog = await DialogService.ShowAsync<ConfirmDialog>(
+                    "",
+                    parameters,
+                    options);
+
                var result = await dialog.Result;
 
-               if (result is not null && !result.Canceled)
+               // User cancelled
+               if (result is null || result.Canceled)
+               {
+                    return;
+               }
+
+               try
                {
                     IsLoading = true;
+
                     await InvokeAsync(StateHasChanged);
-                    await Task.Delay(1000);
-                    var isDeleted = await PropertyService.DeleteAsync(propertyId,userName);
-                    if (isDeleted)
-                    {                        
-                         // _StateContainer.Property.Properties.RemoveAll(x => x.PropertyId == propertyId);
-                         Snackbar.Add("Property deleted successfully.", Severity.Success);
+
+                    var response = await PropertyService.DeleteAsync(
+                         propertyId,
+                         userName);
+
+                    // =========================================================
+                    // SUCCESS
+                    // =========================================================
+
+                    if (response.IsSuccess)
+                    {
+                         Snackbar.Add(
+                              response.Message ?? "Property deactivated successfully.",
+                              Severity.Success);
+
                          _StateContainer.Property.ResetLoaded();
+
                          await LoadProperties();
                     }
                     else
                     {
-                         Snackbar.Add("Failed to delete property.", Severity.Error);
+                         // =====================================================
+                         // FAILURE
+                         // =====================================================
+
+                         Snackbar.Add(
+                              response.Message ?? "Failed to deactivate property.",
+                              Severity.Error);
                     }
+               }
+               catch (Exception ex)
+               {
+                    Snackbar.Add(
+                         ex.Message,
+                         Severity.Error);
+               }
+               finally
+               {
+                    IsLoading = false;
+
+                    await InvokeAsync(StateHasChanged);
                }
           }
 
@@ -125,4 +221,4 @@ namespace TenantVerse.UI.Components.Pages.Property
                     property.TotalFlats.ToString().Contains(SearchString, StringComparison.OrdinalIgnoreCase);
           }
      }
-}
+}    

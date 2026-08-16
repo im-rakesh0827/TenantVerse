@@ -88,19 +88,31 @@ public class PropertyController : ControllerBase
     }
 
 
+    // [HttpDelete("delete/{id:int}")]
+    // public async Task<IActionResult> Delete(int id)
+    // {
+    //     var deleted = await _propertyService.DeleteAsync(id, "System");
+    //     if (!deleted)
+    //     {
+    //         return NotFound(
+    //             ApiResponseHelper.Fail<object>(
+    //                 "Property not found."));
+    //     }
+    //     return Ok(
+    //         ApiResponseHelper.Success(
+    //             true,
+    //             "Property deleted successfully."));
+    // }
+    
     [HttpDelete("delete/{id:int}")]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<ActionResult<ApiResponse<int>>> Delete(int id)
     {
-        var deleted = await _propertyService.DeleteAsync(id, "System");
-        if (!deleted)
-        {
-            return NotFound(
-                ApiResponseHelper.Fail<object>(
-                    "Property not found."));
-        }
-        return Ok(
-            ApiResponseHelper.Success(
-                true,
-                "Property deleted successfully."));
+        var updatedBy = User.Identity?.Name ?? "System";
+
+        var result = await _propertyService.DeleteAsync(
+            id,
+            updatedBy);
+
+        return Ok(result);
     }
-}
+}   

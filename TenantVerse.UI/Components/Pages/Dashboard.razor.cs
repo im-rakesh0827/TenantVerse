@@ -64,25 +64,6 @@ public partial class Dashboard
     private async Task LoadDashboardData(){
         try{
             IsLoading = true;
-            // if (!_StateContainer.Property.IsLoaded)
-            // {
-            //     await Task.Delay(200); 
-            //     var response = await PropertyService.GetAllAsync();
-            //     _StateContainer.Property.SetProperties(response);
-            // }
-            // if(!_StateContainer.Unit.IsLoaded)
-            // {
-            //     await Task.Delay(200); 
-            //     var response = await UnitService.GetAllAsync();
-            //     _StateContainer.Unit.SetUnits(response.Data.ToList());
-            // }
-            // if (!_StateContainer.Tenant.IsLoaded)
-            // {
-            //     await Task.Delay(200); 
-            //     var response = await TenantService.GetAllAsync();
-            //     _StateContainer.Tenant.SetTenants(response.Data);
-            // }
-
             if (!_StateContainer.Property.IsLoaded)
             {
                 await Task.Delay(1000);

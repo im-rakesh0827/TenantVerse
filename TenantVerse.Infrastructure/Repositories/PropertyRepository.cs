@@ -233,26 +233,37 @@ public class PropertyRepository : IPropertyRepository
         return rowsAffected > 0;
     }
 
-    // public async Task<bool> DeleteAsync(int propertyId)
+    
+
+    // public async Task<bool> DeleteAsync(int propertyId, string updatedBy)
     // {
-    //     throw new NotImplementedException();
+    //     using var connection = _connectionFactory.CreateConnection();
+
+    //     var parameters = new DynamicParameters();
+
+    //     parameters.Add("@PropertyId", propertyId);
+    //     parameters.Add("@UpdatedBy", updatedBy);
+
+    //     var rowsAffected = await connection.ExecuteScalarAsync<int>(
+    //         "IT_SP_DeleteProperty",
+    //         parameters,
+    //         commandType: CommandType.StoredProcedure);
+
+    //     return rowsAffected > 0;
     // }
 
-    public async Task<bool> DeleteAsync(int propertyId, string updatedBy)
+    public async Task<int> DeleteAsync(int propertyId, string updatedBy)
     {
         using var connection = _connectionFactory.CreateConnection();
-
-        var parameters = new DynamicParameters();
-
-        parameters.Add("@PropertyId", propertyId);
-        parameters.Add("@UpdatedBy", updatedBy);
-
-        var rowsAffected = await connection.ExecuteScalarAsync<int>(
-            "IT_SP_DeleteProperty",
-            parameters,
+    
+        return await connection.QuerySingleAsync<int>(
+            "dbo.IT_SP_DeleteProperty",
+            new
+            {
+                PropertyId = propertyId,
+                UpdatedBy = updatedBy
+            },
             commandType: CommandType.StoredProcedure);
-
-        return rowsAffected > 0;
     }
 
 

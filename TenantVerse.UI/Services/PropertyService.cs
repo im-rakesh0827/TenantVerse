@@ -101,25 +101,67 @@ public class PropertyService
     }
 
 
-    public async Task<bool> DeleteAsync(int id, string userName)
+    // public async Task<bool> DeleteAsync(int id, string userName)
+    // {
+    //     try
+    //     {
+    //         // Console.WriteLine("I am in DeleteAsync Method");
+    //         var response = await _httpClient.DeleteAsync($"{baseUrl}/delete/{id}");
+    //         if (!response.IsSuccessStatusCode)
+    //         {
+    //             var error = await response.Content.ReadAsStringAsync();
+    //             Console.WriteLine(error);
+    //             return false;
+    //         }
+    //         var result = await response.Content.ReadFromJsonAsync<ApiResponse<bool>>();
+    //         return result?.IsSuccess ?? false;
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         Console.WriteLine(ex);
+    //         return false;
+    //     }
+    // }
+    
+
+    public async Task<ApiResponse<int>> DeleteAsync(int id, string updatedBy)
     {
         try
         {
-            // Console.WriteLine("I am in DeleteAsync Method");
             var response = await _httpClient.DeleteAsync($"{baseUrl}/delete/{id}");
             if (!response.IsSuccessStatusCode)
             {
-                var error = await response.Content.ReadAsStringAsync();
-                Console.WriteLine(error);
-                return false;
+                var errorResult = await response.Content
+                    .ReadFromJsonAsync<ApiResponse<int>>();
+
+                return errorResult ?? new ApiResponse<int>
+                {
+                    IsSuccess = false,
+                    Message = $"Unable to deactivate property. Status: {response.StatusCode}",
+                    Data = 0
+                };
             }
-            var result = await response.Content.ReadFromJsonAsync<ApiResponse<bool>>();
-            return result?.IsSuccess ?? false;
+
+            var result = await response.Content
+                .ReadFromJsonAsync<ApiResponse<int>>();
+
+            return result ?? new ApiResponse<int>
+            {
+                IsSuccess = false,
+                Message = "Invalid response from server.",
+                Data = 0
+            };
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex);
-            return false;
+            return new ApiResponse<int>
+            {
+                IsSuccess = false,
+                Message = ex.Message,
+                Data = 0
+            };
         }
     }
+
+
 }

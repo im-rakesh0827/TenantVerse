@@ -12,5 +12,6 @@ public interface IPropertyRepository
 
     Task<bool> UpdateAsync(Property property);
 
-    Task<bool> DeleteAsync(int propertyId, string updatedBy);
+    // Task<bool> DeleteAsync(int propertyId, string updatedBy);
+    Task<int> DeleteAsync(int propertyId, string updatedBy);
 }

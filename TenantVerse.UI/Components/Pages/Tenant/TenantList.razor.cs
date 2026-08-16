@@ -142,6 +142,7 @@ public partial class TenantList
               Snackbar.Add(
                   "Tenant deactivated successfully.",
                   Severity.Success);
+               await _StateContainer.Unit.RefreshAsync();
               var refreshed = await _StateContainer.Tenant.RefreshAsync();
               if (!refreshed)
               {
