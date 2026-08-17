@@ -7,26 +7,6 @@ using TenantVerse.UI.Services;
 
 namespace TenantVerse.UI.Services;
 
-// public class StateContainer
-// {
-//     public PropertyStateContainer Property { get; }
-
-//     public UnitStateContainer Unit { get; }
-
-//     public TenantStateContainer Tenant { get; }
-
-
-//     public StateContainer(
-//         PropertyService propertyService,
-//         UnitService unitService,
-//         TenantService tenantService)
-//     {
-//         Property = new PropertyStateContainer(propertyService);
-//         Unit = new UnitStateContainer(unitService);
-//         Tenant = new TenantStateContainer(tenantService);
-//     }
-// }
-
 public class StateContainer
 {
     public PropertyStateContainer Property { get; }
@@ -317,9 +297,9 @@ public class InvoiceStateContainer
     }
 
 
-    public List<InvoiceListModel> Invoices { get; private set; } = new();
+    public List<InvoiceModel> Invoices { get; private set; } = new();
 
-    public InvoiceListModel? SelectedInvoice { get; private set; }
+    public InvoiceModel? SelectedInvoice { get; private set; }
 
     public int InvoiceId { get; private set; }
 
@@ -327,16 +307,16 @@ public class InvoiceStateContainer
 
 
     public void SetInvoices(
-        List<InvoiceListModel> invoices)
+        List<InvoiceModel> invoices)
     {
-        Invoices = invoices ?? new List<InvoiceListModel>();
+        Invoices = invoices ?? new List<InvoiceModel>();
 
         IsLoaded = true;
     }
 
 
     public void SetSelectedInvoice(
-        InvoiceListModel invoice)
+        InvoiceModel invoice)
     {
         SelectedInvoice = invoice;
     }

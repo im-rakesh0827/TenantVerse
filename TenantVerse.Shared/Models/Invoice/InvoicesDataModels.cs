@@ -31,7 +31,7 @@ public class CreateInvoiceResponse
 }
 
 
-public class InvoiceListModel
+public class InvoiceModel
 {
     public int InvoiceId { get; set; }
     public string InvoiceNumber { get; set; } = string.Empty;

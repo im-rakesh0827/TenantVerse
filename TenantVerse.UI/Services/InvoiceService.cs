@@ -25,40 +25,40 @@ public class InvoiceService
     // GET ALL INVOICES
     // =========================================================
 
-    public async Task<ApiResponse<List<InvoiceListModel>>> GetAllAsync()
+    public async Task<ApiResponse<List<InvoiceModel>>> GetAllAsync()
     {
         try
         {
             var response = await Client.GetAsync(
-                $"{baseUrl}/all");
+                $"{baseUrl}/getAll");
 
             if (!response.IsSuccessStatusCode)
             {
-                return new ApiResponse<List<InvoiceListModel>>
+                return new ApiResponse<List<InvoiceModel>>
                 {
                     IsSuccess = false,
                     Message =
                         $"Unable to load invoices. Status: {response.StatusCode}",
-                    Data = new List<InvoiceListModel>()
+                    Data = new List<InvoiceModel>()
                 };
             }
 
             return await response.Content
-                .ReadFromJsonAsync<ApiResponse<List<InvoiceListModel>>>()
-                ?? new ApiResponse<List<InvoiceListModel>>
+                .ReadFromJsonAsync<ApiResponse<List<InvoiceModel>>>()
+                ?? new ApiResponse<List<InvoiceModel>>
                 {
                     IsSuccess = false,
                     Message = "Invalid response from server.",
-                    Data = new List<InvoiceListModel>()
+                    Data = new List<InvoiceModel>()
                 };
         }
         catch (Exception ex)
         {
-            return new ApiResponse<List<InvoiceListModel>>
+            return new ApiResponse<List<InvoiceModel>>
             {
                 IsSuccess = false,
                 Message = ex.Message,
-                Data = new List<InvoiceListModel>()
+                Data = new List<InvoiceModel>()
             };
         }
     }

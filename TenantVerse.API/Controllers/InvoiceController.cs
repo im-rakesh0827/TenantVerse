@@ -39,8 +39,8 @@ public class InvoiceController : ControllerBase
         return Ok(result);
     }
 
-    [HttpGet("all")]
-    public async Task<ActionResult<ApiResponse<IEnumerable<InvoiceListModel>>>> GetAll()
+    [HttpGet("getAll")]
+    public async Task<ActionResult<ApiResponse<IEnumerable<InvoiceModel>>>> GetAll()
     {
         var result = await _invoiceService.GetAllAsync();
         if (!result.IsSuccess)

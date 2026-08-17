@@ -21,7 +21,7 @@ public partial class InvoiceList
     private ISnackbar Snackbar { get; set; } = default!;
 
 
-    private List<InvoiceListModel> _invoices = new();
+    private List<InvoiceModel> _invoices = new();
 
     private string _searchString = string.Empty;
 
@@ -36,7 +36,7 @@ public partial class InvoiceList
     // FILTERED INVOICES
     // =========================================================
 
-    protected IEnumerable<InvoiceListModel> FilteredInvoices =>
+    protected IEnumerable<InvoiceModel> FilteredInvoices =>
         string.IsNullOrWhiteSpace(_searchString)
             && string.IsNullOrWhiteSpace(_paymentStatus)
                 ? _invoices
@@ -107,7 +107,7 @@ public partial class InvoiceList
     // FILTER INVOICE
     // =========================================================
 
-    private bool FilterInvoice(InvoiceListModel invoice)
+    private bool FilterInvoice(InvoiceModel invoice)
     {
         // -----------------------------------------------------
         // SEARCH FILTER

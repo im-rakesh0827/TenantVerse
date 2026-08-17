@@ -125,7 +125,7 @@ public class InvoiceRepository : IInvoiceRepository
     }
 
 
-    public async Task<IEnumerable<InvoiceListModel>> GetAllAsync()
+    public async Task<IEnumerable<InvoiceModel>> GetAllAsync()
 {
     var connectionString =
         _configuration.GetConnectionString("DefaultConnection");
@@ -134,7 +134,7 @@ public class InvoiceRepository : IInvoiceRepository
         new SqlConnection(connectionString);
 
     var result =
-        await connection.QueryAsync<InvoiceListModel>(
+        await connection.QueryAsync<InvoiceModel>(
             "dbo.IT_SP_GetAllInvoice",
             commandType: CommandType.StoredProcedure);
 

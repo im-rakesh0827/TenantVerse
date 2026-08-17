@@ -7,5 +7,5 @@ public interface IInvoiceService
 {
     Task<ApiResponse<CreateInvoiceResponse>> CreateAsync(
         CreateInvoiceRequest request);
-        Task<ApiResponse<IEnumerable<InvoiceListModel>>> GetAllAsync();
+        Task<ApiResponse<IEnumerable<InvoiceModel>>> GetAllAsync();
 }

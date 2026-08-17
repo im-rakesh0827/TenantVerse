@@ -184,14 +184,14 @@ public class InvoiceService : IInvoiceService
         }
     }
 
-    public async Task<ApiResponse<IEnumerable<InvoiceListModel>>> GetAllAsync()
+    public async Task<ApiResponse<IEnumerable<InvoiceModel>>> GetAllAsync()
     {
         try
         {
             var invoices =
                 await _invoiceRepository.GetAllAsync();
 
-            return new ApiResponse<IEnumerable<InvoiceListModel>>
+            return new ApiResponse<IEnumerable<InvoiceModel>>
             {
                 IsSuccess = true,
                 Message = "Invoices retrieved successfully.",
@@ -200,7 +200,7 @@ public class InvoiceService : IInvoiceService
         }
         catch (Exception ex)
         {
-            return new ApiResponse<IEnumerable<InvoiceListModel>>
+            return new ApiResponse<IEnumerable<InvoiceModel>>
             {
                 IsSuccess = false,
                 Message = ex.Message
