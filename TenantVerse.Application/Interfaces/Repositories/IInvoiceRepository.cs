@@ -8,5 +8,7 @@ public interface IInvoiceRepository
      Task<CreateInvoiceResponse?> CreateAsync(
         CreateInvoiceRequest request);
      Task<IEnumerable<InvoiceModel>> GetAllAsync();
+
+     Task<int> UpdateAsync(UpdateInvoiceRequest request);
    
 }

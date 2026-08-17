@@ -4,7 +4,6 @@ using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using TenantVerse.Application.Interfaces.Repositories;
 using TenantVerse.Shared.Models.Invoice;
-using TenantVerse.Shared.Models.Invoice;
 
 namespace TenantVerse.Infrastructure.Repositories;
 
@@ -140,5 +139,152 @@ public class InvoiceRepository : IInvoiceRepository
 
     return result;
 }
+
+public async Task<int> UpdateAsync(
+    UpdateInvoiceRequest request)
+{
+    try
+    {
+        var connectionString =
+            _configuration.GetConnectionString("DefaultConnection");
+
+        await using var connection =
+            new SqlConnection(connectionString);
+
+        var parameters = new DynamicParameters();
+
+        parameters.Add(
+            "@InvoiceId",
+            request.InvoiceId,
+            DbType.Int32);
+
+        parameters.Add(
+            "@BillingMonth",
+            request.BillingMonth,
+            DbType.Date);
+
+        parameters.Add(
+            "@InvoiceDate",
+            request.InvoiceDate,
+            DbType.Date);
+
+        parameters.Add(
+            "@DueDate",
+            request.DueDate,
+            DbType.Date);
+
+        parameters.Add(
+            "@DiscountAmount",
+            request.DiscountAmount,
+            DbType.Decimal);
+
+        parameters.Add(
+            "@LateFee",
+            request.LateFee,
+            DbType.Decimal);
+
+        parameters.Add(
+            "@Notes",
+            request.Notes,
+            DbType.String);
+
+        parameters.Add(
+            "@UpdatedBy",
+            request.UpdatedBy,
+            DbType.String);
+
+
+        // Invoice Charges
+        var chargeTable = new DataTable();
+
+        chargeTable.Columns.Add(
+            "ChargeType",
+            typeof(string));
+
+        chargeTable.Columns.Add(
+            "Description",
+            typeof(string));
+
+        chargeTable.Columns.Add(
+            "Amount",
+            typeof(decimal));
+
+        chargeTable.Columns.Add(
+            "PreviousReading",
+            typeof(decimal));
+
+        chargeTable.Columns.Add(
+            "CurrentReading",
+            typeof(decimal));
+
+        chargeTable.Columns.Add(
+            "Units",
+            typeof(decimal));
+
+        chargeTable.Columns.Add(
+            "Rate",
+            typeof(decimal));
+
+
+        foreach (var charge in request.Charges)
+        {
+            var row = chargeTable.NewRow();
+
+            row["ChargeType"] =
+                charge.ChargeType;
+
+            row["Description"] =
+                string.IsNullOrWhiteSpace(charge.Description)
+                    ? DBNull.Value
+                    : charge.Description;
+
+            row["Amount"] =
+                charge.Amount;
+
+            row["PreviousReading"] =
+                charge.PreviousReading.HasValue
+                    ? charge.PreviousReading.Value
+                    : DBNull.Value;
+
+            row["CurrentReading"] =
+                charge.CurrentReading.HasValue
+                    ? charge.CurrentReading.Value
+                    : DBNull.Value;
+
+            row["Units"] =
+                charge.Units.HasValue
+                    ? charge.Units.Value
+                    : DBNull.Value;
+
+            row["Rate"] =
+                charge.Rate.HasValue
+                    ? charge.Rate.Value
+                    : DBNull.Value;
+
+            chargeTable.Rows.Add(row);
+        }
+
+
+        parameters.Add(
+            "@Charges",
+            chargeTable.AsTableValuedParameter(
+                "dbo.InvoiceChargeType"));
+
+
+        var result =
+            await connection.QuerySingleAsync<int>(
+                "dbo.IT_SP_UpdateInvoice",
+                parameters,
+                commandType: CommandType.StoredProcedure);
+
+        return result;
+    }
+    catch
+    {
+        throw;
+    }
+}
+
+
 
 }

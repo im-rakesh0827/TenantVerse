@@ -49,4 +49,65 @@ public class InvoiceController : ControllerBase
         }
         return Ok(result);
     }
+
+    [HttpPut("{invoiceId:int}")]
+public async Task<IActionResult> Update(
+    int invoiceId,
+    [FromBody] UpdateInvoiceRequest request)
+{
+    try
+    {
+        if (invoiceId <= 0)
+        {
+            return BadRequest(new
+            {
+                IsSuccess = false,
+                Message = "Invalid invoice ID."
+            });
+        }
+
+        if (request == null)
+        {
+            return BadRequest(new
+            {
+                IsSuccess = false,
+                Message = "Invoice request is required."
+            });
+        }
+
+        // Ensure route ID and request ID are consistent
+        request.InvoiceId = invoiceId;
+
+        var result =
+            await _invoiceService.UpdateAsync(request);
+
+        return Ok(new
+        {
+            IsSuccess = true,
+            Message = "Invoice updated successfully.",
+            Data = new
+            {
+                InvoiceId = result
+            }
+        });
+    }
+    catch (ArgumentException ex)
+    {
+        return BadRequest(new
+        {
+            IsSuccess = false,
+            Message = ex.Message
+        });
+    }
+    catch (Exception)
+    {
+        return StatusCode(
+            StatusCodes.Status500InternalServerError,
+            new
+            {
+                IsSuccess = false,
+                Message = "An error occurred while updating the invoice."
+            });
+    }
+}
 }

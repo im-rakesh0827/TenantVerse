@@ -100,4 +100,21 @@ public class InvoiceService
             };
         }
     }
+
+
+public async Task<ApiResponse<int>> UpdateAsync(
+    UpdateInvoiceRequest request)
+{
+    var response = await Client.PutAsJsonAsync(
+        $"{baseUrl}/update",
+        request);
+
+    return await response.Content
+               .ReadFromJsonAsync<ApiResponse<int>>()
+           ?? new ApiResponse<int>
+           {
+               IsSuccess = false,
+               Message = "Unable to update invoice."
+           };
+}
 }
