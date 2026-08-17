@@ -9,6 +9,12 @@ public interface IInvoiceService
         CreateInvoiceRequest request);
         Task<ApiResponse<IEnumerable<InvoiceModel>>> GetAllAsync();
 
-        Task<int> UpdateAsync(
-        UpdateInvoiceRequest request);
+        // Task<int> UpdateAsync(
+        // UpdateInvoiceRequest request);
+
+        Task<ApiResponse<int>> UpdateAsync(
+    UpdateInvoiceRequest request);
+
+    Task<ApiResponse<InvoiceModel>> GetByIdAsync(
+    int invoiceId);
 }

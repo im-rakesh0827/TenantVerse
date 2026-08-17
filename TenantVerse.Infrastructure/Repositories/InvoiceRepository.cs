@@ -286,5 +286,38 @@ public async Task<int> UpdateAsync(
 }
 
 
+public async Task<InvoiceModel?> GetByIdAsync(
+    int invoiceId)
+{
+    var connectionString =
+        _configuration.GetConnectionString("DefaultConnection");
+
+    await using var connection =
+        new SqlConnection(connectionString);
+
+    using var multi =
+        await connection.QueryMultipleAsync(
+            "dbo.IT_SP_GetInvoiceById",
+            new
+            {
+                InvoiceId = invoiceId
+            },
+            commandType: CommandType.StoredProcedure);
+
+    var invoice =
+        await multi.ReadFirstOrDefaultAsync<InvoiceModel>();
+
+    if (invoice == null)
+        return null;
+
+    var charges =
+        await multi.ReadAsync<InvoiceChargeModel>();
+
+    invoice.Charges = charges.ToList();
+
+    return invoice;
+}
+
+
 
 }

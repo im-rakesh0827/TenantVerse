@@ -50,64 +50,35 @@ public class InvoiceController : ControllerBase
         return Ok(result);
     }
 
-    [HttpPut("{invoiceId:int}")]
-public async Task<IActionResult> Update(
-    int invoiceId,
-    [FromBody] UpdateInvoiceRequest request)
-{
-    try
+    [HttpGet("getById/{invoiceId:int}")]
+    public async Task<IActionResult> GetById(
+        int invoiceId)
     {
-        if (invoiceId <= 0)
+        var response =
+            await _invoiceService.GetByIdAsync(invoiceId);
+
+        if (!response.IsSuccess)
         {
-            return BadRequest(new
-            {
-                IsSuccess = false,
-                Message = "Invalid invoice ID."
-            });
+            return NotFound(response);
         }
 
-        if (request == null)
-        {
-            return BadRequest(new
-            {
-                IsSuccess = false,
-                Message = "Invoice request is required."
-            });
-        }
+        return Ok(response);
+    }
+    
 
-        // Ensure route ID and request ID are consistent
-        request.InvoiceId = invoiceId;
-
-        var result =
+    [HttpPut("update")]
+    public async Task<IActionResult> Update(
+        [FromBody] UpdateInvoiceRequest request)
+    {
+        var response =
             await _invoiceService.UpdateAsync(request);
 
-        return Ok(new
+        if (!response.IsSuccess)
         {
-            IsSuccess = true,
-            Message = "Invoice updated successfully.",
-            Data = new
-            {
-                InvoiceId = result
-            }
-        });
+            return BadRequest(response);
+        }
+
+        return Ok(response);
     }
-    catch (ArgumentException ex)
-    {
-        return BadRequest(new
-        {
-            IsSuccess = false,
-            Message = ex.Message
-        });
-    }
-    catch (Exception)
-    {
-        return StatusCode(
-            StatusCodes.Status500InternalServerError,
-            new
-            {
-                IsSuccess = false,
-                Message = "An error occurred while updating the invoice."
-            });
-    }
-}
+
 }

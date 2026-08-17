@@ -10,5 +10,6 @@ public interface IInvoiceRepository
      Task<IEnumerable<InvoiceModel>> GetAllAsync();
 
      Task<int> UpdateAsync(UpdateInvoiceRequest request);
+     Task<InvoiceModel?> GetByIdAsync(int invoiceId);
    
 }

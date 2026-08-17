@@ -1,0 +1,596 @@
+
+
+@page "/invoice/{mode}/{InvoiceId:int}"
+@using TenantVerse.Shared.Models.Invoice
+
+<PageTitle>@(IsReadOnly ? "View Invoice" : "Edit Invoice")</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.False">
+
+    <!-- =========================
+         HEADER
+         ========================= -->
+
+    <MudStack Row="true"
+              AlignItems="AlignItems.Center"
+              Class="mb-6">
+
+        <div>
+
+            <MudText Typo="Typo.h4">
+                @(IsReadOnly ? "View Invoice" : "Edit Invoice")
+            </MudText>
+
+            <MudText Typo="Typo.body2"
+                     Color="Color.Secondary">
+
+                @(IsReadOnly
+                    ? "View invoice details"
+                    : "Update invoice information")
+
+            </MudText>
+
+        </div>
+
+    </MudStack>
+
+
+    <!-- =========================
+         ERROR
+         ========================= -->
+
+    @if (!string.IsNullOrWhiteSpace(_message))
+    {
+        <MudAlert Severity="Severity.Error"
+                  Variant="Variant.Outlined"
+                  Class="mb-4">
+
+            @_message
+
+        </MudAlert>
+    }
+
+
+    @if (Invoice != null)
+    {
+        <MudPaper Elevation="1"
+                  Class="pa-6"
+                  Style="position:relative;">
+
+            <MudForm @ref="_form">
+
+                <MudGrid Spacing="3">
+
+                    <!-- =========================
+                         INVOICE INFORMATION
+                         ========================= -->
+
+                    <MudItem xs="12">
+
+                        <MudDivider Class="my-3" />
+
+                        <MudText Typo="Typo.h6">
+                            Invoice Information
+                        </MudText>
+
+                    </MudItem>
+
+
+                    <!-- INVOICE NUMBER -->
+
+                    <MudItem xs="12" sm="6" md="3">
+
+                        <MudTextField T="string"
+                                      Label="Invoice Number"
+                                      Variant="Variant.Outlined"
+                                      @bind-Value="Invoice.InvoiceNumber"
+                                      Disabled="true" />
+
+                    </MudItem>
+
+
+                    <!-- PROPERTY -->
+
+                    <MudItem xs="12" sm="6" md="3">
+
+                        <MudTextField T="string"
+                                      Label="Property"
+                                      Variant="Variant.Outlined"
+                                      @bind-Value="Invoice.PropertyName"
+                                      Disabled="true" />
+
+                    </MudItem>
+
+
+                    <!-- FLAT -->
+
+                    <MudItem xs="12" sm="6" md="3">
+
+                        <MudTextField T="string"
+                                      Label="Flat"
+                                      Variant="Variant.Outlined"
+                                      @bind-Value="Invoice.UnitNumber"
+                                      Disabled="true" />
+
+                    </MudItem>
+
+
+                    <!-- TENANT -->
+
+                    <MudItem xs="12" sm="6" md="3">
+
+                        <MudTextField T="string"
+                                      Label="Tenant"
+                                      Variant="Variant.Outlined"
+                                      @bind-Value="Invoice.TenantName"
+                                      Disabled="true" />
+
+                    </MudItem>
+
+
+                    <!-- =========================
+                         BILLING INFORMATION
+                         ========================= -->
+
+                    <MudItem xs="12">
+
+                        <MudDivider Class="my-3" />
+
+                        <MudText Typo="Typo.h6">
+                            Billing Information
+                        </MudText>
+
+                    </MudItem>
+
+
+                    <!-- BILLING MONTH -->
+
+                    <MudItem xs="12" sm="6" md="4">
+
+                        <MudDatePicker Label="Billing Month"
+                                       Variant="Variant.Outlined"
+                                       @bind-Date="_billingMonth"
+                                       Disabled="@IsReadOnly"
+                                       Required="true"
+                                       RequiredError="Billing month is required." />
+
+                    </MudItem>
+
+
+                    <!-- INVOICE DATE -->
+
+                    <MudItem xs="12" sm="6" md="4">
+
+                        <MudDatePicker Label="Invoice Date"
+                                       Variant="Variant.Outlined"
+                                       @bind-Date="_invoiceDate"
+                                       Disabled="@IsReadOnly"
+                                       Required="true"
+                                       RequiredError="Invoice date is required." />
+
+                    </MudItem>
+
+
+                    <!-- DUE DATE -->
+
+                    <MudItem xs="12" sm="6" md="4">
+
+                        <MudDatePicker Label="Due Date"
+                                       Variant="Variant.Outlined"
+                                       @bind-Date="_dueDate"
+                                       Disabled="@IsReadOnly"
+                                       Required="true"
+                                       RequiredError="Due date is required." />
+
+                    </MudItem>
+
+
+                    <!-- =========================
+                         CHARGES
+                         ========================= -->
+
+                    <MudItem xs="12">
+
+                        <MudDivider Class="my-3" />
+
+                        <MudText Typo="Typo.h6">
+                            Invoice Charges
+                        </MudText>
+
+                    </MudItem>
+
+
+                    @foreach (var charge in Invoice.Charges)
+                    {
+                        <MudItem xs="12">
+
+                            <MudPaper Class="pa-4"
+                                      Elevation="1">
+
+                                <MudGrid Spacing="3">
+
+                                    <!-- CHARGE TYPE -->
+
+                                    <MudItem xs="12"
+                                             sm="6"
+                                             md="3">
+
+                                        <MudTextField T="string"
+                                                      Label="Charge Type"
+                                                      Variant="Variant.Outlined"
+                                                      @bind-Value="charge.ChargeType"
+                                                      Disabled="true" />
+
+                                    </MudItem>
+
+
+                                    <!-- DESCRIPTION -->
+
+                                    <MudItem xs="12"
+                                             sm="6"
+                                             md="3">
+
+                                        <MudTextField T="string"
+                                                      Label="Description"
+                                                      Variant="Variant.Outlined"
+                                                      @bind-Value="charge.Description"
+                                                      Disabled="@IsReadOnly" />
+
+                                    </MudItem>
+
+
+                                    @if (IsElectricity(charge))
+                                    {
+                                        <!-- PREVIOUS READING -->
+
+                                        <MudItem xs="12"
+                                                 sm="6"
+                                                 md="3">
+
+                                            <MudNumericField T="decimal?"
+                                                             Label="Previous Reading"
+                                                             Variant="Variant.Outlined"
+                                                             @bind-Value="charge.PreviousReading"
+                                                             Disabled="@IsReadOnly"
+                                                             Min="0" />
+
+                                        </MudItem>
+
+
+                                        <!-- CURRENT READING -->
+
+                                        <MudItem xs="12"
+                                                 sm="6"
+                                                 md="3">
+
+                                            <MudNumericField T="decimal?"
+                                                             Label="Current Reading"
+                                                             Variant="Variant.Outlined"
+                                                             @bind-Value="charge.CurrentReading"
+                                                             Disabled="@IsReadOnly"
+                                                             Min="0" />
+
+                                        </MudItem>
+
+
+                                        <!-- RATE -->
+
+                                        <MudItem xs="12"
+                                                 sm="6"
+                                                 md="3">
+
+                                            <MudNumericField T="decimal?"
+                                                             Label="Electricity Rate"
+                                                             Variant="Variant.Outlined"
+                                                             @bind-Value="charge.Rate"
+                                                             Disabled="@IsReadOnly"
+                                                             Adornment="Adornment.Start"
+                                                             AdornmentText="₹"
+                                                             Min="0" />
+
+                                        </MudItem>
+
+
+                                        <!-- UNITS -->
+
+                                        <MudItem xs="12"
+                                                 sm="6"
+                                                 md="3">
+
+                                            <MudNumericField T="decimal"
+                                                             Label="Units"
+                                                             Variant="Variant.Outlined"
+                                                             Value="@CalculateUnits(charge)"
+                                                             Disabled="true" />
+
+                                        </MudItem>
+
+
+                                        <!-- ELECTRICITY AMOUNT -->
+
+                                        <MudItem xs="12"
+                                                 sm="6"
+                                                 md="3">
+
+                                            <MudNumericField T="decimal"
+                                                             Label="Electricity Amount"
+                                                             Variant="Variant.Outlined"
+                                                             Value="@CalculateElectricityAmount(charge)"
+                                                             Disabled="true"
+                                                             Adornment="Adornment.Start"
+                                                             AdornmentText="₹" />
+
+                                        </MudItem>
+                                    }
+                                    else
+                                    {
+                                        <!-- NORMAL CHARGE -->
+
+                                        <MudItem xs="12"
+                                                 sm="6"
+                                                 md="3">
+
+                                            <MudNumericField T="decimal"
+                                                             Label="Amount"
+                                                             Variant="Variant.Outlined"
+                                                             @bind-Value="charge.Amount"
+                                                             Disabled="@IsReadOnly"
+                                                             Adornment="Adornment.Start"
+                                                             AdornmentText="₹"
+                                                             Min="0" />
+
+                                        </MudItem>
+                                    }
+
+                                </MudGrid>
+
+                            </MudPaper>
+
+                        </MudItem>
+                    }
+
+
+                    <!-- =========================
+                         ADJUSTMENTS
+                         ========================= -->
+
+                    <MudItem xs="12">
+
+                        <MudDivider Class="my-3" />
+
+                        <MudText Typo="Typo.h6">
+                            Adjustments
+                        </MudText>
+
+                    </MudItem>
+
+
+                    <!-- DISCOUNT -->
+
+                    <MudItem xs="12" sm="6">
+
+                        <MudNumericField T="decimal"
+                                         Label="Discount"
+                                         Variant="Variant.Outlined"
+                                         @bind-Value="Invoice.DiscountAmount"
+                                         Disabled="@IsReadOnly"
+                                         Adornment="Adornment.Start"
+                                         AdornmentText="₹"
+                                         Min="0" />
+
+                    </MudItem>
+
+
+                    <!-- LATE FEE -->
+
+                    <MudItem xs="12" sm="6">
+
+                        <MudNumericField T="decimal"
+                                         Label="Late Fee"
+                                         Variant="Variant.Outlined"
+                                         @bind-Value="Invoice.LateFee"
+                                         Disabled="@IsReadOnly"
+                                         Adornment="Adornment.Start"
+                                         AdornmentText="₹"
+                                         Min="0" />
+
+                    </MudItem>
+
+
+                    <!-- =========================
+                         PAYMENT STATUS
+                         ========================= -->
+
+                    <MudItem xs="12">
+
+                        <MudDivider Class="my-3" />
+
+                        <MudText Typo="Typo.h6">
+                            Payment Information
+                        </MudText>
+
+                    </MudItem>
+
+
+                    <MudItem xs="12" sm="6">
+
+                        <MudTextField T="string"
+                                      Label="Payment Status"
+                                      Variant="Variant.Outlined"
+                                      @bind-Value="Invoice.PaymentStatus"
+                                      Disabled="true" />
+
+                    </MudItem>
+
+
+                    <!-- =========================
+                         NOTES
+                         ========================= -->
+
+                    <MudItem xs="12">
+
+                        <MudDivider Class="my-3" />
+
+                        <MudText Typo="Typo.h6">
+                            Notes
+                        </MudText>
+
+                    </MudItem>
+
+
+                    <MudItem xs="12">
+
+                        <MudTextField T="string"
+                                      Label="Notes"
+                                      Variant="Variant.Outlined"
+                                      @bind-Value="Invoice.Notes"
+                                      Disabled="@IsReadOnly"
+                                      Lines="4"
+                                      FullWidth="true" />
+
+                    </MudItem>
+
+
+                    <!-- =========================
+                         SUMMARY
+                         ========================= -->
+
+                    <MudItem xs="12">
+
+                        <MudDivider Class="my-4" />
+
+                    </MudItem>
+
+
+                    <MudItem xs="12">
+
+                        <MudStack Spacing="2"
+                                  AlignItems="AlignItems.End">
+
+                            <MudText Typo="Typo.body1">
+                                Sub Total:
+                                <strong>
+                                    ₹ @CalculateSubtotal().ToString("N2")
+                                </strong>
+                            </MudText>
+
+
+                            <MudText Typo="Typo.body1">
+                                Discount:
+                                <strong>
+                                    - ₹ @Invoice.DiscountAmount.ToString("N2")
+                                </strong>
+                            </MudText>
+
+
+                            <MudText Typo="Typo.body1">
+                                Late Fee:
+                                <strong>
+                                    + ₹ @Invoice.LateFee.ToString("N2")
+                                </strong>
+                            </MudText>
+
+
+                            <MudDivider Style="width:300px;" />
+
+
+                            <MudText Typo="Typo.h5">
+                                Total Payable:
+                                <strong>
+                                    ₹ @CalculateTotal().ToString("N2")
+                                </strong>
+                            </MudText>
+
+                        </MudStack>
+
+                    </MudItem>
+
+
+                    <!-- =========================
+                         ACTIONS
+                         ========================= -->
+
+                    <MudItem xs="12">
+
+                        <MudDivider Class="my-4" />
+
+                        <MudStack Row="true"
+                                  Justify="Justify.FlexEnd"
+                                  Spacing="2">
+
+                            <MudButton Variant="Variant.Outlined"
+                                       Color="Color.Default"
+                                       Disabled="@_isSaving"
+                                       OnClick="GoBack">
+
+                                @(IsReadOnly ? "Back" : "Cancel")
+
+                            </MudButton>
+
+
+                            @* @if (IsReadOnly)
+                            {
+                                <MudButton Variant="Variant.Filled"
+                                           Color="Color.Primary"
+                                           StartIcon="@Icons.Material.Filled.Edit"
+                                           Disabled="@IsLoading"
+                                           OnClick="GoToEdit">
+
+                                    Edit Invoice
+
+                                </MudButton>
+                            }
+                            else
+                            {
+                                <MudButton Variant="Variant.Filled"
+                                           Color="Color.Primary"
+                                           Disabled="@(_isSaving || IsLoading)"
+                                           StartIcon="@Icons.Material.Filled.Save"
+                                           OnClick="SaveAsync">
+
+                                    Update Invoice
+
+                                </MudButton>
+                            } *@
+
+
+                            <MudButton Variant="Variant.Filled"
+                                           Color="Color.Primary"
+                                           Disabled="@(IsReadOnly ||_isSaving || IsLoading)"
+                                           StartIcon="@Icons.Material.Filled.Save"
+                                           OnClick="SaveAsync">
+
+                                    Update Invoice
+
+                                </MudButton>
+
+                        </MudStack>
+
+                    </MudItem>
+
+                </MudGrid>
+
+            </MudForm>
+
+
+            <!-- =========================
+                 LOADER
+                 ========================= -->
+
+            @if (_isSaving || IsLoading)
+            {
+                <CustomLoaderComponent />
+            }
+
+        </MudPaper>
+    }
+    else if (IsLoading)
+    {
+        <MudPaper Class="pa-6">
+
+            <CustomLoaderComponent />
+
+        </MudPaper>
+    }
+
+</MudContainer>
