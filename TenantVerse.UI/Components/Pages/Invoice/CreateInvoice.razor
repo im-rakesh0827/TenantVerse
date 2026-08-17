@@ -1,0 +1,562 @@
+@page "/invoice/create"
+
+@using TenantVerse.Shared.Models.Invoice
+@using TenantVerse.Shared.Models.Unit
+@using TenantVerse.Shared.Models.Tenant
+
+<PageTitle>Create Invoice</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.False"
+              Class="pa-4">
+
+    <MudStack Row="true"
+              Justify="Justify.SpaceBetween"
+              AlignItems="AlignItems.Center"
+              Class="mb-4">
+
+        <MudStack Spacing="0">
+
+            <MudText Typo="Typo.h5">
+                Create Invoice
+            </MudText>
+
+            <MudText Typo="Typo.body2"
+                     Color="Color.Secondary">
+
+                Generate a rent and utility invoice for a tenant
+
+            </MudText>
+
+        </MudStack>
+
+    </MudStack>
+
+
+    <MudPaper Elevation="1"
+              Class="pa-4"
+              Style="position:relative;">
+
+        <MudForm @ref="_form">
+
+            <MudGrid Spacing="3">
+                <MudItem xs="12">
+
+                    <MudText Typo="Typo.h6">
+                        Invoice Information
+                    </MudText>
+
+                    <MudDivider Class="my-3" />
+
+                </MudItem>
+
+
+                <MudItem xs="12"
+                         sm="4">
+
+                         <MudSelect T="int"
+                              Label="Property"
+                              Variant="Variant.Outlined"
+                              Value="_model.PropertyId"
+                              ValueChanged="OnPropertyChanged"
+                              Required="true"
+                              RequiredError="Property is required.">
+
+                              @foreach (var property in _properties)
+                              {
+                                  <MudSelectItem T="int"
+                                                 Value="@property.PropertyId">
+
+                                      @property.PropertyName
+
+                                  </MudSelectItem>
+                              }
+
+                         </MudSelect>
+                </MudItem>
+
+
+                <!-- FLAT -->
+
+                <MudItem xs="12"
+                         sm="4">
+                    <MudSelect T="int"
+                         Label="Flat"
+                         Variant="Variant.Outlined"
+                         Value="_model.UnitId"
+                         ValueChanged="OnUnitChanged"
+                         Disabled="@(_model.PropertyId <= 0 || IsLoadingFlats)"
+                         Required="true"
+                         RequiredError="Flat is required.">
+
+                         @foreach (var unit in _availableUnits)
+                         {
+                              <MudSelectItem T="int"
+                                             Value="@unit.UnitId">
+
+                                   @unit.UnitNumber
+
+                              </MudSelectItem>
+                         }
+                    </MudSelect>
+                </MudItem>
+
+
+                <!-- TENANT -->
+
+                <MudItem xs="12"
+                         sm="4">
+
+                    <MudSelect T="int"
+                               Label="Tenant"
+                               Variant="Variant.Outlined"
+                               Margin="Margin.Dense"
+                               @bind-Value="_model.TenantId"
+                               Disabled="@(_model.UnitId == 0 || IsLoadingTenants)"
+                               Required="true"
+                               RequiredError="Tenant is required.">
+
+                        @if (IsLoadingTenants)
+                        {
+                            <MudSelectItem T="int"
+                                           Value="0"
+                                           Disabled="true">
+
+                                Loading tenant...
+
+                            </MudSelectItem>
+                        }
+                        else
+                        {
+                            @foreach (var tenant in _availableTenants)
+                            {
+                                <MudSelectItem T="int"
+                                               Value="@tenant.TenantId">
+
+                                    @tenant.FirstName @tenant.LastName
+
+                                </MudSelectItem>
+                            }
+                        }
+
+                    </MudSelect>
+
+                </MudItem>
+
+
+
+                <MudItem xs="12"
+                         sm="4">
+
+                    <MudDatePicker Label="Billing Month"
+                                   Variant="Variant.Outlined"
+                                   Margin="Margin.Dense"
+                                   DateFormat="MMM yyyy"
+                                   @bind-Date="_billingMonth"
+                                   Required="true" />
+
+                </MudItem>
+
+
+
+
+                <MudItem xs="12"
+                         sm="4">
+
+                    <MudDatePicker Label="Invoice Date"
+                                   Variant="Variant.Outlined"
+                                   Margin="Margin.Dense"
+                                   DateFormat="dd MMM yyyy"
+                                   @bind-Date="_invoiceDate"
+                                   Required="true" />
+
+                </MudItem>
+
+
+                <!-- DUE DATE -->
+
+                <MudItem xs="12"
+                         sm="4">
+
+                    <MudDatePicker Label="Due Date"
+                                   Variant="Variant.Outlined"
+                                   Margin="Margin.Dense"
+                                   DateFormat="dd MMM yyyy"
+                                   @bind-Date="_dueDate"
+                                   Required="true" />
+
+                </MudItem>
+
+
+                <MudItem xs="12">
+
+                    <MudDivider Class="my-3" />
+
+                    <MudText Typo="Typo.h6">
+                        Rent & Electricity
+                    </MudText>
+
+                </MudItem>
+
+
+
+                <MudItem xs="12"
+                         sm="4">
+
+                    <MudNumericField T="decimal"
+                                     Label="Monthly Flat Rent"
+                                     Variant="Variant.Outlined"
+                                     Margin="Margin.Dense"
+                                     Adornment="Adornment.Start"
+                                     AdornmentText="₹"
+                                     @bind-Value="_model.MonthlyRent"
+                                     Min="0"
+                                     Immediate="true" />
+
+                </MudItem>
+
+
+                <MudItem xs="12"
+                         sm="4">
+
+                    <MudNumericField T="decimal"
+                                     Label="Previous Reading"
+                                     Variant="Variant.Outlined"
+                                     Margin="Margin.Dense"
+                                     @bind-Value="_model.PreviousReading"
+                                     Min="0"
+                                     Immediate="true"
+                                     OnValueChanged="CalculateElectricity" />
+                </MudItem>
+
+
+
+                <MudItem xs="12"
+                         sm="4">
+
+                    <MudNumericField T="decimal"
+                                     Label="Current Reading"
+                                     Variant="Variant.Outlined"
+                                     Margin="Margin.Dense"
+                                     @bind-Value="_model.CurrentReading"
+                                     Min="0"
+                                     Immediate="true"
+                                     OnValueChanged="CalculateElectricity" />
+
+                </MudItem>
+
+
+
+
+                <MudItem xs="12"
+                         sm="4">
+
+                    <MudNumericField T="decimal"
+                                     Label="Electricity Rate"
+                                     Variant="Variant.Outlined"
+                                     Margin="Margin.Dense"
+                                     Adornment="Adornment.Start"
+                                     AdornmentText="₹"
+                                     @bind-Value="_model.ElectricityRate"
+                                     Min="0"
+                                     Immediate="true"
+                                     OnValueChanged="CalculateElectricity" />
+
+                </MudItem>
+
+
+
+                <MudItem xs="12"
+                         sm="4">
+
+                    <MudTextField T="string"
+                                  Label="Electricity Units"
+                                  Variant="Variant.Outlined"
+                                  Margin="Margin.Dense"
+                                  Value="@ElectricityUnits.ToString("N2")"
+                                  ReadOnly="true" />
+
+                </MudItem>
+
+
+
+                <MudItem xs="12"
+                         sm="4">
+
+                    <MudTextField T="string"
+                                  Label="Electricity Amount"
+                                  Variant="Variant.Outlined"
+                                  Margin="Margin.Dense"
+                                  Adornment="Adornment.Start"
+                                  AdornmentText="₹"
+                                  Value="@ElectricityAmount.ToString("N2")"
+                                  ReadOnly="true" />
+
+                </MudItem>
+
+
+               
+                <MudItem xs="12">
+
+                    <MudDivider Class="my-3" />
+
+                    <MudText Typo="Typo.h6">
+                        Additional Charges
+                    </MudText>
+
+                </MudItem>
+
+
+
+                <MudItem xs="12"
+                         sm="3">
+
+                    <MudNumericField T="decimal"
+                                     Label="Maintenance"
+                                     Variant="Variant.Outlined"
+                                     Margin="Margin.Dense"
+                                     Adornment="Adornment.Start"
+                                     AdornmentText="₹"
+                                     @bind-Value="_model.MaintenanceCharge"
+                                     Min="0"
+                                     Immediate="true" />
+
+                </MudItem>
+
+
+
+                <MudItem xs="12"
+                         sm="3">
+
+                    <MudNumericField T="decimal"
+                                     Label="Water"
+                                     Variant="Variant.Outlined"
+                                     Margin="Margin.Dense"
+                                     Adornment="Adornment.Start"
+                                     AdornmentText="₹"
+                                     @bind-Value="_model.WaterCharge"
+                                     Min="0"
+                                     Immediate="true" />
+
+                </MudItem>
+
+
+
+                <MudItem xs="12"
+                         sm="3">
+
+                    <MudNumericField T="decimal"
+                                     Label="Late Fee"
+                                     Variant="Variant.Outlined"
+                                     Margin="Margin.Dense"
+                                     Adornment="Adornment.Start"
+                                     AdornmentText="₹"
+                                     @bind-Value="_model.LateFee"
+                                     Min="0"
+                                     Immediate="true" />
+
+                </MudItem>
+
+
+                <MudItem xs="12"
+                         sm="3">
+
+                    <MudNumericField T="decimal"
+                                     Label="Discount"
+                                     Variant="Variant.Outlined"
+                                     Margin="Margin.Dense"
+                                     Adornment="Adornment.Start"
+                                     AdornmentText="₹"
+                                     @bind-Value="_model.Discount"
+                                     Min="0"
+                                     Immediate="true" />
+
+                </MudItem>
+
+                <MudItem xs="12">
+
+                    <MudTextField T="string"
+                                  Label="Notes"
+                                  Variant="Variant.Outlined"
+                                  Margin="Margin.Dense"
+                                  Lines="3"
+                                  @bind-Value="_model.Notes" />
+
+                </MudItem>
+
+           
+                <MudItem xs="12">
+
+                    <MudDivider Class="my-3" />
+
+                    <MudText Typo="Typo.h6">
+                        Invoice Summary
+                    </MudText>
+
+                </MudItem>
+
+
+                <MudItem xs="12"
+                         md="6">
+
+                    <MudPaper Outlined="true"
+                              Class="pa-3">
+
+                        <MudStack Spacing="2">
+
+                            <MudStack Row="true"
+                                      Justify="Justify.SpaceBetween">
+
+                                <MudText>
+                                    Monthly Rent
+                                </MudText>
+
+                                <MudText>
+                                    ₹@_model.MonthlyRent.ToString("N2")
+                                </MudText>
+
+                            </MudStack>
+
+
+                            <MudStack Row="true"
+                                      Justify="Justify.SpaceBetween">
+
+                                <MudText>
+                                    Electricity
+                                </MudText>
+
+                                <MudText>
+                                    ₹@ElectricityAmount.ToString("N2")
+                                </MudText>
+
+                            </MudStack>
+
+
+                            <MudStack Row="true"
+                                      Justify="Justify.SpaceBetween">
+
+                                <MudText>
+                                    Maintenance
+                                </MudText>
+
+                                <MudText>
+                                    ₹@_model.MaintenanceCharge.ToString("N2")
+                                </MudText>
+
+                            </MudStack>
+
+
+                            <MudStack Row="true"
+                                      Justify="Justify.SpaceBetween">
+
+                                <MudText>
+                                    Water
+                                </MudText>
+
+                                <MudText>
+                                    ₹@_model.WaterCharge.ToString("N2")
+                                </MudText>
+
+                            </MudStack>
+
+
+                            <MudStack Row="true"
+                                      Justify="Justify.SpaceBetween">
+
+                                <MudText>
+                                    Late Fee
+                                </MudText>
+
+                                <MudText>
+                                    ₹@_model.LateFee.ToString("N2")
+                                </MudText>
+
+                            </MudStack>
+
+
+                            <MudStack Row="true"
+                                      Justify="Justify.SpaceBetween">
+
+                                <MudText>
+                                    Discount
+                                </MudText>
+
+                                <MudText Color="Color.Error">
+
+                                    -₹@_model.Discount.ToString("N2")
+
+                                </MudText>
+
+                            </MudStack>
+
+
+                            <MudDivider />
+
+
+                            <MudStack Row="true"
+                                      Justify="Justify.SpaceBetween">
+
+                                <MudText Typo="Typo.h6">
+                                    Total Payable
+                                </MudText>
+
+                                <MudText Typo="Typo.h6"
+                                         Color="Color.Primary">
+
+                                    ₹@TotalPayable.ToString("N2")
+
+                                </MudText>
+
+                            </MudStack>
+
+                        </MudStack>
+
+                    </MudPaper>
+
+                </MudItem>
+
+
+          
+                <MudItem xs="12">
+
+                    <MudDivider Class="my-3" />
+
+                    <MudStack Row="true"
+                              Justify="Justify.FlexEnd"
+                              Spacing="2">
+
+                        <MudButton Variant="Variant.Outlined"
+                                   Color="Color.Default"
+                                   Disabled="@_isSaving"
+                                   OnClick="GoBack">
+
+                            Cancel
+
+                        </MudButton>
+
+
+                        <MudButton Variant="Variant.Filled"
+                                   Color="Color.Primary"
+                                   Disabled="@_isSaving"
+                                   StartIcon="@Icons.Material.Filled.Save"
+                                   OnClick="CreateInvoiceAsync">
+
+                            Create Invoice
+
+                        </MudButton>
+
+                    </MudStack>
+
+                </MudItem>
+
+            </MudGrid>
+
+        </MudForm>
+
+        @if (IsLoading || _isSaving)
+        {
+            <CustomLoaderComponent />
+        }
+
+    </MudPaper>
+
+</MudContainer>

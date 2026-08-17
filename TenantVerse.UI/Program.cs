@@ -101,7 +101,7 @@ builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<PropertyService>();
 builder.Services.AddScoped<UnitService>();
 builder.Services.AddScoped<TenantService>();
-
+builder.Services.AddScoped<InvoiceService>();
 builder.Services.AddScoped<StateContainer>();
 
 

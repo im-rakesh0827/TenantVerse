@@ -1,9 +1,31 @@
 using TenantVerse.Shared.Models.Tenant;
 using TenantVerse.Shared.Models.Unit;
+using TenantVerse.Shared.Models.Invoice;
+
 using TenantVerse.UI.Models.Property;
 using TenantVerse.UI.Services;
 
 namespace TenantVerse.UI.Services;
+
+// public class StateContainer
+// {
+//     public PropertyStateContainer Property { get; }
+
+//     public UnitStateContainer Unit { get; }
+
+//     public TenantStateContainer Tenant { get; }
+
+
+//     public StateContainer(
+//         PropertyService propertyService,
+//         UnitService unitService,
+//         TenantService tenantService)
+//     {
+//         Property = new PropertyStateContainer(propertyService);
+//         Unit = new UnitStateContainer(unitService);
+//         Tenant = new TenantStateContainer(tenantService);
+//     }
+// }
 
 public class StateContainer
 {
@@ -13,15 +35,19 @@ public class StateContainer
 
     public TenantStateContainer Tenant { get; }
 
+    public InvoiceStateContainer Invoice { get; }
+
 
     public StateContainer(
         PropertyService propertyService,
         UnitService unitService,
-        TenantService tenantService)
+        TenantService tenantService,
+        InvoiceService invoiceService)
     {
         Property = new PropertyStateContainer(propertyService);
         Unit = new UnitStateContainer(unitService);
         Tenant = new TenantStateContainer(tenantService);
+        Invoice = new InvoiceStateContainer(invoiceService);
     }
 }
 
@@ -268,6 +294,92 @@ public class TenantStateContainer
         }
 
         SetTenants(response.Data);
+
+        return true;
+    }
+}
+
+
+
+// ============================================================
+// INVOICE STATE
+// ============================================================
+
+public class InvoiceStateContainer
+{
+    private readonly InvoiceService _invoiceService;
+
+
+    public InvoiceStateContainer(
+        InvoiceService invoiceService)
+    {
+        _invoiceService = invoiceService;
+    }
+
+
+    public List<InvoiceListModel> Invoices { get; private set; } = new();
+
+    public InvoiceListModel? SelectedInvoice { get; private set; }
+
+    public int InvoiceId { get; private set; }
+
+    public bool IsLoaded { get; private set; }
+
+
+    public void SetInvoices(
+        List<InvoiceListModel> invoices)
+    {
+        Invoices = invoices ?? new List<InvoiceListModel>();
+
+        IsLoaded = true;
+    }
+
+
+    public void SetSelectedInvoice(
+        InvoiceListModel invoice)
+    {
+        SelectedInvoice = invoice;
+    }
+
+
+    public void SetInvoiceId(
+        int invoiceId)
+    {
+        InvoiceId = invoiceId;
+    }
+
+
+    public void ResetLoaded()
+    {
+        IsLoaded = false;
+    }
+
+
+    public void Clear()
+    {
+        Invoices.Clear();
+
+        SelectedInvoice = null;
+
+        InvoiceId = 0;
+
+        IsLoaded = false;
+    }
+
+
+    public async Task<bool> RefreshAsync()
+    {
+        var response =
+            await _invoiceService.GetAllAsync();
+
+        if (response is null ||
+            !response.IsSuccess ||
+            response.Data is null)
+        {
+            return false;
+        }
+
+        SetInvoices(response.Data);
 
         return true;
     }

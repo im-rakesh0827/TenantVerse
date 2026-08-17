@@ -1,0 +1,61 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace TenantVerse.Shared.Models.Invoice;
+public class CreateInvoiceRequest
+{
+    public int PropertyId { get; set; }
+    public int UnitId { get; set; }
+    public int TenantId { get; set; }
+    public DateTime BillingMonth { get; set; }
+    public DateTime InvoiceDate { get; set; }
+    public DateTime DueDate { get; set; }
+    public decimal MonthlyRent { get; set; }
+    public decimal PreviousReading { get; set; }
+    public decimal CurrentReading { get; set; }
+    public decimal ElectricityRate { get; set; }
+    public decimal MaintenanceCharge { get; set; }
+    public decimal WaterCharge { get; set; }
+    public decimal LateFee { get; set; }
+    public decimal Discount { get; set; }
+    public string? Notes { get; set; }
+    public string? CreatedBy { get; set; }
+}
+public class CreateInvoiceResponse
+{
+    public int InvoiceId { get; set; }
+    public string InvoiceNumber { get; set; } = string.Empty;
+    public decimal TotalPayable { get; set; }
+}
+
+
+public class InvoiceListModel
+{
+    public int InvoiceId { get; set; }
+    public string InvoiceNumber { get; set; } = string.Empty;
+    public int PropertyId { get; set; }
+    public string PropertyName { get; set; } = string.Empty;
+    public int UnitId { get; set; }
+    public string UnitNumber { get; set; } = string.Empty;
+    public int TenantId { get; set; }
+    public string TenantName { get; set; } = string.Empty;
+    public DateTime BillingMonth { get; set; }
+    public DateTime InvoiceDate { get; set; }
+    public DateTime DueDate { get; set; }
+    public decimal MonthlyRent { get; set; }
+    public decimal ElectricityCharge { get; set; }
+    public decimal MaintenanceCharge { get; set; }
+    public decimal WaterCharge { get; set; }
+    public decimal LateFee { get; set; }
+    public decimal Discount { get; set; }
+    public decimal SubTotal { get; set; }
+    public decimal TotalPayable { get; set; }
+    public string PaymentStatus { get; set; } = string.Empty;
+    public bool IsActive { get; set; }
+    public DateTime CreatedOn { get; set; }
+    public string? CreatedBy { get; set; }
+    public DateTime? UpdatedOn { get; set; }
+    public string? UpdatedBy { get; set; }
+}

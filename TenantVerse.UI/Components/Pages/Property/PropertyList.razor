@@ -57,7 +57,9 @@
      ========================= -->
 
 <MudPaper Class="mt-4 pa-2"
-          Style="position:relative; min-height:300px;">
+          Style="position:relative;">
+          @* min-height:300px;"> *@
+
 
 
     <!-- =========================
@@ -169,6 +171,14 @@
                                        context.PropertyId))" />
                 </MudTd>
             </RowTemplate>
+
+
+            <NoRecordsContent>
+               <MudText Color="Color.Secondary"
+                    Class="pa-4">
+                    @(IsLoading ? "Loading..." : "No record found.")
+               </MudText>
+            </NoRecordsContent>
 
             <!-- =========================
                  PAGINATION

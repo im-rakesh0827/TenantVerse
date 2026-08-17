@@ -253,6 +253,14 @@
             </RowTemplate>
 
 
+            <NoRecordsContent>
+               <MudText Color="Color.Secondary"
+                    Class="pa-4">
+                    @(IsLoading ? "Loading..." : "No record found.")
+               </MudText>
+            </NoRecordsContent>
+
+
             <!-- =========================
                  PAGINATION
                  ========================= -->

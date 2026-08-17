@@ -20,6 +20,7 @@ namespace TenantVerse.Application
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IUnitService, UnitService>();
             services.AddScoped<ITenantService, TenantService>();
+            services.AddScoped<IInvoiceService, InvoiceService>();
 
             return services;
         }

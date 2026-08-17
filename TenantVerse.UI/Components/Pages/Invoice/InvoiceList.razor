@@ -1,0 +1,370 @@
+@page "/invoice"
+@using TenantVerse.Shared.Models.Invoice
+
+<PageTitle>Invoices</PageTitle>
+
+<MudText Typo="Typo.h6" Class="mb-2">
+    Invoice List - @FilteredInvoices.Count()
+</MudText>
+
+
+<!-- =========================
+     HEADER / SEARCH / FILTER
+     ========================= -->
+
+
+<MudPaper Class="pa-2">
+
+    <MudStack Row="true"
+              
+              AlignItems="AlignItems.Center">
+
+        <MudItem xs="12"
+                 sm="6"
+                 md="4">
+
+            <MudTextField T="string"
+                          Label="Search"
+                          Placeholder="Search Invoice..."
+                          Variant="Variant.Outlined"
+                          Margin="Margin.Dense"
+                          Immediate="true"
+                          Adornment="Adornment.Start"
+                          AdornmentIcon="@Icons.Material.Filled.Search"
+                          @bind-Value="_searchString" />
+
+        </MudItem>
+
+
+        <!-- PAYMENT STATUS -->
+
+        <MudItem xs="12"
+                 sm="4"
+                 md="3">
+
+            <MudSelect T="string"
+                       Label="Payment Status"
+                       Variant="Variant.Outlined"
+                       Margin="Margin.Dense"
+                       Clearable="true"
+                       @bind-Value="_paymentStatus">
+
+                       @foreach (var status in PaymentStatus.StatusList)
+                        {
+                            <MudSelectItem T="string"
+                                           Value="@status">
+                                @status
+                            </MudSelectItem>
+                        }
+            </MudSelect>
+
+        </MudItem>
+
+        <MudButton Variant="Variant.Filled"
+               Color="Color.Primary"
+               StartIcon="@Icons.Material.Filled.Add"
+               OnClick="AddInvoice"
+               Style="margin-left:auto;">
+               Add Invoice
+          </MudButton>
+
+    </MudStack>
+
+</MudPaper>
+
+<!-- =========================
+     GRID CONTAINER
+     ========================= -->
+
+<MudPaper Class="mt-4 pa-2"
+          Style="position:relative;">
+
+    <!-- =========================
+         ERROR
+         ========================= -->
+
+    @if (!string.IsNullOrWhiteSpace(_message))
+    {
+        <MudAlert Severity="Severity.Error"
+                  Variant="Variant.Outlined"
+                  Class="ma-2">
+
+            @_message
+
+        </MudAlert>
+    }
+
+
+    <!-- =========================
+         GRID
+         ========================= -->
+
+    @if (string.IsNullOrWhiteSpace(_message))
+    {
+        <MudTable T="InvoiceListModel"
+                  Items="FilteredInvoices"
+                  Hover="true"
+                  Dense="true"
+                  Striped="true"
+                  Bordered="true"
+                  RowsPerPage="20">
+
+            <HeaderContent>
+
+                <MudTh>Invoice</MudTh>
+
+                <MudTh>Property</MudTh>
+
+                <MudTh>Flat</MudTh>
+
+                <MudTh>Tenant</MudTh>
+
+                <MudTh>Billing Month</MudTh>
+
+                <MudTh>Due Date</MudTh>
+
+                <MudTh>Total</MudTh>
+
+                <MudTh>Status</MudTh>
+
+                <MudTh>Actions</MudTh>
+
+            </HeaderContent>
+
+
+            <RowTemplate Context="invoice">
+
+                <!-- =========================
+                     INVOICE
+                     ========================= -->
+
+                <MudTd DataLabel="Invoice">
+
+                    <MudText Typo="Typo.body2">
+
+                        <b>
+                            @invoice.InvoiceNumber
+                        </b>
+
+                    </MudText>
+
+                </MudTd>
+
+
+                <!-- =========================
+                     PROPERTY
+                     ========================= -->
+
+                <MudTd DataLabel="Property">
+
+                    @(string.IsNullOrWhiteSpace(invoice.PropertyName)
+                        ? "-"
+                        : invoice.PropertyName)
+
+                </MudTd>
+
+
+                <!-- =========================
+                     FLAT
+                     ========================= -->
+
+                <MudTd DataLabel="Flat">
+
+                    @(string.IsNullOrWhiteSpace(invoice.UnitNumber)
+                        ? "-"
+                        : invoice.UnitNumber)
+
+                </MudTd>
+
+
+                <!-- =========================
+                     TENANT
+                     ========================= -->
+
+                <MudTd DataLabel="Tenant">
+
+                    @(string.IsNullOrWhiteSpace(invoice.TenantName)
+                        ? "-"
+                        : invoice.TenantName)
+
+                </MudTd>
+
+
+                <!-- =========================
+                     BILLING MONTH
+                     ========================= -->
+
+                <MudTd DataLabel="Billing Month">
+
+                    @invoice.BillingMonth.ToString("MMM yyyy")
+
+                </MudTd>
+
+
+                <!-- =========================
+                     DUE DATE
+                     ========================= -->
+
+                <MudTd DataLabel="Due Date">
+
+                    @invoice.DueDate.ToString("dd MMM yyyy")
+
+                </MudTd>
+
+
+                <!-- =========================
+                     TOTAL
+                     ========================= -->
+
+                <MudTd DataLabel="Total">
+
+                    <MudText Typo="Typo.body2">
+
+                        <b>
+                            ₹@invoice.TotalPayable.ToString("N2")
+                        </b>
+
+                    </MudText>
+
+                </MudTd>
+
+
+                <!-- =========================
+                     STATUS
+                     ========================= -->
+
+                <MudTd DataLabel="Status">
+
+                    @if (string.Equals(
+                        invoice.PaymentStatus,
+                        "Paid",
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        <MudText Color="Color.Success">
+                            ● Paid
+                        </MudText>
+                    }
+                    else if (string.Equals(
+                        invoice.PaymentStatus,
+                        "Pending",
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        <MudText Color="Color.Warning">
+                            ● Pending
+                        </MudText>
+                    }
+                    else if (string.Equals(
+                        invoice.PaymentStatus,
+                        "PartiallyPaid",
+                        StringComparison.OrdinalIgnoreCase)
+                        ||
+                        string.Equals(
+                        invoice.PaymentStatus,
+                        "Partially Paid",
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        <MudText Color="Color.Info">
+                            ● Partially Paid
+                        </MudText>
+                    }
+                    else if (string.Equals(
+                        invoice.PaymentStatus,
+                        "Overdue",
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        <MudText Color="Color.Error">
+                            ● Overdue
+                        </MudText>
+                    }
+                    else if (string.Equals(
+                        invoice.PaymentStatus,
+                        "Cancelled",
+                        StringComparison.OrdinalIgnoreCase))
+                    {
+                        <MudText Color="Color.Error">
+                            ● Cancelled
+                        </MudText>
+                    }
+                    else
+                    {
+                        <MudText Color="Color.Default">
+                            ● @(string.IsNullOrWhiteSpace(invoice.PaymentStatus)
+                                ? "Unknown"
+                                : invoice.PaymentStatus)
+                        </MudText>
+                    }
+
+                </MudTd>
+
+
+                <!-- =========================
+                     ACTIONS
+                     ========================= -->
+
+                <MudTd DataLabel="Actions">
+
+                    <!-- VIEW -->
+
+                    <MudIconButton Icon="@Icons.Material.Filled.Visibility"
+                                   Color="Color.Info"
+                                   Size="Size.Small"
+                                   Title="View"
+                                   OnClick="@(() =>
+                                       EditOrViewInvoice(
+                                           invoice.InvoiceId,
+                                           "view"))" />
+
+
+                    <!-- EDIT -->
+
+                    <MudIconButton Icon="@Icons.Material.Filled.Edit"
+                                   Color="Color.Primary"
+                                   Size="Size.Small"
+                                   Title="Edit"
+                                   OnClick="@(() =>
+                                       EditOrViewInvoice(
+                                           invoice.InvoiceId,
+                                           "edit"))" />
+
+                </MudTd>
+
+            </RowTemplate>
+
+
+            <!-- =========================
+                 NO RECORDS
+                 ========================= -->
+
+            <NoRecordsContent>
+               <MudText Color="Color.Secondary"
+                    Class="pa-4">
+                    @(IsLoading ? "Loading..." : "No record found.")
+               </MudText>
+            </NoRecordsContent>
+
+
+            <!-- =========================
+                 PAGINATION
+                 ========================= -->
+
+            <PagerContent>
+
+                <MudTablePager PageSizeOptions="new int[]
+                {5, 10, 20, 50, 100, 200, 500}" />
+
+            </PagerContent>
+
+        </MudTable>
+    }
+
+
+    <!-- =========================
+         LOADING OVERLAY
+         ========================= -->
+
+    @if (IsLoading)
+    {
+        <CustomLoaderComponent />
+    }
+
+</MudPaper>

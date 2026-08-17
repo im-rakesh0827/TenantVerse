@@ -115,8 +115,9 @@
         </RowTemplate>
 
         <NoRecordsContent>
-            <MudText Class="pa-4">
-                No properties found.
+            <MudText Color="Color.Secondary"
+                Class="pa-4">
+                @(IsLoading ? "Loading..." : "No record found.")
             </MudText>
         </NoRecordsContent>
 
@@ -155,9 +156,9 @@
         </RowTemplate>
 
         <NoRecordsContent>
-
-            <MudText Class="pa-4">
-                No properties found.
+            <MudText Color="Color.Secondary"
+                Class="pa-4">
+                @(IsLoading ? "Loading..." : "No record found.")
             </MudText>
         </NoRecordsContent>
         <PagerContent>
@@ -165,9 +166,48 @@
             <MudTablePager PageSizeOptions="new int[] { 5 }" />
         </PagerContent>
     </MudTable>
-    @if (IsLoading)
-    {
-        <CustomLoaderComponent />
-    }
+    
 </MudPaper>
 
+
+
+
+<MudPaper Class="pa-4">
+    <MudText Typo="Typo.h6" Class="mb-3">
+        Recent Tenants(Top 5)
+    </MudText>
+    <MudTable Items="_tenants"
+                Hover="true"
+                Dense="true"
+                Striped="true"
+                Bordered="true"
+                RowsPerPage="5">
+        <HeaderContent>
+            <MudTh>Name</MudTh>
+            <MudTh>Phone</MudTh>
+            <MudTh>Property</MudTh>
+            <MudTh>Rent(₹)</MudTh>
+        </HeaderContent>
+
+        <RowTemplate>
+            <MudTd>@context.FirstName @context.LastName</MudTd>
+            <MudTd>@context.PhoneNumber</MudTd>
+            <MudTd>@context.PropertyName</MudTd>
+            <MudTd>@context.MonthlyRent</MudTd>
+        </RowTemplate>
+
+        <NoRecordsContent>
+            <MudText Color="Color.Secondary"
+                Class="pa-4">
+                @(IsLoading ? "Loading..." : "No record found.")
+            </MudText>
+        </NoRecordsContent>
+        <PagerContent>
+            <MudTablePager PageSizeOptions="new int[] { 5 }" />
+        </PagerContent>
+    </MudTable>
+</MudPaper>
+@if (IsLoading)
+{
+    <CustomLoaderComponent />
+}
