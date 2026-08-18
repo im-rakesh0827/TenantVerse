@@ -201,3 +201,27 @@ public class CreateInvoicePaymentRequest
 
     public string? CreatedBy { get; set; }
 }
+
+
+public class ReverseInvoicePaymentRequest
+{
+    public int InvoicePaymentId { get; set; }
+
+    public string? UpdatedBy { get; set; }
+}
+
+
+public class ReverseInvoicePaymentResponse
+{
+    public bool IsSuccess { get; set; }
+
+    public string Message { get; set; } = string.Empty;
+
+    public int InvoiceId { get; set; }
+
+    public string PaymentStatus { get; set; } = string.Empty;
+
+    public decimal TotalPaid { get; set; }
+
+    public decimal BalanceDue { get; set; }
+}

@@ -1,5 +1,5 @@
 using TenantVerse.Shared.Models.Invoice;
-
+using TenantVerse.Shared.Models;
 namespace TenantVerse.Application.Interfaces.Repositories;
 
 public interface IInvoicePaymentRepository
@@ -9,4 +9,7 @@ public interface IInvoicePaymentRepository
 
     Task<IEnumerable<InvoicePaymentModel>> GetByInvoiceIdAsync(
         int invoiceId);
+
+     Task<ApiResponse<ReverseInvoicePaymentResponse>> ReverseAsync(
+    ReverseInvoicePaymentRequest request);
 }

@@ -64,5 +64,27 @@ public async Task<ApiResponse<List<InvoicePaymentModel>>> GetByInvoiceIdAsync(
            };
 }
         
+
+
+
+
+public async Task<ApiResponse<ReverseInvoicePaymentResponse>> ReverseAsync(
+    ReverseInvoicePaymentRequest request)
+{
+    var response = await Client.PostAsJsonAsync(
+        $"{baseUrl}/reverse",
+        request);
+
+    return await response.Content
+               .ReadFromJsonAsync<
+                   ApiResponse<ReverseInvoicePaymentResponse>>()
+           ?? new ApiResponse<ReverseInvoicePaymentResponse>
+           {
+               IsSuccess = false,
+               Message = "Unable to reverse payment."
+           };
+}
+
     }
+    
 }

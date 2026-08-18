@@ -1,7 +1,7 @@
 @using TenantVerse.Shared.Models.Invoice
 @using TenantVerse.UI.Services;
 @using MudBlazor
-
+@using TenantVerse.UI.Components.Common
 <MudDialog>
 
     <TitleContent>
@@ -163,7 +163,7 @@
 
                 <MudChip T="string"
                          Size="Size.Small"
-                         Color="@GetPaymentStatusColor(Invoice.PaymentStatus)">
+                         Color="@StatusColor.GetStatusColor(Invoice.PaymentStatus)">
 
                     @(string.IsNullOrWhiteSpace(Invoice.PaymentStatus)
                         ? "Unknown"
@@ -346,8 +346,9 @@
 
             @if (_isLoading)
             {
-                <MudProgressLinear Indeterminate="true"
-                                   Class="mb-3" />
+                @* <MudProgressLinear Indeterminate="true"
+                                   Class="mb-3" /> *@
+                                   <CustomLoaderComponent />
             }
             else if (!string.IsNullOrWhiteSpace(_message))
             {
@@ -376,119 +377,177 @@
 
                         <MudGrid Spacing="2">
 
-                            <MudItem xs="12"
-                                     sm="6"
-                                     md="3">
+    <!-- =========================
+         PAYMENT DATE
+         ========================= -->
 
-                                <MudText Typo="Typo.caption"
-                                         Color="Color.Secondary">
+    <MudItem xs="12"
+             sm="6"
+             md="3">
 
-                                    Payment Date
+        <MudText Typo="Typo.caption"
+                 Color="Color.Secondary">
 
-                                </MudText>
+            Payment Date
 
-                                <MudText>
+        </MudText>
 
-                                    @payment.PaymentDate.ToString("dd MMM yyyy")
+        <MudText>
 
-                                </MudText>
+            @payment.PaymentDate.ToString("dd MMM yyyy")
 
-                            </MudItem>
+        </MudText>
 
-
-                            <MudItem xs="12"
-                                     sm="6"
-                                     md="3">
-
-                                <MudText Typo="Typo.caption"
-                                         Color="Color.Secondary">
-
-                                    Amount
-
-                                </MudText>
-
-                                <MudText Color="Color.Success">
-
-                                    <b>
-                                        ₹@payment.PaymentAmount.ToString("N2")
-                                    </b>
-
-                                </MudText>
-
-                            </MudItem>
+    </MudItem>
 
 
-                            <MudItem xs="12"
-                                     sm="6"
-                                     md="3">
+    <!-- =========================
+         AMOUNT
+         ========================= -->
 
-                                <MudText Typo="Typo.caption"
-                                         Color="Color.Secondary">
+    <MudItem xs="12"
+             sm="6"
+             md="3">
 
-                                    Payment Method
+        <MudText Typo="Typo.caption"
+                 Color="Color.Secondary">
 
-                                </MudText>
+            Amount
 
-                                <MudText>
+        </MudText>
 
-                                    @(string.IsNullOrWhiteSpace(
-                                        payment.PaymentMethod)
-                                        ? "-"
-                                        : payment.PaymentMethod)
+        <MudText Color="Color.Success">
 
-                                </MudText>
+            <b>
+                ₹@payment.PaymentAmount.ToString("N2")
+            </b>
 
-                            </MudItem>
+        </MudText>
 
-
-                            <MudItem xs="12"
-                                     sm="6"
-                                     md="3">
-
-                                <MudText Typo="Typo.caption"
-                                         Color="Color.Secondary">
-
-                                    Status
-
-                                </MudText>
-
-                                <MudChip T="string"
-                                         Size="Size.Small"
-                                         Color="@GetPaymentStatusColor(
-                                             payment.PaymentStatus)">
-
-                                    @(string.IsNullOrWhiteSpace(
-                                        payment.PaymentStatus)
-                                        ? "Unknown"
-                                        : payment.PaymentStatus)
-
-                                </MudChip>
-
-                            </MudItem>
+    </MudItem>
 
 
-                            <MudItem xs="12">
+    <!-- =========================
+         PAYMENT METHOD
+         ========================= -->
 
-                                <MudText Typo="Typo.caption"
-                                         Color="Color.Secondary">
+    <MudItem xs="12"
+             sm="6"
+             md="3">
 
-                                    Notes
+        <MudText Typo="Typo.caption"
+                 Color="Color.Secondary">
 
-                                </MudText>
+            Payment Method
 
-                                <MudText>
+        </MudText>
 
-                                    @(string.IsNullOrWhiteSpace(payment.Notes)
-                                        ? "-"
-                                        : payment.Notes)
+        <MudText>
 
-                                </MudText>
+            @(string.IsNullOrWhiteSpace(payment.PaymentMethod)
+                ? "-"
+                : payment.PaymentMethod)
 
-                            </MudItem>
+        </MudText>
 
-                        </MudGrid>
+    </MudItem>
 
-                    </MudPaper>
+
+    <!-- =========================
+         STATUS
+         ========================= -->
+
+    <MudItem xs="12"
+             sm="6"
+             md="3">
+
+        <MudText Typo="Typo.caption"
+                 Color="Color.Secondary">
+
+            Status
+
+        </MudText>
+
+        <MudChip T="string"
+                 Size="Size.Small"
+                 Color="@StatusColor.GetStatusColor(
+                     payment.PaymentStatus)">
+
+            @(string.IsNullOrWhiteSpace(payment.PaymentStatus)
+                ? "Unknown"
+                : payment.PaymentStatus)
+
+        </MudChip>
+
+    </MudItem>
+
+
+    <!-- =========================
+         ACTIONS
+         ========================= -->
+
+    <MudItem xs="12"
+             sm="6"
+             md="3">
+
+        <MudText Typo="Typo.caption"
+                 Color="Color.Secondary">
+
+            Actions
+
+        </MudText>
+
+        @if (string.Equals(
+            payment.PaymentStatus,
+            "Completed",
+            StringComparison.OrdinalIgnoreCase))
+        {
+            <MudIconButton Icon="@Icons.Material.Filled.Undo"
+               Color="Color.Error"
+               Size="Size.Small"
+               Title="Reverse Payment"
+               Disabled="@_isPaymentSaving"
+               OnClick="@(() => ConfirmReversePaymentAsync(payment))" />
+        }
+        else
+        {
+            <MudText Typo="Typo.caption"
+                     Color="Color.Secondary">
+
+                -
+
+            </MudText>
+        }
+
+    </MudItem>
+
+
+    <!-- =========================
+         NOTES
+         ========================= -->
+
+    <MudItem xs="12">
+
+        <MudText Typo="Typo.caption"
+                 Color="Color.Secondary">
+
+            Notes
+
+        </MudText>
+
+        <MudText>
+
+            @(string.IsNullOrWhiteSpace(payment.Notes)
+                ? "-"
+                : payment.Notes)
+
+        </MudText>
+
+    </MudItem>
+
+</MudGrid>
+
+</MudPaper>
                 }
             }
 

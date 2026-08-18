@@ -6,8 +6,7 @@ using TenantVerse.Shared.Models.Invoice;
 using TenantVerse.UI.Services;
 using MudBlazor;
 using Microsoft.AspNetCore.Components;
-
-
+using TenantVerse.UI.Components.Common;
 namespace TenantVerse.UI.Components.Pages.Invoice.PopUpDialog;
 public partial class InvoicePaymentDialog
 {
@@ -24,6 +23,14 @@ public partial class InvoicePaymentDialog
     [Inject]
     private InvoicePaymentService InvoicePaymentService { get; set; } = default!;
 
+
+     [Inject]
+    private StateContainer _StateContainer { get; set; } = default!;
+
+      [Inject]
+    private ISnackbar Snackbar { get; set; } = default!;
+    [Inject]
+    private IDialogService DialogService { get; set; } = default!;
 
     private List<InvoicePaymentModel> _payments = new();
 
@@ -120,25 +127,6 @@ public partial class InvoicePaymentDialog
                 Invoice!.TotalPayable - _totalPaid);
     }
 
-
-    private Color GetPaymentStatusColor(string? status)
-    {
-        return status?.ToLowerInvariant() switch
-        {
-            "paid" => Color.Success,
-            "completed" => Color.Success,
-
-            "partially paid" => Color.Info,
-            "partiallypaid" => Color.Info,
-
-            "pending" => Color.Warning,
-
-            "overdue" => Color.Error,
-            "cancelled" => Color.Error,
-
-            _ => Color.Default
-        };
-    }
     private void Close()
     {
         MudDialog.Close();
@@ -303,6 +291,113 @@ public partial class InvoicePaymentDialog
         }
     }
 
-    
+
+    private async Task ConfirmReversePaymentAsync(
+        InvoicePaymentModel payment)
+    {
+        if (payment is null)
+            return;
+
+        var parameters = new DialogParameters
+        {
+            {
+                nameof(ConfirmDialog.Title),
+                "Reverse Payment"
+            },
+            {
+                nameof(ConfirmDialog.Message),
+                $"Are you sure you want to reverse the payment of ₹{payment.PaymentAmount:N2}?"
+            },
+            {
+                nameof(ConfirmDialog.ConfirmText),
+                "Reverse"
+            },
+            {
+                nameof(ConfirmDialog.CancelText),
+                "Cancel"
+            },
+            {
+                nameof(ConfirmDialog.ConfirmButtonColor),
+                Color.Error
+            }
+        };
+
+        var options = new DialogOptions
+        {
+            CloseOnEscapeKey = true,
+            MaxWidth = MaxWidth.Small,
+            FullWidth = true
+        };
+
+        var dialog = await DialogService.ShowAsync<ConfirmDialog>(
+            "Reverse Payment",
+            parameters,
+            options);
+
+        var result = await dialog.Result;
+
+        if (result.Canceled)
+            return;
+
+        if (result.Data is bool confirmed && confirmed)
+        {
+            await ReversePaymentAsync(payment);
+        }
+    }
+
+    private async Task ReversePaymentAsync(
+        InvoicePaymentModel payment)
+    {
+        try
+        {
+            _isLoading=true;
+            _isPaymentSaving = true;
+            _paymentFormMessage = null;
+
+            var request = new ReverseInvoicePaymentRequest
+            {
+                InvoicePaymentId = payment.InvoicePaymentId,
+                UpdatedBy = "System"
+            };
+
+            await Task.Delay(1000);
+            // Console.WriteLine("I am in Reverse invioce payment method");
+            var response = await InvoicePaymentService.ReverseAsync(request);
+            if (response is null)
+            {
+                _paymentFormMessage =
+                    "No response received from server.";
+
+                return;
+            }
+
+            if (!response.IsSuccess)
+            {
+                _paymentFormMessage =
+                    response.Message ??
+                    "Unable to reverse payment.";
+
+                return;
+            }
+
+            Snackbar.Add(
+                "Payment reversed successfully.",
+                Severity.Success);
+
+            await LoadPaymentHistoryAsync();
+            UpdateInvoicePaymentStatus();
+        }
+        catch (Exception ex)
+        {
+            _paymentFormMessage =
+                ex.Message;
+        }
+        finally
+        {
+            _isPaymentSaving = false;
+            _isLoading = false;
+            // await InvokeAsync(StateHasChanged);
+        }
+    }
     
 }

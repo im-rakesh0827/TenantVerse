@@ -73,4 +73,11 @@ public class InvoicePaymentService : IInvoicePaymentService
             };
         }
     }
+
+
+public async Task<ApiResponse<ReverseInvoicePaymentResponse>> ReverseAsync(
+    ReverseInvoicePaymentRequest request)
+{
+    return await _repository.ReverseAsync(request);
+}
 }

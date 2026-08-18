@@ -55,4 +55,15 @@ public class InvoicePaymentController : ControllerBase
 
         return Ok(response);
     }
+
+
+    [HttpPost("reverse")]
+    public async Task<IActionResult> ReversePayment(
+        [FromBody] ReverseInvoicePaymentRequest request)
+    {
+        var response =
+            await _invoicePaymentService.ReverseAsync(request);
+
+        return Ok(response);
+    }
 }
