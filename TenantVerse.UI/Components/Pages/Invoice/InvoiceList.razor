@@ -1,5 +1,6 @@
 @page "/invoice"
 @using TenantVerse.Shared.Models.Invoice
+@using TenantVerse.UI.Components.Pages.Tenant.PopUpScreen
 
 <PageTitle>Invoices</PageTitle>
 
@@ -386,7 +387,7 @@
 
 @if (_showTenantPopup && _selectedTenant is not null)
 {
-    <TenantDetailsPopupComponent
+    <TenantDetailsPopup
         Tenant="_selectedTenant"
         ClosePopup="CloseTenantPopup" />
 }

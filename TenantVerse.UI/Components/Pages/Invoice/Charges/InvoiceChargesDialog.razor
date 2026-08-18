@@ -39,8 +39,7 @@
 
     <DialogContent>
 
-        @if (Invoice?.Charges is null ||
-             Invoice.Charges.Count == 0)
+        @if (ChargesList is null || ChargesList.Count == 0)
         {
             <MudAlert Severity="Severity.Info">
                 No charges available for this invoice.
@@ -48,7 +47,7 @@
         }
         else
         {
-            @foreach (var charge in Invoice.Charges)
+            @foreach (var charge in ChargesList)
             {
                 <MudPaper Class="pa-4 mb-3"
                           Elevation="1">
@@ -161,9 +160,7 @@
         <MudButton Variant="Variant.Filled"
                    Color="Color.Primary"
                    OnClick="Close">
-
             Close
-
         </MudButton>
 
     </DialogActions>

@@ -3,6 +3,7 @@ using MudBlazor;
 using TenantVerse.Shared.Models.Invoice;
 using TenantVerse.UI.Services;
 using TenantVerse.Shared.Models.Tenant;
+using TenantVerse.UI.Components.Pages.Invoice.Charges;
 
 namespace TenantVerse.UI.Components.Pages.Invoice;
 
@@ -219,6 +220,10 @@ public partial class InvoiceList
             {
                 nameof(InvoiceChargesDialog.Invoice),
                 invoice
+            },
+            {
+                nameof(InvoiceChargesDialog.ChargesList),
+                invoice.Charges
             }
         };
 

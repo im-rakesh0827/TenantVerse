@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using TenantVerse.Shared.Models.Invoice;
 
-namespace TenantVerse.UI.Components.Pages.Invoice;
+namespace TenantVerse.UI.Components.Pages.Invoice.Charges;
 
 public partial class InvoiceChargesDialog
 {
@@ -11,6 +11,9 @@ public partial class InvoiceChargesDialog
 
     [Parameter]
     public InvoiceModel Invoice { get; set; } = new();
+
+    [Parameter]    
+    public List<InvoiceChargeModel> ChargesList { get; set; } = new();
 
     private void Close()
     {
