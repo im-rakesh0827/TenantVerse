@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using TenantVerse.Shared.Models.Invoice;
 using TenantVerse.UI.Services;
-
+using TenantVerse.Shared.Models.Tenant;
 
 namespace TenantVerse.UI.Components.Pages.Invoice;
 
@@ -33,6 +33,11 @@ public partial class InvoiceList
     private bool IsLoading;
 
     private string? _message;
+
+
+    private bool _showTenantPopup;
+
+    private TenantModel? _selectedTenant;
 
 
     protected IEnumerable<InvoiceModel> FilteredInvoices =>
@@ -207,33 +212,46 @@ public partial class InvoiceList
         };
     }
 
-
-
-
-
-
     private async Task ShowChargesAsync(InvoiceModel invoice)
-{
-    var parameters = new DialogParameters
     {
+        var parameters = new DialogParameters
         {
-            nameof(InvoiceChargesDialog.Invoice),
-            invoice
-        }
-    };
+            {
+                nameof(InvoiceChargesDialog.Invoice),
+                invoice
+            }
+        };
 
-    var options = new DialogOptions
+        var options = new DialogOptions
+        {
+            MaxWidth = MaxWidth.Large,
+            FullWidth = true,
+            CloseOnEscapeKey = true
+        };
+
+        await DialogService.ShowAsync<InvoiceChargesDialog>(
+            "Invoice Charges",
+            parameters,
+            options);
+    }
+
+
+    private async Task ShowTenantPopup(int tenantId)
     {
-        MaxWidth = MaxWidth.Large,
-        FullWidth = true,
-        CloseOnEscapeKey = true
-    };
+        _selectedTenant = await _StateContainer.Tenant.GetTenantAsync(tenantId);
+        if (_selectedTenant is null)
+        {
+            _message = "Tenant details were not found.";
+            return;
+        }
 
-    await DialogService.ShowAsync<InvoiceChargesDialog>(
-        "Invoice Charges",
-        parameters,
-        options);
-}
+        _showTenantPopup = true;
+    }
 
+    private void CloseTenantPopup()
+    {
+        _showTenantPopup = false;
+        _selectedTenant = null;
+    }
     
 }

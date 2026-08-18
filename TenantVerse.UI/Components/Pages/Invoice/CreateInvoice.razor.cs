@@ -319,7 +319,7 @@ public partial class CreateInvoice
 
                 return;
             }
-
+            await Task.Delay(1000);
             var response = await InvoiceService.CreateAsync(_model);
             if (!response.IsSuccess)
             {
@@ -329,7 +329,6 @@ public partial class CreateInvoice
 
                 return;
             }
-            _StateContainer.Invoice.ResetLoaded();
             await _StateContainer.Invoice.RefreshAsync();
      
             Snackbar.Add(

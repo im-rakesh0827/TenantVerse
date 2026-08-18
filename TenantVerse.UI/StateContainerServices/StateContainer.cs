@@ -277,6 +277,33 @@ public class TenantStateContainer
 
         return true;
     }
+
+
+
+    // public TenantModel? GetTenant(int tenantId)
+    // {
+        
+    //     return Tenants.FirstOrDefault(
+    //         x => x.TenantId == tenantId);
+    // }
+
+
+    public async Task<TenantModel?> GetTenantAsync(int tenantId)
+    {
+        if (!IsLoaded)
+        {
+            var response =
+            await _tenantService.GetByIdAsync(tenantId);
+            if (response is null ||
+                !response.IsSuccess ||
+                response.Data is null)
+            {
+                return null;
+            }
+            return response.Data;  
+        }
+        return Tenants.FirstOrDefault(x => x.TenantId == tenantId);
+    }
 }
 
 

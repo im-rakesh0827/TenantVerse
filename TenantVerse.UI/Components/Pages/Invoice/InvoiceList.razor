@@ -166,12 +166,30 @@
                      TENANT
                      ========================= -->
 
-                <MudTd DataLabel="Tenant">
+                @* <MudTd DataLabel="Tenant">
 
                     @(string.IsNullOrWhiteSpace(invoice.TenantName)
                         ? "-"
                         : invoice.TenantName)
 
+                </MudTd> *@
+
+
+                <MudTd DataLabel="Tenant">
+                    @if (!string.IsNullOrWhiteSpace(invoice.TenantName))
+                    {
+                        <MudButton Variant="Variant.Text"
+                                Color="Color.Primary"
+                                Size="Size.Small"
+                                OnClick="@(() => ShowTenantPopup(invoice.TenantId))">
+
+                            @invoice.TenantName
+                        </MudButton>
+                    }
+                    else
+                    {
+                        <MudText>-</MudText>
+                    }
                 </MudTd>
 
 
@@ -364,3 +382,11 @@
     }
 
 </MudPaper>
+
+
+@if (_showTenantPopup && _selectedTenant is not null)
+{
+    <TenantDetailsPopupComponent
+        Tenant="_selectedTenant"
+        ClosePopup="CloseTenantPopup" />
+}

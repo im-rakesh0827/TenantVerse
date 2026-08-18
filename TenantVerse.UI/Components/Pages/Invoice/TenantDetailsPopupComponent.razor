@@ -1,0 +1,347 @@
+@using TenantVerse.Shared.Models.Tenant
+
+<div class="tv-popup-overlay">
+
+    <div class="tv-popup-container tv-popup-md">
+
+        <!-- =========================
+             HEADER
+             ========================= -->
+
+        <div class="tv-popup-header">
+
+            <div>
+
+                <MudText Typo="Typo.h6">
+                    Tenant Details
+                </MudText>
+
+                <MudText Typo="Typo.body2"
+                         Color="Color.Secondary">
+
+                    Tenant Information
+
+                </MudText>
+
+            </div>
+
+            <MudIconButton Icon="@Icons.Material.Filled.Close"
+                           Color="Color.Default"
+                           OnClick="Close" />
+
+        </div>
+
+
+        <MudDivider />
+
+
+        <!-- =========================
+             CONTENT
+             ========================= -->
+
+        <div class="tv-popup-content">
+
+            <!-- =========================
+                 PERSONAL INFORMATION
+                 ========================= -->
+
+            <MudText Typo="Typo.h6"
+                     Class="mb-3">
+
+                Personal Information
+
+            </MudText>
+
+            <MudGrid Spacing="2">
+
+                <!-- NAME -->
+
+                <MudItem xs="12" sm="6">
+
+                    <MudText Typo="Typo.caption"
+                             Color="Color.Secondary">
+
+                        Name
+
+                    </MudText>
+
+                    <MudText Typo="Typo.body1">
+
+                        <b>
+                            @Tenant?.FirstName @Tenant?.LastName
+                        </b>
+
+                    </MudText>
+
+                </MudItem>
+
+
+                <!-- PHONE -->
+
+                <MudItem xs="12" sm="6">
+
+                    <MudText Typo="Typo.caption"
+                             Color="Color.Secondary">
+
+                        Phone Number
+
+                    </MudText>
+
+                    <MudText Typo="Typo.body1">
+
+                        @(string.IsNullOrWhiteSpace(Tenant?.PhoneNumber)
+                            ? "-"
+                            : Tenant.PhoneNumber)
+
+                    </MudText>
+
+                </MudItem>
+
+
+                <!-- EMAIL -->
+
+                <MudItem xs="12" sm="6">
+
+                    <MudText Typo="Typo.caption"
+                             Color="Color.Secondary">
+
+                        Email
+
+                    </MudText>
+
+                    <MudText Typo="Typo.body1">
+
+                        @(string.IsNullOrWhiteSpace(Tenant?.Email)
+                            ? "-"
+                            : Tenant.Email)
+
+                    </MudText>
+
+                </MudItem>
+
+
+                <!-- STATUS -->
+
+                <MudItem xs="12" sm="6">
+
+                    <MudText Typo="Typo.caption"
+                             Color="Color.Secondary">
+
+                        Status
+
+                    </MudText>
+
+                    <MudText Typo="Typo.body1">
+
+                        @(string.IsNullOrWhiteSpace(Tenant?.Status)
+                            ? "-"
+                            : Tenant.Status)
+
+                    </MudText>
+
+                </MudItem>
+
+            </MudGrid>
+
+
+            <MudDivider Class="my-5" />
+
+
+            <!-- =========================
+                 EMERGENCY CONTACT
+                 ========================= -->
+
+            <MudText Typo="Typo.h6"
+                     Class="mb-3">
+
+                Emergency Contact
+
+            </MudText>
+
+            <MudGrid Spacing="2">
+
+                <!-- CONTACT NAME -->
+
+                <MudItem xs="12" sm="6">
+
+                    <MudText Typo="Typo.caption"
+                             Color="Color.Secondary">
+
+                        Contact Name
+
+                    </MudText>
+
+                    <MudText Typo="Typo.body1">
+
+                        @(string.IsNullOrWhiteSpace(
+                            Tenant?.EmergencyContactName)
+                            ? "-"
+                            : Tenant.EmergencyContactName)
+
+                    </MudText>
+
+                </MudItem>
+
+
+                <!-- CONTACT PHONE -->
+
+                <MudItem xs="12" sm="6">
+
+                    <MudText Typo="Typo.caption"
+                             Color="Color.Secondary">
+
+                        Contact Phone
+
+                    </MudText>
+
+                    <MudText Typo="Typo.body1">
+
+                        @(string.IsNullOrWhiteSpace(
+                            Tenant?.EmergencyContactPhone)
+                            ? "-"
+                            : Tenant.EmergencyContactPhone)
+
+                    </MudText>
+
+                </MudItem>
+
+            </MudGrid>
+
+
+            <MudDivider Class="my-5" />
+
+
+            <!-- =========================
+                 LEASE INFORMATION
+                 ========================= -->
+
+            <MudText Typo="Typo.h6"
+                     Class="mb-3">
+
+                Lease Information
+
+            </MudText>
+
+            <MudGrid Spacing="2">
+
+                <!-- LEASE START -->
+
+                <MudItem xs="12" sm="6">
+
+                    <MudText Typo="Typo.caption"
+                             Color="Color.Secondary">
+
+                        Lease Start
+
+                    </MudText>
+
+                    <MudText Typo="Typo.body1">
+
+                        @(Tenant?.LeaseStartDate?.ToString("dd MMM yyyy")
+                            ?? "-")
+
+                    </MudText>
+
+                </MudItem>
+
+
+                <!-- LEASE END -->
+
+                <MudItem xs="12" sm="6">
+
+                    <MudText Typo="Typo.caption"
+                             Color="Color.Secondary">
+
+                        Lease End
+
+                    </MudText>
+
+                    <MudText Typo="Typo.body1">
+
+                        @(Tenant?.LeaseEndDate?.ToString("dd MMM yyyy")
+                            ?? "-")
+
+                    </MudText>
+
+                </MudItem>
+
+
+                <!-- MONTHLY RENT -->
+
+                <MudItem xs="12" sm="6">
+
+                    <MudText Typo="Typo.caption"
+                             Color="Color.Secondary">
+
+                        Monthly Rent
+
+                    </MudText>
+
+                    <MudText Typo="Typo.body1">
+
+                        ₹@(Tenant?.MonthlyRent?.ToString("N2") ?? "0.00")
+
+                    </MudText>
+
+                </MudItem>
+
+
+                <!-- SECURITY DEPOSIT -->
+
+                <MudItem xs="12" sm="6">
+
+                    <MudText Typo="Typo.caption"
+                             Color="Color.Secondary">
+
+                        Security Deposit
+
+                    </MudText>
+
+                    <MudText Typo="Typo.body1">
+
+                        ₹@(Tenant?.SecurityDeposit?.ToString("N2") ?? "0.00")
+
+                    </MudText>
+
+                </MudItem>
+
+            </MudGrid>
+
+        </div>
+
+
+        <!-- =========================
+             FOOTER
+             ========================= -->
+
+        <div class="tv-popup-footer">
+
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       OnClick="Close">
+
+                Close
+
+            </MudButton>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+@code {
+
+    [Parameter]
+    public TenantModel? Tenant { get; set; }
+
+    [Parameter]
+    public EventCallback ClosePopup { get; set; }
+
+
+    private async Task Close()
+    {
+        await ClosePopup.InvokeAsync();
+    }
+}

@@ -3,18 +3,39 @@
 <MudDialog>
 
     <TitleContent>
-        <MudText Typo="Typo.h6">
-            Invoice Charges
-        </MudText>
 
-        @if (Invoice is not null)
-        {
-            <MudText Typo="Typo.body2"
-                     Color="Color.Secondary">
-                @Invoice.InvoiceNumber
+    <MudStack Row="true"
+              AlignItems="AlignItems.Center"
+              Justify="Justify.SpaceBetween"
+              Style="width:100%;">
+
+        <div>
+
+            <MudText Typo="Typo.h6">
+                Invoice Charges
             </MudText>
-        }
-    </TitleContent>
+
+            @if (Invoice is not null)
+            {
+                <MudText Typo="Typo.body2"
+                         Color="Color.Secondary">
+
+                    @Invoice.InvoiceNumber
+
+                </MudText>
+            }
+
+        </div>
+
+        <MudIconButton Icon="@Icons.Material.Filled.Close"
+                       Color="Color.Default"
+                       Size="Size.Small"
+                       OnClick="Close"
+                       Title="Close" />
+
+    </MudStack>
+
+</TitleContent>
 
     <DialogContent>
 
