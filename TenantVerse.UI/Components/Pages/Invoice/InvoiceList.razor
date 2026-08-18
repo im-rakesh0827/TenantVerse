@@ -113,7 +113,7 @@
                 <MudTh>Due Date</MudTh>
                 <MudTh>Total</MudTh>
                 <MudTh>Status</MudTh>
-                <MudTh>Charges</MudTh>
+                @* <MudTh>Charges</MudTh> *@
                 <MudTh>Actions</MudTh>
             </HeaderContent>
 
@@ -301,16 +301,16 @@
                 </MudTd>
 
 
-                <MudTd DataLabel="Charges">
+                @* <MudTd DataLabel="Charges">
                     <MudButton Variant="Variant.Outlined"
                             Color="Color.Primary"
                             Size="Size.Small"
                             StartIcon="@Icons.Material.Filled.ReceiptLong"
                             OnClick="@(() => ShowChargesAsync(invoice))">
-                        @* Charges (@invoice.Charges.Count) *@
+                        Charges (@invoice.Charges.Count)
                         Charges
                     </MudButton>
-                </MudTd>
+                </MudTd> *@
 
                 <!-- =========================
                      ACTIONS
@@ -385,9 +385,9 @@
 </MudPaper>
 
 
-@if (_showTenantPopup && _selectedTenant is not null)
+@* @if (_showTenantPopup && _selectedTenant is not null)
 {
     <TenantDetailsPopup
         Tenant="_selectedTenant"
         ClosePopup="CloseTenantPopup" />
-}
+} *@

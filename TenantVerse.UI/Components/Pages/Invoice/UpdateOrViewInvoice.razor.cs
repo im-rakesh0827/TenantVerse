@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using TenantVerse.Shared.Models.Invoice;
 using TenantVerse.UI.Services;
+using TenantVerse.UI.Components.Pages.Invoice.PopUpDialog;
 
 namespace TenantVerse.UI.Components.Pages.Invoice;
 
@@ -16,6 +17,12 @@ public partial class UpdateOrViewInvoice : ComponentBase
     [Inject]
     private InvoiceService InvoiceService { get; set; } = default!;
 
+     // [Inject]
+     // private InvoicePaymentService InvoicePaymentService { get; set; } = default!;
+
+     [Inject]
+      private IDialogService DialogService { get; set; } = default!;
+
     [Inject]
     private StateContainer _StateContainer { get; set; } = default!;
 
@@ -24,6 +31,8 @@ public partial class UpdateOrViewInvoice : ComponentBase
 
     [Inject]
     private ISnackbar Snackbar { get; set; } = default!;
+
+
 
 
     private MudForm? _form;
@@ -39,6 +48,20 @@ public partial class UpdateOrViewInvoice : ComponentBase
     private DateTime? _billingMonth;
     private DateTime? _invoiceDate;
     private DateTime? _dueDate;
+
+
+//-------------------Invoice Payment------------------
+     private List<InvoicePaymentModel> _payments = new();
+     private decimal _totalPaid;
+     private decimal _balanceDue;
+     private bool _isPaymentLoading;
+     private bool _isPaymentSaving;
+     private string? _paymentMessage;
+     private CreateInvoicePaymentRequest _paymentRequest = new()
+     {
+         PaymentDate = DateTime.Today,
+         PaymentMethod = "Cash"
+     };
 
 
     private bool IsReadOnly =>
@@ -96,6 +119,7 @@ public partial class UpdateOrViewInvoice : ComponentBase
             _billingMonth = Invoice.BillingMonth;
             _invoiceDate = Invoice.InvoiceDate;
             _dueDate = Invoice.DueDate;
+          //   await LoadPaymentHistoryAsync();
         }
         catch (Exception ex)
         {
@@ -330,5 +354,38 @@ public partial class UpdateOrViewInvoice : ComponentBase
     {
         NavigationManager.NavigateTo("/invoice");
     }
+
+private async Task OpenPaymentDetailsAsync()
+{
+    if (Invoice is null)
+    {
+        return;
+    }
+
+    var parameters = new DialogParameters
+    {
+        {
+            nameof(InvoicePaymentDialog.Invoice),
+            Invoice
+        },
+        {
+            nameof(InvoicePaymentDialog.IsReadOnly),
+            IsReadOnly
+        }
+    };
+
+    var options = new DialogOptions
+    {
+        CloseOnEscapeKey = true,
+        MaxWidth = MaxWidth.Medium,
+        FullWidth = true,
+        BackdropClick = false
+    };
+
+    await DialogService.ShowAsync<InvoicePaymentDialog>(
+        "Payment Details",
+        parameters,
+        options);
+}
 
 }

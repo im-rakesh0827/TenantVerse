@@ -21,7 +21,8 @@ namespace TenantVerse.Application
             services.AddScoped<IUnitService, UnitService>();
             services.AddScoped<ITenantService, TenantService>();
             services.AddScoped<IInvoiceService, InvoiceService>();
-
+            services.AddScoped<IInvoicePaymentService, InvoicePaymentService>();
+            
             return services;
         }
     }

@@ -3,7 +3,7 @@ using MudBlazor;
 using TenantVerse.Shared.Models.Invoice;
 using TenantVerse.UI.Services;
 using TenantVerse.Shared.Models.Tenant;
-using TenantVerse.UI.Components.Pages.Invoice.Charges;
+using TenantVerse.UI.Components.Pages.Invoice.PopUpDialog;
 
 namespace TenantVerse.UI.Components.Pages.Invoice;
 

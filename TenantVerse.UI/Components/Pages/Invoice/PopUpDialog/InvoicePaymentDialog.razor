@@ -1,0 +1,511 @@
+@using TenantVerse.Shared.Models.Invoice
+@using TenantVerse.UI.Services;
+@using MudBlazor
+
+<MudDialog>
+
+    <TitleContent>
+
+        <MudStack Row="true"
+                  AlignItems="AlignItems.Center"
+                  Justify="Justify.SpaceBetween">
+
+            <div>
+                <MudText Typo="Typo.h6">
+                    Payment Details
+                </MudText>
+
+                @if (Invoice is not null)
+                {
+                    <MudText Typo="Typo.body2"
+                             Color="Color.Secondary">
+
+                        @Invoice.InvoiceNumber
+
+                    </MudText>
+                }
+            </div>
+
+            <MudIconButton Icon="@Icons.Material.Filled.Close"
+                           Color="Color.Default"
+                           OnClick="Close" />
+
+        </MudStack>
+
+    </TitleContent>
+
+
+    <DialogContent>
+
+        @if (Invoice is null)
+        {
+            <MudAlert Severity="Severity.Error">
+                Invoice information is not available.
+            </MudAlert>
+        }
+        else
+        {
+            <!-- =========================
+                 PAYMENT SUMMARY
+                 ========================= -->
+
+            <MudText Typo="Typo.h6"
+                     Class="mb-3">
+
+                Payment Summary
+
+            </MudText>
+
+
+            <MudGrid Spacing="2">
+
+                <!-- TOTAL PAYABLE -->
+
+                <MudItem xs="12"
+                         sm="4">
+
+                    <MudPaper Class="pa-3"
+                              Elevation="1">
+
+                        <MudText Typo="Typo.caption"
+                                 Color="Color.Secondary">
+
+                            Total Payable
+
+                        </MudText>
+
+                        <MudText Typo="Typo.h6">
+
+                            ₹@Invoice.TotalPayable.ToString("N2")
+
+                        </MudText>
+
+                    </MudPaper>
+
+                </MudItem>
+
+
+                <!-- TOTAL PAID -->
+
+                <MudItem xs="12"
+                         sm="4">
+
+                    <MudPaper Class="pa-3"
+                              Elevation="1">
+
+                        <MudText Typo="Typo.caption"
+                                 Color="Color.Secondary">
+
+                            Total Paid
+
+                        </MudText>
+
+                        <MudText Typo="Typo.h6"
+                                 Color="Color.Success">
+
+                            ₹@_totalPaid.ToString("N2")
+
+                        </MudText>
+
+                    </MudPaper>
+
+                </MudItem>
+
+
+                <!-- BALANCE -->
+
+                <MudItem xs="12"
+                         sm="4">
+
+                    <MudPaper Class="pa-3"
+                              Elevation="1">
+
+                        <MudText Typo="Typo.caption"
+                                 Color="Color.Secondary">
+
+                            Balance Due
+
+                        </MudText>
+
+                        <MudText Typo="Typo.h6"
+                                 Color="@(_balanceDue > 0
+                                    ? Color.Error
+                                    : Color.Success)">
+
+                            ₹@_balanceDue.ToString("N2")
+
+                        </MudText>
+
+                    </MudPaper>
+
+                </MudItem>
+
+            </MudGrid>
+
+
+            <MudDivider Class="my-4" />
+
+
+            <!-- =========================
+                 PAYMENT STATUS
+                 ========================= -->
+
+            <MudStack Row="true"
+                      AlignItems="AlignItems.Center"
+                      Spacing="2"
+                      Class="mb-4">
+
+                <MudText Typo="Typo.body1">
+
+                    Payment Status:
+
+                </MudText>
+
+                <MudChip T="string"
+                         Size="Size.Small"
+                         Color="@GetPaymentStatusColor(Invoice.PaymentStatus)">
+
+                    @(string.IsNullOrWhiteSpace(Invoice.PaymentStatus)
+                        ? "Unknown"
+                        : Invoice.PaymentStatus)
+
+                </MudChip>
+
+            </MudStack>
+
+
+            <!-- =========================
+                 RECORD PAYMENT BUTTON
+                 ========================= -->
+
+            @if (!IsReadOnly && _balanceDue > 0)
+            {
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           StartIcon="@Icons.Material.Filled.Payment"
+                           OnClick="OpenRecordPaymentForm">
+
+                    Record Payment
+
+                </MudButton>
+
+            }
+
+            @if (_showPaymentForm)
+{
+    <MudPaper Class="pa-4 mt-4"
+              Elevation="2">
+
+        <MudText Typo="Typo.h6"
+                 Class="mb-4">
+
+            Record Payment
+
+        </MudText>
+
+        <MudForm @ref="_paymentForm">
+
+            <MudGrid Spacing="3">
+
+                <MudItem xs="12" sm="6">
+
+                    <MudNumericField T="decimal?"
+                                     Label="Payment Amount"
+                                     Variant="Variant.Outlined"
+                                     Adornment="Adornment.Start"
+                                     AdornmentText="₹"
+                                     @bind-Value="_paymentAmount"
+                                     Min="0.01m"
+                                     Max="@_balanceDue"
+                                     Required="true"
+                                     RequiredError="Payment amount is required."
+                                     HelperText="@($"Maximum payable amount: ₹{_balanceDue:N2}")" />
+
+                </MudItem>
+
+
+                <MudItem xs="12" sm="6">
+
+                    <MudDatePicker Label="Payment Date"
+                                   Variant="Variant.Outlined"
+                                   @bind-Date="_paymentDate"
+                                   Required="true" />
+
+                </MudItem>
+
+
+                <MudItem xs="12" sm="6">
+
+                    <MudSelect T="string"
+                               Label="Payment Method"
+                               Variant="Variant.Outlined"
+                               @bind-Value="_paymentMethod"
+                               Required="true"
+                               RequiredError="Payment method is required.">
+
+                        <MudSelectItem T="string" Value="@("Cash")">
+                            Cash
+                        </MudSelectItem>
+
+                        <MudSelectItem T="string" Value="@("Bank Transfer")">
+                            Bank Transfer
+                        </MudSelectItem>
+
+                        <MudSelectItem T="string" Value="@("UPI")">
+                            UPI
+                        </MudSelectItem>
+
+                        <MudSelectItem T="string" Value="@("Cheque")">
+                            Cheque
+                        </MudSelectItem>
+
+                    </MudSelect>
+
+                </MudItem>
+
+
+                <MudItem xs="12" sm="6">
+
+                    <MudTextField T="string"
+                                  Label="Notes"
+                                  Variant="Variant.Outlined"
+                                  @bind-Value="_paymentNotes"
+                                  Lines="2" />
+
+                </MudItem>
+
+
+                @if (!string.IsNullOrWhiteSpace(_paymentFormMessage))
+                {
+                    <MudItem xs="12">
+
+                        <MudAlert Severity="Severity.Error"
+                                  Variant="Variant.Outlined">
+
+                            @_paymentFormMessage
+
+                        </MudAlert>
+
+                    </MudItem>
+                }
+
+
+                <MudItem xs="12">
+
+                    <MudStack Row="true"
+                              Justify="Justify.FlexEnd"
+                              Spacing="2">
+
+                        <MudButton Variant="Variant.Outlined"
+                                   Color="Color.Default"
+                                   Disabled="@_isPaymentSaving"
+                                   OnClick="CancelPaymentForm">
+
+                            Cancel
+
+                        </MudButton>
+
+
+                        <MudButton Variant="Variant.Filled"
+                                   Color="Color.Primary"
+                                   Disabled="@_isPaymentSaving"
+                                   StartIcon="@Icons.Material.Filled.Save"
+                                   OnClick="SavePaymentAsync">
+
+                            Save Payment
+
+                        </MudButton>
+
+                    </MudStack>
+
+                </MudItem>
+
+            </MudGrid>
+
+        </MudForm>
+
+    </MudPaper>
+}
+
+
+
+            <MudDivider Class="my-4" />
+
+
+            <!-- =========================
+                 PAYMENT HISTORY
+                 ========================= -->
+
+            <MudText Typo="Typo.h6"
+                     Class="mb-3">
+
+                Payment History
+
+            </MudText>
+
+
+            @if (_isLoading)
+            {
+                <MudProgressLinear Indeterminate="true"
+                                   Class="mb-3" />
+            }
+            else if (!string.IsNullOrWhiteSpace(_message))
+            {
+                <MudAlert Severity="Severity.Error"
+                          Variant="Variant.Outlined">
+
+                    @_message
+
+                </MudAlert>
+            }
+            else if (_payments.Count == 0)
+            {
+                <MudAlert Severity="Severity.Info"
+                          Variant="Variant.Outlined">
+
+                    No payments recorded for this invoice.
+
+                </MudAlert>
+            }
+            else
+            {
+                @foreach (var payment in _payments)
+                {
+                    <MudPaper Class="pa-3 mb-3"
+                              Elevation="1">
+
+                        <MudGrid Spacing="2">
+
+                            <MudItem xs="12"
+                                     sm="6"
+                                     md="3">
+
+                                <MudText Typo="Typo.caption"
+                                         Color="Color.Secondary">
+
+                                    Payment Date
+
+                                </MudText>
+
+                                <MudText>
+
+                                    @payment.PaymentDate.ToString("dd MMM yyyy")
+
+                                </MudText>
+
+                            </MudItem>
+
+
+                            <MudItem xs="12"
+                                     sm="6"
+                                     md="3">
+
+                                <MudText Typo="Typo.caption"
+                                         Color="Color.Secondary">
+
+                                    Amount
+
+                                </MudText>
+
+                                <MudText Color="Color.Success">
+
+                                    <b>
+                                        ₹@payment.PaymentAmount.ToString("N2")
+                                    </b>
+
+                                </MudText>
+
+                            </MudItem>
+
+
+                            <MudItem xs="12"
+                                     sm="6"
+                                     md="3">
+
+                                <MudText Typo="Typo.caption"
+                                         Color="Color.Secondary">
+
+                                    Payment Method
+
+                                </MudText>
+
+                                <MudText>
+
+                                    @(string.IsNullOrWhiteSpace(
+                                        payment.PaymentMethod)
+                                        ? "-"
+                                        : payment.PaymentMethod)
+
+                                </MudText>
+
+                            </MudItem>
+
+
+                            <MudItem xs="12"
+                                     sm="6"
+                                     md="3">
+
+                                <MudText Typo="Typo.caption"
+                                         Color="Color.Secondary">
+
+                                    Status
+
+                                </MudText>
+
+                                <MudChip T="string"
+                                         Size="Size.Small"
+                                         Color="@GetPaymentStatusColor(
+                                             payment.PaymentStatus)">
+
+                                    @(string.IsNullOrWhiteSpace(
+                                        payment.PaymentStatus)
+                                        ? "Unknown"
+                                        : payment.PaymentStatus)
+
+                                </MudChip>
+
+                            </MudItem>
+
+
+                            <MudItem xs="12">
+
+                                <MudText Typo="Typo.caption"
+                                         Color="Color.Secondary">
+
+                                    Notes
+
+                                </MudText>
+
+                                <MudText>
+
+                                    @(string.IsNullOrWhiteSpace(payment.Notes)
+                                        ? "-"
+                                        : payment.Notes)
+
+                                </MudText>
+
+                            </MudItem>
+
+                        </MudGrid>
+
+                    </MudPaper>
+                }
+            }
+
+        }
+
+    </DialogContent>
+
+    @* <DialogActions>
+
+        <MudButton Variant="Variant.Outlined"
+                   Color="Color.Default"
+                   OnClick="Close">
+
+            Close
+
+        </MudButton>
+
+    </DialogActions> *@
+
+</MudDialog>

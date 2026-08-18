@@ -166,3 +166,22 @@
     </DialogActions>
 
 </MudDialog>
+
+
+@code
+{
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; } = default!;
+
+    [Parameter]
+    public InvoiceModel Invoice { get; set; } = new();
+
+    [Parameter]    
+    public List<InvoiceChargeModel> ChargesList { get; set; } = new();
+
+    private void Close()
+    {
+        MudDialog.Close();
+    }
+
+}
