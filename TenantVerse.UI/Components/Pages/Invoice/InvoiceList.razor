@@ -7,12 +7,6 @@
     Invoice List - @FilteredInvoices.Count()
 </MudText>
 
-
-<!-- =========================
-     HEADER / SEARCH / FILTER
-     ========================= -->
-
-
 <MudPaper Class="pa-2">
 
     <MudStack Row="true"
@@ -110,25 +104,16 @@
                   RowsPerPage="20">
 
             <HeaderContent>
-
                 <MudTh>Invoice</MudTh>
-
                 <MudTh>Property</MudTh>
-
                 <MudTh>Flat</MudTh>
-
                 <MudTh>Tenant</MudTh>
-
                 <MudTh>Billing Month</MudTh>
-
                 <MudTh>Due Date</MudTh>
-
                 <MudTh>Total</MudTh>
-
                 <MudTh>Status</MudTh>
-
+                <MudTh>Charges</MudTh>
                 <MudTh>Actions</MudTh>
-
             </HeaderContent>
 
 
@@ -296,6 +281,17 @@
 
                 </MudTd>
 
+
+                <MudTd DataLabel="Charges">
+                    <MudButton Variant="Variant.Outlined"
+                            Color="Color.Primary"
+                            Size="Size.Small"
+                            StartIcon="@Icons.Material.Filled.ReceiptLong"
+                            OnClick="@(() => ShowChargesAsync(invoice))">
+                        @* Charges (@invoice.Charges.Count) *@
+                        Charges
+                    </MudButton>
+                </MudTd>
 
                 <!-- =========================
                      ACTIONS

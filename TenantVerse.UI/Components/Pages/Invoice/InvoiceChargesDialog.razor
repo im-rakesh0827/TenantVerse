@@ -1,0 +1,150 @@
+@using TenantVerse.Shared.Models.Invoice
+
+<MudDialog>
+
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            Invoice Charges
+        </MudText>
+
+        @if (Invoice is not null)
+        {
+            <MudText Typo="Typo.body2"
+                     Color="Color.Secondary">
+                @Invoice.InvoiceNumber
+            </MudText>
+        }
+    </TitleContent>
+
+    <DialogContent>
+
+        @if (Invoice?.Charges is null ||
+             Invoice.Charges.Count == 0)
+        {
+            <MudAlert Severity="Severity.Info">
+                No charges available for this invoice.
+            </MudAlert>
+        }
+        else
+        {
+            @foreach (var charge in Invoice.Charges)
+            {
+                <MudPaper Class="pa-4 mb-3"
+                          Elevation="1">
+
+                    <MudGrid Spacing="2">
+
+                        <MudItem xs="12" sm="6">
+                            <MudText Typo="Typo.caption"
+                                     Color="Color.Secondary">
+                                Charge Type
+                            </MudText>
+
+                            <MudText Typo="Typo.body1">
+                                <b>@charge.ChargeType</b>
+                            </MudText>
+                        </MudItem>
+
+                        <MudItem xs="12" sm="6">
+                            <MudText Typo="Typo.caption"
+                                     Color="Color.Secondary">
+                                Description
+                            </MudText>
+
+                            <MudText>
+                                @(charge.Description ?? "-")
+                            </MudText>
+                        </MudItem>
+
+                        <MudItem xs="12" sm="6">
+                            <MudText Typo="Typo.caption"
+                                     Color="Color.Secondary">
+                                Amount
+                            </MudText>
+
+                            <MudText>
+                                <b>₹@charge.Amount.ToString("N2")</b>
+                            </MudText>
+                        </MudItem>
+
+                        @if (string.Equals(
+                            charge.ChargeType,
+                            "Electricity",
+                            StringComparison.OrdinalIgnoreCase))
+                        {
+                            <MudItem xs="12" sm="3">
+
+                                <MudText Typo="Typo.caption"
+                                         Color="Color.Secondary">
+                                    Previous Reading
+                                </MudText>
+
+                                <MudText>
+                                    @(charge.PreviousReading?.ToString("N2") ?? "-")
+                                </MudText>
+
+                            </MudItem>
+
+                            <MudItem xs="12" sm="3">
+
+                                <MudText Typo="Typo.caption"
+                                         Color="Color.Secondary">
+                                    Current Reading
+                                </MudText>
+
+                                <MudText>
+                                    @(charge.CurrentReading?.ToString("N2") ?? "-")
+                                </MudText>
+
+                            </MudItem>
+
+                            <MudItem xs="12" sm="3">
+
+                                <MudText Typo="Typo.caption"
+                                         Color="Color.Secondary">
+                                    Units
+                                </MudText>
+
+                                <MudText>
+                                    @(charge.Units?.ToString("N2") ?? "-")
+                                </MudText>
+
+                            </MudItem>
+
+                            <MudItem xs="12" sm="3">
+
+                                <MudText Typo="Typo.caption"
+                                         Color="Color.Secondary">
+                                    Rate
+                                </MudText>
+
+                                <MudText>
+                                    @(charge.Rate.HasValue
+                                        ? $"₹{charge.Rate.Value:N2}"
+                                        : "-")
+                                </MudText>
+
+                            </MudItem>
+                        }
+
+                    </MudGrid>
+
+                </MudPaper>
+            }
+        }
+
+    </DialogContent>
+
+    <DialogActions>
+
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   OnClick="Close">
+
+            Close
+
+        </MudButton>
+
+    </DialogActions>
+
+</MudDialog>

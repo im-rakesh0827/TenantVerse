@@ -20,8 +20,11 @@ public partial class InvoiceList
     [Inject]
     private ISnackbar Snackbar { get; set; } = default!;
 
+    [Inject]
+    private IDialogService DialogService { get; set; } = default!;
 
     private List<InvoiceModel> _invoices = new();
+    // private List<InvoiceChargeModel> _charges = new();
 
     private string _searchString = string.Empty;
 
@@ -32,10 +35,6 @@ public partial class InvoiceList
     private string? _message;
 
 
-    // =========================================================
-    // FILTERED INVOICES
-    // =========================================================
-
     protected IEnumerable<InvoiceModel> FilteredInvoices =>
         string.IsNullOrWhiteSpace(_searchString)
             && string.IsNullOrWhiteSpace(_paymentStatus)
@@ -43,32 +42,17 @@ public partial class InvoiceList
                 : _invoices.Where(FilterInvoice);
 
 
-    // =========================================================
-    // INITIALIZE
-    // =========================================================
-
     protected override async Task OnInitializedAsync()
     {
         await LoadInvoicesAsync();
     }
-
-
-    // =========================================================
-    // LOAD INVOICES
-    // =========================================================
 
     private async Task LoadInvoicesAsync()
     {
         try
         {
             IsLoading = true;
-
             _message = null;
-
-
-            // -------------------------------------------------
-            // USE CACHE WHEN ALREADY LOADED
-            // -------------------------------------------------
 
             if (!_StateContainer.Invoice.IsLoaded)
             {
@@ -82,15 +66,8 @@ public partial class InvoiceList
                     return;
                 }
             }
-
-
-            // -------------------------------------------------
-            // GET INVOICES FROM STATE CONTAINER
-            // -------------------------------------------------
-
-            _invoices =
-                _StateContainer.Invoice.Invoices
-                    .ToList();
+            _invoices = _StateContainer.Invoice.Invoices.ToList();
+            // _charges = _invoices.SelectMany(x => x.Charges).ToList();
         }
         catch (Exception ex)
         {
@@ -103,16 +80,9 @@ public partial class InvoiceList
     }
 
 
-    // =========================================================
-    // FILTER INVOICE
-    // =========================================================
 
     private bool FilterInvoice(InvoiceModel invoice)
     {
-        // -----------------------------------------------------
-        // SEARCH FILTER
-        // -----------------------------------------------------
-
         if (!string.IsNullOrWhiteSpace(_searchString))
         {
             var search =
@@ -182,12 +152,6 @@ public partial class InvoiceList
                 return false;
             }
         }
-
-
-        // -----------------------------------------------------
-        // PAYMENT STATUS FILTER
-        // -----------------------------------------------------
-
         if (!string.IsNullOrWhiteSpace(_paymentStatus))
         {
             if (!string.Equals(
@@ -203,20 +167,10 @@ public partial class InvoiceList
         return true;
     }
 
-
-    // =========================================================
-    // ADD INVOICE
-    // =========================================================
-
     private void AddInvoice()
     {
         NavigationManager.NavigateTo("/invoice/create");
     }
-
-
-    // =========================================================
-    // VIEW / EDIT INVOICE
-    // =========================================================
 
     private void EditOrViewInvoice(
         int invoiceId,
@@ -225,11 +179,6 @@ public partial class InvoiceList
         NavigationManager.NavigateTo(
             $"/invoice/{mode}/{invoiceId}");
     }
-
-
-    // =========================================================
-    // STATUS COLOR
-    // =========================================================
 
     private Color GetStatusColor(string? status)
     {
@@ -257,6 +206,34 @@ public partial class InvoiceList
                 Color.Default
         };
     }
+
+
+
+
+
+
+    private async Task ShowChargesAsync(InvoiceModel invoice)
+{
+    var parameters = new DialogParameters
+    {
+        {
+            nameof(InvoiceChargesDialog.Invoice),
+            invoice
+        }
+    };
+
+    var options = new DialogOptions
+    {
+        MaxWidth = MaxWidth.Large,
+        FullWidth = true,
+        CloseOnEscapeKey = true
+    };
+
+    await DialogService.ShowAsync<InvoiceChargesDialog>(
+        "Invoice Charges",
+        parameters,
+        options);
+}
 
     
 }

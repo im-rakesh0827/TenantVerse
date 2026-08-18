@@ -124,7 +124,24 @@ public class InvoiceRepository : IInvoiceRepository
     }
 
 
-    public async Task<IEnumerable<InvoiceModel>> GetAllAsync()
+//     public async Task<IEnumerable<InvoiceModel>> GetAllAsync()
+// {
+//     var connectionString =
+//         _configuration.GetConnectionString("DefaultConnection");
+
+//     await using var connection =
+//         new SqlConnection(connectionString);
+
+//     var result =
+//         await connection.QueryAsync<InvoiceModel>(
+//             "dbo.IT_SP_GetAllInvoice",
+//             commandType: CommandType.StoredProcedure);
+
+//     return result;
+// }
+
+
+public async Task<IEnumerable<InvoiceModel>> GetAllAsync()
 {
     var connectionString =
         _configuration.GetConnectionString("DefaultConnection");
@@ -132,12 +149,41 @@ public class InvoiceRepository : IInvoiceRepository
     await using var connection =
         new SqlConnection(connectionString);
 
-    var result =
-        await connection.QueryAsync<InvoiceModel>(
+    using var multi =
+        await connection.QueryMultipleAsync(
             "dbo.IT_SP_GetAllInvoice",
             commandType: CommandType.StoredProcedure);
 
-    return result;
+    var invoices =
+        (await multi.ReadAsync<InvoiceModel>())
+        .ToList();
+
+    var charges =
+        (await multi.ReadAsync<InvoiceChargeModel>())
+        .ToList();
+
+    var chargesByInvoice =
+        charges
+            .GroupBy(x => x.InvoiceId)
+            .ToDictionary(
+                x => x.Key,
+                x => x.ToList());
+
+    foreach (var invoice in invoices)
+    {
+        if (chargesByInvoice.TryGetValue(
+                invoice.InvoiceId,
+                out var invoiceCharges))
+        {
+            invoice.Charges = invoiceCharges;
+        }
+        else
+        {
+            invoice.Charges = new List<InvoiceChargeModel>();
+        }
+    }
+
+    return invoices;
 }
 
 public async Task<int> UpdateAsync(

@@ -61,31 +61,41 @@ public partial class UpdateOrViewInvoice : ComponentBase
             IsLoading = true;
             _message = null;
 
-            var response =
-                await InvoiceService.GetByIdAsync(InvoiceId);
-            await Task.Delay(200);
-            if (!response.IsSuccess ||
-                response.Data == null)
+            if (!_StateContainer.Invoice.IsLoaded)
             {
-                _message =
-                    response.Message ??
-                    "Unable to load invoice.";
+                await Task.Delay(1000);
+                var refreshed =
+                    await _StateContainer.Invoice.RefreshAsync();
 
-                return;
+                if (!refreshed)
+                {
+                    _message = "Unable to load invoices.";
+                    return;
+                }
             }
 
+            var result = (_StateContainer.Invoice.Invoices.FirstOrDefault(x=>x.InvoiceId==InvoiceId));
+            if(result!=null){
+               Invoice = result;
+            }
+            else{
+                 var response =
+                 await InvoiceService.GetByIdAsync(InvoiceId);
+                 await Task.Delay(2000);
+                if (!response.IsSuccess ||
+                   response.Data == null)
+               {
+                   _message =
+                       response.Message ??
+                       "Unable to load invoice.";
 
-            Invoice = response.Data;
-
-
-            _billingMonth =
-                Invoice.BillingMonth;
-
-            _invoiceDate =
-                Invoice.InvoiceDate;
-
-            _dueDate =
-                Invoice.DueDate;
+                   return;
+               }
+               Invoice = response.Data;
+            }
+            _billingMonth = Invoice.BillingMonth;
+            _invoiceDate = Invoice.InvoiceDate;
+            _dueDate = Invoice.DueDate;
         }
         catch (Exception ex)
         {
@@ -256,7 +266,7 @@ public partial class UpdateOrViewInvoice : ComponentBase
                 await InvoiceService.UpdateAsync(
                     request);
 
-            await Task.Delay(1000);
+            
             if (!response.IsSuccess)
             {
                 _message =
@@ -270,7 +280,9 @@ public partial class UpdateOrViewInvoice : ComponentBase
                 return;
             }
 
+            await _StateContainer.Invoice.RefreshAsync();
 
+            await Task.Delay(1000);
             Snackbar.Add(
                 "Invoice updated successfully.",
                 Severity.Success);
