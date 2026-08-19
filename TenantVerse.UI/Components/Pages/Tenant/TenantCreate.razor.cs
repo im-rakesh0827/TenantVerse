@@ -76,33 +76,33 @@ public partial class TenantCreate
           }
     }
 
-     private string GetUnitDisplayName(int unitId)
-          {
-          if (IsLoadingFlats)
-               return "Loading flats...";
+    //  private string GetUnitDisplayName(int unitId)
+    //       {
+    //       if (IsLoadingFlats)
+    //            return "Loading flats...";
 
-          if (!_availableUnits.Any())
-               return "No flat available";
+    //       if (!_availableUnits.Any())
+    //            return "No flat available";
 
-          if (unitId == 0)
-               return "Select Flat";
+    //       if (unitId == 0)
+    //            return "Select Flat";
 
-          var unit = _availableUnits
-               .FirstOrDefault(x => x.UnitId == unitId);
+    //       var unit = _availableUnits
+    //            .FirstOrDefault(x => x.UnitId == unitId);
 
-          return unit?.UnitNumber ?? "Select Flat";
-     }
+    //       return unit?.UnitNumber ?? "Select Flat";
+    //  }
 
-    private string GetPropertyName(int propertyId)
-    {
-          if (propertyId == 0)
-              return "Select Property";
+    // private string GetPropertyName(int propertyId)
+    // {
+    //       if (propertyId == 0)
+    //           return "Select Property";
 
-          var property = _properties
-              .FirstOrDefault(x => x.PropertyId == propertyId);
+    //       var property = _properties
+    //           .FirstOrDefault(x => x.PropertyId == propertyId);
 
-          return property?.PropertyName ?? "Select Property";
-     }
+    //       return property?.PropertyName ?? "Select Property";
+    //  }
 
     private async Task OnPropertyChanged(int propertyId)
     {
@@ -283,4 +283,61 @@ public partial class TenantCreate
           }
       
     }
+
+
+    private Task<IEnumerable<int>> SearchProperties(
+    string? value,
+    CancellationToken cancellationToken)
+{
+    if (string.IsNullOrWhiteSpace(value))
+    {
+        return Task.FromResult(
+            _properties.Select(x => x.PropertyId));
+    }
+
+    var result = _properties
+        .Where(x =>
+            x.PropertyName.Contains(
+                value,
+                StringComparison.OrdinalIgnoreCase))
+        .Select(x => x.PropertyId);
+
+    return Task.FromResult(result);
+}
+
+private string GetPropertyName(int propertyId)
+{
+    return _properties
+        .FirstOrDefault(x => x.PropertyId == propertyId)
+        ?.PropertyName ?? string.Empty;
+}
+
+
+
+private Task<IEnumerable<int>> SearchUnits(
+    string? value,
+    CancellationToken cancellationToken)
+{
+    if (string.IsNullOrWhiteSpace(value))
+    {
+        return Task.FromResult(
+            _availableUnits.Select(x => x.UnitId));
+    }
+
+    var result = _availableUnits
+        .Where(x =>
+            x.UnitNumber.Contains(
+                value,
+                StringComparison.OrdinalIgnoreCase))
+        .Select(x => x.UnitId);
+
+    return Task.FromResult(result);
+}
+
+private string GetUnitDisplayName(int unitId)
+{
+    return _availableUnits
+        .FirstOrDefault(x => x.UnitId == unitId)
+        ?.UnitNumber ?? string.Empty;
+}
 }

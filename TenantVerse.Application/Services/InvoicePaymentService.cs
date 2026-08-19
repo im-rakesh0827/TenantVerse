@@ -80,4 +80,30 @@ public async Task<ApiResponse<ReverseInvoicePaymentResponse>> ReverseAsync(
 {
     return await _repository.ReverseAsync(request);
 }
+
+
+
+public async Task<ApiResponse<IEnumerable<InvoicePaymentModel>>> GetAllPaymentAsync()
+{
+    try
+    {
+        var payments = await _repository.GetAllPaymentAsync();
+
+        return new ApiResponse<IEnumerable<InvoicePaymentModel>>
+        {
+            IsSuccess = true,
+            Message = "Invoice payments retrieved successfully.",
+            Data = payments
+        };
+    }
+    catch (Exception ex)
+    {
+        return new ApiResponse<IEnumerable<InvoicePaymentModel>>
+        {
+            IsSuccess = false,
+            Message = ex.Message,
+            Data = Enumerable.Empty<InvoicePaymentModel>()
+        };
+    }
+}
 }

@@ -12,4 +12,6 @@ public interface IInvoicePaymentService
         int invoiceId);
 Task<ApiResponse<ReverseInvoicePaymentResponse>> ReverseAsync(
     ReverseInvoicePaymentRequest request);
+
+    Task<ApiResponse<IEnumerable<InvoicePaymentModel>>> GetAllPaymentAsync();
 }

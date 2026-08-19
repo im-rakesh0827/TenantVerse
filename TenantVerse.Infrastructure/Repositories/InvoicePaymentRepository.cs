@@ -73,6 +73,8 @@ public class InvoicePaymentRepository : IInvoicePaymentRepository
         return result;
     }
 
+
+
     public async Task<IEnumerable<InvoicePaymentModel>> GetByInvoiceIdAsync(
     int invoiceId)
 {
@@ -97,6 +99,26 @@ public class InvoicePaymentRepository : IInvoicePaymentRepository
 
     return result;
 }
+
+
+
+public async Task<IEnumerable<InvoicePaymentModel>> GetAllPaymentAsync()
+{
+    var connectionString =
+        _configuration.GetConnectionString("DefaultConnection");
+
+    await using var connection =
+        new SqlConnection(connectionString);
+
+    var result =
+        await connection.QueryAsync<InvoicePaymentModel>(
+            "dbo.IT_SP_GetAllInvoicePayments",
+            commandType: CommandType.StoredProcedure);
+
+    return result;
+}
+
+
 
 
 public async Task<ApiResponse<ReverseInvoicePaymentResponse>> ReverseAsync(

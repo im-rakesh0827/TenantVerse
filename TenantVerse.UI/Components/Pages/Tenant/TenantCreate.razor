@@ -15,9 +15,7 @@
 
             <MudText Typo="Typo.body2"
                      Color="Color.Secondary">
-
                 Add a new tenant and assign a flat
-
             </MudText>
 
 
@@ -48,64 +46,46 @@
                      PROPERTY
                      ========================= -->
 
-                <MudItem xs="12"
-                         sm="6">
-                    <MudSelect T="int"
-                               Label="Property"
-                               Variant="Variant.Outlined"
-                               Value="_model.PropertyId"
-                               ValueChanged="OnPropertyChanged"
-                               Required="true"
-                               RequiredError="Property is required."
-                               Placeholder="Select Property"
-                               Disabled="@IsLoading"
-                               ToStringFunc="GetPropertyName">
-
-                        @foreach (var property in _properties)
-                        {
-                            <MudSelectItem T="int"
-                                           Value="@property.PropertyId">
-
-                                @property.PropertyName
-
-                            </MudSelectItem>
-                        }
-                    </MudSelect>
-                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudAutocomplete T="int"
+                                        Label="Property"
+                                        Variant="Variant.Outlined"
+                                        Value="_model.PropertyId"
+                                        ValueChanged="OnPropertyChanged"
+                                        SearchFunc="SearchProperties"
+                                        ToStringFunc="GetPropertyName"
+                                        ResetValueOnEmptyText="true"
+                                        CoerceText="true"
+                                        Clearable="true"
+                                        Required="true"
+                                        RequiredError="Property is required."
+                                        Placeholder="Select Property"
+                                        Disabled="@IsLoading"
+                                        FullWidth="true" />
+               </MudItem>
 
 
                 <!-- =========================
                      FLAT
                      ========================= -->
 
-                <MudItem xs="12"
-                         sm="6">
+                <MudItem xs="12" sm="6">
 
-                    <MudSelect T="int"
-                         Label="Flat"
-                         Variant="Variant.Outlined"
-                         Value="_model.UnitId"
-                         ValueChanged="OnUnitChanged"
-                         Required="true"
-                         RequiredError="Flat is required."
-                         Disabled="@(IsLoading || IsLoadingFlats || !_availableUnits.Any())"
-                         ToStringFunc="GetUnitDisplayName">
-
-                             @if (!IsLoadingFlats && _availableUnits.Any())
-                             {
-                                  @foreach (var unit in _availableUnits)
-                                  {
-                                       <MudSelectItem T="int"
-                                                      Value="@unit.UnitId">
-
-                                            @unit.UnitNumber
-
-                                       </MudSelectItem>
-                                  }
-                             }
-
-                             </MudSelect>
-                </MudItem>
+                    <MudAutocomplete T="int"
+                                        Label="Flat"
+                                        Variant="Variant.Outlined"
+                                        Value="_model.UnitId"
+                                        ValueChanged="OnUnitChanged"
+                                        SearchFunc="SearchUnits"
+                                        ToStringFunc="GetUnitDisplayName"
+                                        ResetValueOnEmptyText="true"
+                                        CoerceText="true"
+                                        Clearable="true"
+                                        Required="true"
+                                        RequiredError="Flat is required."
+                                        Disabled="@(IsLoading || IsLoadingFlats || !_availableUnits.Any())"
+                                        FullWidth="true" />
+               </MudItem>
 
 
                 <!-- =========================
@@ -321,17 +301,11 @@
                                    Disabled="@IsLoading"
                                    StartIcon="@Icons.Material.Filled.Save"
                                    OnClick="SaveAsync">
-
-                            Save Tenant
-
+                            Save
                         </MudButton>
-
                     </MudStack>
-
                 </MudItem>
-
             </MudGrid>
-
         </MudForm>
 
 

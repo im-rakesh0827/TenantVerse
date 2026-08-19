@@ -168,4 +168,39 @@ public partial class UnitViewUpdate
     {
         Navigation.NavigateTo("/flat");
     }
+
+
+
+
+
+
+
+
+
+    private Task<IEnumerable<int>> SearchProperties(
+    string? value,
+    CancellationToken cancellationToken)
+{
+    if (string.IsNullOrWhiteSpace(value))
+    {
+        return Task.FromResult(
+            properties.Select(x => x.PropertyId));
+    }
+
+    var result = properties
+        .Where(x =>
+            x.PropertyName.Contains(
+                value,
+                StringComparison.OrdinalIgnoreCase))
+        .Select(x => x.PropertyId);
+
+    return Task.FromResult(result);
+}
+
+private string GetPropertyName(int propertyId)
+{
+    return properties
+        .FirstOrDefault(x => x.PropertyId == propertyId)
+        ?.PropertyName ?? string.Empty;
+}
 }

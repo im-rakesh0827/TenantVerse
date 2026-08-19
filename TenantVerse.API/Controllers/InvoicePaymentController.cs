@@ -66,4 +66,16 @@ public class InvoicePaymentController : ControllerBase
 
         return Ok(response);
     }
+
+
+    [HttpGet("geAllPayment")]
+    public async Task<IActionResult> GetAllInvoicePayments()
+    {
+        var response = await _invoicePaymentService.GetAllPaymentAsync();
+        if (!response.IsSuccess)
+        {
+            return BadRequest(response);
+        }
+        return Ok(response);
+    }
 }

@@ -521,6 +521,7 @@
 
                             <MudButton Variant="Variant.Filled"
                                     Color="Color.Primary"
+                                    Disabled="@(IsReadOnly ||_isSaving || IsLoading)"
                                     StartIcon="@Icons.Material.Filled.Payment"
                                     OnClick="OpenPaymentDetailsAsync">
 
@@ -538,39 +539,12 @@
                             </MudButton>
 
 
-                            @* @if (IsReadOnly)
-                            {
-                                <MudButton Variant="Variant.Filled"
-                                           Color="Color.Primary"
-                                           StartIcon="@Icons.Material.Filled.Edit"
-                                           Disabled="@IsLoading"
-                                           OnClick="GoToEdit">
-
-                                    Edit Invoice
-
-                                </MudButton>
-                            }
-                            else
-                            {
-                                <MudButton Variant="Variant.Filled"
-                                           Color="Color.Primary"
-                                           Disabled="@(_isSaving || IsLoading)"
-                                           StartIcon="@Icons.Material.Filled.Save"
-                                           OnClick="SaveAsync">
-
-                                    Update Invoice
-
-                                </MudButton>
-                            } *@
-
-
                             <MudButton Variant="Variant.Filled"
                                            Color="Color.Primary"
                                            Disabled="@(IsReadOnly ||_isSaving || IsLoading)"
                                            StartIcon="@Icons.Material.Filled.Save"
                                            OnClick="SaveAsync">
-
-                                    Update Invoice
+                                    Update
 
                                 </MudButton>
 

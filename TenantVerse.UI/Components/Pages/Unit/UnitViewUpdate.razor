@@ -15,28 +15,23 @@
             <MudGrid Spacing="3">
 
                 <!-- PROPERTY -->
-                <MudItem xs="12" md="6">
-                    <MudSelect T="int"
-                               Label="Property"
-                               Variant="Variant.Outlined"
-                               Value="_model.PropertyId"
-                               ValueChanged="OnPropertyChanged"
-                               Disabled="@IsViewMode"
-                               Required="true"
-                               RequiredError="Property is required.">
-
-                        @foreach (var property in properties)
-                        {
-                            <MudSelectItem T="int"
-                                           Value="@property.PropertyId">
-
-                                @property.PropertyName
-
-                            </MudSelectItem>
-                        }
-
-                    </MudSelect>
-                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudAutocomplete T="int"
+                                        Label="Property"
+                                        Variant="Variant.Outlined"
+                                        Value="_model.PropertyId"
+                                        ValueChanged="OnPropertyChanged"
+                                        SearchFunc="SearchProperties"
+                                        ToStringFunc="GetPropertyName"
+                                        ResetValueOnEmptyText="true"
+                                        CoerceText="true"
+                                        Clearable="true"
+                                        Required="true"
+                                        RequiredError="Property is required."
+                                        Placeholder="Select Property"
+                                        Disabled="@IsLoading"
+                                        FullWidth="true" />
+               </MudItem>
 
 
                 <!-- FLAT NUMBER -->

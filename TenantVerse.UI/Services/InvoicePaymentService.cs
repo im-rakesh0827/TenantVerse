@@ -30,7 +30,7 @@ namespace TenantVerse.UI.Services
 
 
 
-        public async Task<ApiResponse<CreateInvoicePaymentResponse>> CreateAsync(
+public async Task<ApiResponse<CreateInvoicePaymentResponse>> CreateAsync(
     CreateInvoicePaymentRequest request)
 {
     var response = await Client.PostAsJsonAsync(
@@ -84,6 +84,46 @@ public async Task<ApiResponse<ReverseInvoicePaymentResponse>> ReverseAsync(
                Message = "Unable to reverse payment."
            };
 }
+
+public async Task<ApiResponse<IEnumerable<InvoicePaymentModel>>> GetAllPaymentAsync()
+    {
+        try
+        {
+            var response =
+                await Client.GetAsync("{baseUrl}/geAllPayment");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return new ApiResponse<IEnumerable<InvoicePaymentModel>>
+                {
+                    IsSuccess = false,
+                    Message = $"Failed to retrieve invoice payments. Status code: {response.StatusCode}",
+                    Data = Enumerable.Empty<InvoicePaymentModel>()
+                };
+            }
+
+            var result =
+                await response.Content
+                    .ReadFromJsonAsync<ApiResponse<IEnumerable<InvoicePaymentModel>>>();
+
+            return result ??
+                new ApiResponse<IEnumerable<InvoicePaymentModel>>
+                {
+                    IsSuccess = false,
+                    Message = "No response received from server.",
+                    Data = Enumerable.Empty<InvoicePaymentModel>()
+                };
+        }
+        catch (Exception ex)
+        {
+            return new ApiResponse<IEnumerable<InvoicePaymentModel>>
+            {
+                IsSuccess = false,
+                Message = ex.Message,
+                Data = Enumerable.Empty<InvoicePaymentModel>()
+            };
+        }
+    }
 
     }
     

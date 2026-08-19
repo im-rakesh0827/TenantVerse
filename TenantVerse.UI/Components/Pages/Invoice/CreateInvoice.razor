@@ -50,11 +50,12 @@
                 </MudItem>
 
 
-                <MudItem xs="12"
+                @* <MudItem xs="12"
                          sm="4">
 
                          <MudSelect T="int"
                               Label="Property"
+                              Margin="Margin.Dense"
                               Variant="Variant.Outlined"
                               Value="_model.PropertyId"
                               ValueChanged="OnPropertyChanged"
@@ -72,74 +73,66 @@
                               }
 
                          </MudSelect>
+                </MudItem> *@
+
+
+                <MudItem xs="12" sm="4">
+                    <MudAutocomplete T="int"
+                                    Label="Property"
+                                    Margin="Margin.Dense"
+                                    Variant="Variant.Outlined"
+                                    Value="_model.PropertyId"
+                                    ValueChanged="OnPropertyChanged"
+                                    SearchFunc="SearchProperties"
+                                    ToStringFunc="GetPropertyName"
+                                    ResetValueOnEmptyText="true"
+                                    CoerceText="true"
+                                    Clearable="true"
+                                    Required="true"
+                                    RequiredError="Property is required."
+                                    FullWidth="true" />
                 </MudItem>
 
 
                 <!-- FLAT -->
 
-                <MudItem xs="12"
-                         sm="4">
-                    <MudSelect T="int"
-                         Label="Flat"
-                         Variant="Variant.Outlined"
-                         Value="_model.UnitId"
-                         ValueChanged="OnUnitChanged"
-                         Disabled="@(_model.PropertyId <= 0 || IsLoadingFlats)"
-                         Required="true"
-                         RequiredError="Flat is required.">
-
-                         @foreach (var unit in _availableUnits)
-                         {
-                              <MudSelectItem T="int"
-                                             Value="@unit.UnitId">
-
-                                   @unit.UnitNumber
-
-                              </MudSelectItem>
-                         }
-                    </MudSelect>
+                <MudItem xs="12" sm="4">
+                    <MudAutocomplete T="int"
+                                    Label="Flat"
+                                    Margin="Margin.Dense"
+                                    Variant="Variant.Outlined"
+                                    Value="_model.UnitId"
+                                    ValueChanged="OnUnitChanged"
+                                    SearchFunc="SearchUnits"
+                                    ToStringFunc="GetUnitNumber"
+                                    ResetValueOnEmptyText="true"
+                                    CoerceText="true"
+                                    Clearable="true"
+                                    Disabled="@(_model.PropertyId <= 0 || IsLoadingFlats)"
+                                    Required="true"
+                                    RequiredError="Flat is required."
+                                    FullWidth="true" />
                 </MudItem>
 
 
                 <!-- TENANT -->
 
-                <MudItem xs="12"
-                         sm="4">
-
-                    <MudSelect T="int"
-                               Label="Tenant"
-                               Variant="Variant.Outlined"
-                               Margin="Margin.Dense"
-                               @bind-Value="_model.TenantId"
-                               Disabled="@(_model.UnitId == 0 || IsLoadingTenants)"
-                               Required="true"
-                               RequiredError="Tenant is required.">
-
-                        @if (IsLoadingTenants)
-                        {
-                            <MudSelectItem T="int"
-                                           Value="0"
-                                           Disabled="true">
-
-                                Loading tenant...
-
-                            </MudSelectItem>
-                        }
-                        else
-                        {
-                            @foreach (var tenant in _availableTenants)
-                            {
-                                <MudSelectItem T="int"
-                                               Value="@tenant.TenantId">
-
-                                    @tenant.FirstName @tenant.LastName
-
-                                </MudSelectItem>
-                            }
-                        }
-
-                    </MudSelect>
-
+                <MudItem xs="12" sm="4">
+                    <MudAutocomplete T="int"
+                                    Label="Tenant"
+                                    Margin="Margin.Dense"
+                                    Variant="Variant.Outlined"
+                                    Value="_model.TenantId"
+                                    ValueChanged="OnTenantChanged"
+                                    SearchFunc="SearchTenants"
+                                    ToStringFunc="GetTenantName"
+                                    ResetValueOnEmptyText="true"
+                                    CoerceText="true"
+                                    Clearable="true"
+                                    Disabled="@(_model.UnitId == 0 || IsLoadingTenants)"
+                                    Required="true"
+                                    RequiredError="Tenant is required."
+                                    FullWidth="true" />
                 </MudItem>
 
 
@@ -539,9 +532,7 @@
                                    Disabled="@_isSaving"
                                    StartIcon="@Icons.Material.Filled.Save"
                                    OnClick="CreateInvoiceAsync">
-
-                            Create Invoice
-
+                             Save
                         </MudButton>
 
                     </MudStack>

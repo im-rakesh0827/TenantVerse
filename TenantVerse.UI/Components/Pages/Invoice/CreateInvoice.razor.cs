@@ -378,4 +378,92 @@ public partial class CreateInvoice
     {
         NavigationManager.NavigateTo("/invoice");
     }
+
+
+    private Task<IEnumerable<int>> SearchProperties(
+    string? value,
+    CancellationToken cancellationToken)
+{
+    if (string.IsNullOrWhiteSpace(value))
+    {
+        return Task.FromResult(
+            _properties.Select(x => x.PropertyId));
+    }
+
+    var result = _properties
+        .Where(x =>
+            x.PropertyName.Contains(
+                value,
+                StringComparison.OrdinalIgnoreCase))
+        .Select(x => x.PropertyId);
+
+    return Task.FromResult(result);
+}
+
+private Task<IEnumerable<int>> SearchUnits(
+    string? value,
+    CancellationToken cancellationToken)
+{
+    if (string.IsNullOrWhiteSpace(value))
+    {
+        return Task.FromResult(
+            _availableUnits.Select(x => x.UnitId));
+    }
+
+    var result = _availableUnits
+        .Where(x =>
+            x.UnitNumber.Contains(
+                value,
+                StringComparison.OrdinalIgnoreCase))
+        .Select(x => x.UnitId);
+
+    return Task.FromResult(result);
+}
+
+
+private string GetUnitNumber(int unitId)
+{
+    return _availableUnits
+        .FirstOrDefault(x => x.UnitId == unitId)
+        ?.UnitNumber ?? string.Empty;
+}
+
+private Task<IEnumerable<int>> SearchTenants(
+    string? value,
+    CancellationToken cancellationToken)
+{
+    if (string.IsNullOrWhiteSpace(value))
+    {
+        return Task.FromResult(
+            _availableTenants.Select(x => x.TenantId));
+    }
+
+    var result = _availableTenants
+        .Where(x =>
+            $"{x.FirstName} {x.LastName}"
+                .Contains(
+                    value,
+                    StringComparison.OrdinalIgnoreCase))
+        .Select(x => x.TenantId);
+
+    return Task.FromResult(result);
+}
+
+
+
+private string GetTenantName(int tenantId)
+{
+    var tenant = _availableTenants
+        .FirstOrDefault(x => x.TenantId == tenantId);
+
+    return tenant == null
+        ? string.Empty
+        : $"{tenant.FirstName} {tenant.LastName}";
+}
+
+private void OnTenantChanged(int tenantId)
+{
+    _model.TenantId = tenantId;
+}
+
 }

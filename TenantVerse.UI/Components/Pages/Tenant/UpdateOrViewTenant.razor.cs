@@ -426,4 +426,68 @@ public partial class UpdateOrViewTenant
           }
       
     }
+
+
+
+
+
+
+
+
+
+    private Task<IEnumerable<int>> SearchProperties(
+    string? value,
+    CancellationToken cancellationToken)
+{
+    if (string.IsNullOrWhiteSpace(value))
+    {
+        return Task.FromResult(
+            _properties.Select(x => x.PropertyId));
+    }
+
+    var result = _properties
+        .Where(x =>
+            x.PropertyName.Contains(
+                value,
+                StringComparison.OrdinalIgnoreCase))
+        .Select(x => x.PropertyId);
+
+    return Task.FromResult(result);
+}
+
+private string GetPropertyName(int propertyId)
+{
+    return _properties
+        .FirstOrDefault(x => x.PropertyId == propertyId)
+        ?.PropertyName ?? string.Empty;
+}
+
+
+
+private Task<IEnumerable<int>> SearchUnits(
+    string? value,
+    CancellationToken cancellationToken)
+{
+    if (string.IsNullOrWhiteSpace(value))
+    {
+        return Task.FromResult(
+            _units.Select(x => x.UnitId));
+    }
+
+    var result = _units
+        .Where(x =>
+            x.UnitNumber.Contains(
+                value,
+                StringComparison.OrdinalIgnoreCase))
+        .Select(x => x.UnitId);
+
+    return Task.FromResult(result);
+}
+
+private string GetUnitDisplayName(int unitId)
+{
+    return _units
+        .FirstOrDefault(x => x.UnitId == unitId)
+        ?.UnitNumber ?? string.Empty;
+}
 }

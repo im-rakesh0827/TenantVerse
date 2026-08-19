@@ -69,3 +69,12 @@
 
     border-top: 1px solid #e0e0e0;
 }
+
+
+/* This css is for popup header background color */
+
+.mud-dialog .mud-dialog-title {
+    background-color: rgba(129, 144, 149, 0.667) !important;
+    /* background-color: rgba(89, 74, 226, 1) !important; */
+    padding: 5px 24px !important;
+}
