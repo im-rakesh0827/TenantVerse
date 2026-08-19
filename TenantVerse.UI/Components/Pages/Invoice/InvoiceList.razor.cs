@@ -4,10 +4,11 @@ using TenantVerse.Shared.Models.Invoice;
 using TenantVerse.UI.Services;
 using TenantVerse.Shared.Models.Tenant;
 using TenantVerse.UI.Components.Pages.Invoice.PopUpDialog;
+using TenantVerse.UI.Components.Pages.Tenant.PopUpScreen;
 
 namespace TenantVerse.UI.Components.Pages.Invoice;
 
-public partial class InvoiceList
+public partial class InvoiceList : ComponentBase
 {
     [Inject]
     private InvoiceService InvoiceService { get; set; } = default!;
@@ -40,12 +41,22 @@ public partial class InvoiceList
 
     private TenantModel? _selectedTenant;
 
+    private DateTime? _billingMonth;
+
+
+    // protected IEnumerable<InvoiceModel> FilteredInvoices =>
+    //     string.IsNullOrWhiteSpace(_searchString)
+    //         && string.IsNullOrWhiteSpace(_paymentStatus)
+    //             ? _invoices
+    //             : _invoices.Where(FilterInvoice);
+
 
     protected IEnumerable<InvoiceModel> FilteredInvoices =>
-        string.IsNullOrWhiteSpace(_searchString)
-            && string.IsNullOrWhiteSpace(_paymentStatus)
-                ? _invoices
-                : _invoices.Where(FilterInvoice);
+    string.IsNullOrWhiteSpace(_searchString)
+    && string.IsNullOrWhiteSpace(_paymentStatus)
+    && !_billingMonth.HasValue
+        ? _invoices
+        : _invoices.Where(FilterInvoice);
 
 
     protected override async Task OnInitializedAsync()
@@ -87,92 +98,186 @@ public partial class InvoiceList
 
 
 
+    // private bool FilterInvoice(InvoiceModel invoice)
+    // {
+    //     if (!string.IsNullOrWhiteSpace(_searchString))
+    //     {
+    //         var search =
+    //             _searchString.Trim();
+
+    //         var matchesSearch =
+    //             (invoice.InvoiceNumber ?? string.Empty)
+    //                 .Contains(
+    //                     search,
+    //                     StringComparison.OrdinalIgnoreCase)
+
+    //             ||
+
+    //             (invoice.PropertyName ?? string.Empty)
+    //                 .Contains(
+    //                     search,
+    //                     StringComparison.OrdinalIgnoreCase)
+
+    //             ||
+
+    //             (invoice.UnitNumber ?? string.Empty)
+    //                 .Contains(
+    //                     search,
+    //                     StringComparison.OrdinalIgnoreCase)
+
+    //             ||
+
+    //             (invoice.TenantName ?? string.Empty)
+    //                 .Contains(
+    //                     search,
+    //                     StringComparison.OrdinalIgnoreCase)
+
+    //             ||
+
+    //             invoice.BillingMonth
+    //                 .ToString("MMM yyyy")
+    //                 .Contains(
+    //                     search,
+    //                     StringComparison.OrdinalIgnoreCase)
+
+    //             ||
+
+    //             invoice.DueDate
+    //                 .ToString("dd MMM yyyy")
+    //                 .Contains(
+    //                     search,
+    //                     StringComparison.OrdinalIgnoreCase)
+
+    //             ||
+
+    //             invoice.TotalPayable
+    //                 .ToString()
+    //                 .Contains(
+    //                     search,
+    //                     StringComparison.OrdinalIgnoreCase)
+
+    //             ||
+
+    //             (invoice.PaymentStatus ?? string.Empty)
+    //                 .Contains(
+    //                     search,
+    //                     StringComparison.OrdinalIgnoreCase);
+
+
+    //         if (!matchesSearch)
+    //         {
+    //             return false;
+    //         }
+    //     }
+    //     if (!string.IsNullOrWhiteSpace(_paymentStatus))
+    //     {
+    //         if (!string.Equals(
+    //                 invoice.PaymentStatus,
+    //                 _paymentStatus,
+    //                 StringComparison.OrdinalIgnoreCase))
+    //         {
+    //             return false;
+    //         }
+    //     }
+
+
+    //     return true;
+    // }
+
+
     private bool FilterInvoice(InvoiceModel invoice)
+{
+    // =========================
+    // SEARCH
+    // =========================
+
+    if (!string.IsNullOrWhiteSpace(_searchString))
     {
-        if (!string.IsNullOrWhiteSpace(_searchString))
+        var search = _searchString.Trim();
+
+        var matchesSearch =
+            (invoice.InvoiceNumber ?? string.Empty)
+                .Contains(search, StringComparison.OrdinalIgnoreCase)
+
+            ||
+
+            (invoice.PropertyName ?? string.Empty)
+                .Contains(search, StringComparison.OrdinalIgnoreCase)
+
+            ||
+
+            (invoice.UnitNumber ?? string.Empty)
+                .Contains(search, StringComparison.OrdinalIgnoreCase)
+
+            ||
+
+            (invoice.TenantName ?? string.Empty)
+                .Contains(search, StringComparison.OrdinalIgnoreCase)
+
+            ||
+
+            invoice.BillingMonth
+                .ToString("MMM yyyy")
+                .Contains(search, StringComparison.OrdinalIgnoreCase)
+
+            ||
+
+            invoice.DueDate
+                .ToString("dd MMM yyyy")
+                .Contains(search, StringComparison.OrdinalIgnoreCase)
+
+            ||
+
+            invoice.TotalPayable
+                .ToString("N2")
+                .Contains(search, StringComparison.OrdinalIgnoreCase)
+
+            ||
+
+            (invoice.PaymentStatus ?? string.Empty)
+                .Contains(search, StringComparison.OrdinalIgnoreCase);
+
+        if (!matchesSearch)
         {
-            var search =
-                _searchString.Trim();
-
-            var matchesSearch =
-                (invoice.InvoiceNumber ?? string.Empty)
-                    .Contains(
-                        search,
-                        StringComparison.OrdinalIgnoreCase)
-
-                ||
-
-                (invoice.PropertyName ?? string.Empty)
-                    .Contains(
-                        search,
-                        StringComparison.OrdinalIgnoreCase)
-
-                ||
-
-                (invoice.UnitNumber ?? string.Empty)
-                    .Contains(
-                        search,
-                        StringComparison.OrdinalIgnoreCase)
-
-                ||
-
-                (invoice.TenantName ?? string.Empty)
-                    .Contains(
-                        search,
-                        StringComparison.OrdinalIgnoreCase)
-
-                ||
-
-                invoice.BillingMonth
-                    .ToString("MMM yyyy")
-                    .Contains(
-                        search,
-                        StringComparison.OrdinalIgnoreCase)
-
-                ||
-
-                invoice.DueDate
-                    .ToString("dd MMM yyyy")
-                    .Contains(
-                        search,
-                        StringComparison.OrdinalIgnoreCase)
-
-                ||
-
-                invoice.TotalPayable
-                    .ToString()
-                    .Contains(
-                        search,
-                        StringComparison.OrdinalIgnoreCase)
-
-                ||
-
-                (invoice.PaymentStatus ?? string.Empty)
-                    .Contains(
-                        search,
-                        StringComparison.OrdinalIgnoreCase);
-
-
-            if (!matchesSearch)
-            {
-                return false;
-            }
+            return false;
         }
-        if (!string.IsNullOrWhiteSpace(_paymentStatus))
-        {
-            if (!string.Equals(
-                    invoice.PaymentStatus,
-                    _paymentStatus,
-                    StringComparison.OrdinalIgnoreCase))
-            {
-                return false;
-            }
-        }
-
-
-        return true;
     }
 
+
+    // =========================
+    // PAYMENT STATUS
+    // =========================
+
+    if (!string.IsNullOrWhiteSpace(_paymentStatus))
+    {
+        if (!string.Equals(
+                invoice.PaymentStatus?.Trim(),
+                _paymentStatus.Trim(),
+                StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+    }
+
+
+    // =========================
+    // BILLING MONTH
+    // =========================
+
+    if (_billingMonth.HasValue)
+    {
+        var selectedMonth = _billingMonth.Value;
+
+        if (invoice.BillingMonth.Year != selectedMonth.Year ||
+            invoice.BillingMonth.Month != selectedMonth.Month)
+        {
+            return false;
+        }
+    }
+
+
+    return true;
+}
     private void AddInvoice()
     {
         NavigationManager.NavigateTo("/invoice/create");
@@ -184,33 +289,6 @@ public partial class InvoiceList
     {
         NavigationManager.NavigateTo(
             $"/invoice/{mode}/{invoiceId}");
-    }
-
-    private Color GetStatusColor(string? status)
-    {
-        return status?.Trim().ToLowerInvariant() switch
-        {
-            "paid" =>
-                Color.Success,
-
-            "pending" =>
-                Color.Warning,
-
-            "partiallypaid" =>
-                Color.Info,
-
-            "partially paid" =>
-                Color.Info,
-
-            "overdue" =>
-                Color.Error,
-
-            "cancelled" =>
-                Color.Error,
-
-            _ =>
-                Color.Default
-        };
     }
 
     private async Task ShowChargesAsync(InvoiceModel invoice)

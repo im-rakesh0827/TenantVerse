@@ -193,36 +193,10 @@
                 <!-- STATUS -->
 
                 <MudTd DataLabel="Status">
-
-                    @if (context.Status == "Available")
-                    {
-                        <MudText Color="Color.Success">
-                            ● Available
+                        <MudText Color="@StatusColor.GetStatusColor(context.Status)">
+                            ● @context.Status
                         </MudText>
-                    }
-                    else if (context.Status == "Occupied")
-                    {
-                        <MudText Color="Color.Error">
-                            ● Occupied
-                        </MudText>
-                    }
-                    else if (context.Status == "Maintenance")
-                    {
-                        <MudText Color="Color.Warning">
-                            ● Maintenance
-                        </MudText>
-                    }
-                    else
-                    {
-                        <MudText Color="Color.Default">
-                            ● @(string.IsNullOrWhiteSpace(context.Status)
-                                ? "Unknown"
-                                : context.Status)
-                        </MudText>
-                    }
-
                 </MudTd>
-
 
                 <!-- ACTIONS -->
 

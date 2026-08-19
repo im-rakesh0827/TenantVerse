@@ -1,7 +1,3 @@
-@using TenantVerse.Shared.Models.Invoice
-@using TenantVerse.UI.Services;
-@using MudBlazor
-@using TenantVerse.UI.Components.Common
 <MudDialog>
 
     <TitleContent>
@@ -547,6 +543,10 @@
 
 </MudGrid>
 
+    @if(_isPaymentSaving)
+{
+    <CustomLoaderComponent />
+}
 </MudPaper>
                 }
             }
@@ -555,16 +555,5 @@
 
     </DialogContent>
 
-    @* <DialogActions>
-
-        <MudButton Variant="Variant.Outlined"
-                   Color="Color.Default"
-                   OnClick="Close">
-
-            Close
-
-        </MudButton>
-
-    </DialogActions> *@
-
 </MudDialog>
+

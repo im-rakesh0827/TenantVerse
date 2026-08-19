@@ -1,17 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using MudBlazor;
 
-namespace TenantVerse.UI.Components.Common
-{
-    public static class StatusColor
-    {
+namespace TenantVerse.UI.Components.Common;
 
-        public  static Color GetStatusColor(string? status)
+public static class StatusColor
+{
+    public static Color GetStatusColor(string? status)
     {
-        return status?.ToLowerInvariant() switch
+        return status?.Trim().ToLowerInvariant() switch
         {
             "paid" => Color.Success,
             "completed" => Color.Success,
@@ -24,9 +19,18 @@ namespace TenantVerse.UI.Components.Common
             "overdue" => Color.Error,
             "cancelled" => Color.Error,
 
+
+            "available" => Color.Success,
+
+            "occupied" => Color.Error,
+
+            "maintenance" => Color.Warning,
+
+            "active" => Color.Success,
+            "inactive" => Color.Error,
+    
             _ => Color.Default
         };
     }
-        
-    }
 }
+

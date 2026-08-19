@@ -6,9 +6,8 @@ using TenantVerse.Shared.Models.Invoice;
 using TenantVerse.UI.Services;
 using MudBlazor;
 using Microsoft.AspNetCore.Components;
-using TenantVerse.UI.Components.Common;
 namespace TenantVerse.UI.Components.Pages.Invoice.PopUpDialog;
-public partial class InvoicePaymentDialog
+public partial class InvoicePaymentDialog :ComponentBase
 {
     [CascadingParameter]
     private IMudDialogInstance MudDialog { get; set; } = default!;
@@ -27,7 +26,7 @@ public partial class InvoicePaymentDialog
      [Inject]
     private StateContainer _StateContainer { get; set; } = default!;
 
-      [Inject]
+    [Inject]
     private ISnackbar Snackbar { get; set; } = default!;
     [Inject]
     private IDialogService DialogService { get; set; } = default!;
@@ -229,10 +228,8 @@ public partial class InvoicePaymentDialog
 
                 CreatedBy = "System"
             };
-
-
-            var response =
-                await InvoicePaymentService.CreateAsync(request);
+            await Task.Delay(1000);
+            var response = await InvoicePaymentService.CreateAsync(request);
 
 
             if (response is null ||
@@ -244,6 +241,8 @@ public partial class InvoicePaymentDialog
 
                 return;
             }
+
+            Snackbar.Add("Payment created successfully.",Severity.Success);
 
 
             // Payment successfully created

@@ -2,6 +2,7 @@
 
 @page "/invoice/{mode}/{InvoiceId:int}"
 @using TenantVerse.Shared.Models.Invoice
+@using TenantVerse.UI.Components.Pages.Invoice.PopUpDialog;
 
 <PageTitle>@(IsReadOnly ? "View Invoice" : "Edit Invoice")</PageTitle>
 

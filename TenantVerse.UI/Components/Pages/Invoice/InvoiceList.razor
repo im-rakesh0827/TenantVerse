@@ -55,12 +55,27 @@
 
         </MudItem>
 
+        <MudItem xs="12"
+         sm="4"
+         md="3">
+
+    <MudDatePicker Label="Billing Month"
+                   Variant="Variant.Outlined"
+                   Margin="Margin.Dense"
+                   DateFormat="MMM yyyy"
+                   OpenTo="OpenTo.Month"
+                   Views="DatePickerViews.Month | DatePickerViews.Year"
+                   Clearable="true"
+                   @bind-Date="_billingMonth" />
+
+</MudItem>
+
         <MudButton Variant="Variant.Filled"
                Color="Color.Primary"
                StartIcon="@Icons.Material.Filled.Add"
                OnClick="AddInvoice"
                Style="margin-left:auto;">
-               Add Invoice
+               Create
           </MudButton>
 
     </MudStack>
@@ -239,64 +254,11 @@
 
                 <MudTd DataLabel="Status">
 
-                    @if (string.Equals(
-                        invoice.PaymentStatus,
-                        "Paid",
-                        StringComparison.OrdinalIgnoreCase))
-                    {
-                        <MudText Color="Color.Success">
-                            ● Paid
-                        </MudText>
-                    }
-                    else if (string.Equals(
-                        invoice.PaymentStatus,
-                        "Pending",
-                        StringComparison.OrdinalIgnoreCase))
-                    {
-                        <MudText Color="Color.Warning">
-                            ● Pending
-                        </MudText>
-                    }
-                    else if (string.Equals(
-                        invoice.PaymentStatus,
-                        "PartiallyPaid",
-                        StringComparison.OrdinalIgnoreCase)
-                        ||
-                        string.Equals(
-                        invoice.PaymentStatus,
-                        "Partially Paid",
-                        StringComparison.OrdinalIgnoreCase))
-                    {
-                        <MudText Color="Color.Info">
-                            ● Partially Paid
-                        </MudText>
-                    }
-                    else if (string.Equals(
-                        invoice.PaymentStatus,
-                        "Overdue",
-                        StringComparison.OrdinalIgnoreCase))
-                    {
-                        <MudText Color="Color.Error">
-                            ● Overdue
-                        </MudText>
-                    }
-                    else if (string.Equals(
-                        invoice.PaymentStatus,
-                        "Cancelled",
-                        StringComparison.OrdinalIgnoreCase))
-                    {
-                        <MudText Color="Color.Error">
-                            ● Cancelled
-                        </MudText>
-                    }
-                    else
-                    {
-                        <MudText Color="Color.Default">
-                            ● @(string.IsNullOrWhiteSpace(invoice.PaymentStatus)
-                                ? "Unknown"
-                                : invoice.PaymentStatus)
-                        </MudText>
-                    }
+                    <MudText Color="@StatusColor.GetStatusColor(invoice.PaymentStatus)">
+                        ● @(string.IsNullOrWhiteSpace(invoice.PaymentStatus)
+                            ? "Unknown"
+                            : invoice.PaymentStatus.Replace("PartiallyPaid", "Partially Paid"))
+                    </MudText>
 
                 </MudTd>
 
@@ -385,9 +347,9 @@
 </MudPaper>
 
 
-@* @if (_showTenantPopup && _selectedTenant is not null)
+@if (_showTenantPopup && _selectedTenant is not null)
 {
     <TenantDetailsPopup
         Tenant="_selectedTenant"
         ClosePopup="CloseTenantPopup" />
-} *@
+}

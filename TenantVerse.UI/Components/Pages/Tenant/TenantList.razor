@@ -184,34 +184,9 @@
                 <!-- STATUS -->
 
                 <MudTd DataLabel="Status">
-
-                    @if (context.Status == "Active")
-                    {
-                        <MudText Color="Color.Success">
-                            ● Active
-                        </MudText>
-                    }
-                    else if (context.Status == "Pending")
-                    {
-                        <MudText Color="Color.Warning">
-                            ● Pending
-                        </MudText>
-                    }
-                    else if (context.Status == "Inactive")
-                    {
-                        <MudText Color="Color.Error">
-                            ● Inactive
-                        </MudText>
-                    }
-                    else
-                    {
-                        <MudText Color="Color.Default">
-                            ● @(string.IsNullOrWhiteSpace(context.Status)
-                                ? "Unknown"
-                                : context.Status)
-                        </MudText>
-                    }
-
+                    <MudText Color="@StatusColor.GetStatusColor(context.Status)">
+                        ● @context.Status
+                    </MudText>
                 </MudTd>
 
 
