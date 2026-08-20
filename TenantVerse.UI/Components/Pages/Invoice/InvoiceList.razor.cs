@@ -5,6 +5,8 @@ using TenantVerse.UI.Services;
 using TenantVerse.Shared.Models.Tenant;
 using TenantVerse.UI.Components.Pages.Invoice.PopUpDialog;
 using TenantVerse.UI.Components.Pages.Tenant.PopUpScreen;
+using TenantVerse.UI.Components.Pages.Tenant.PopUpDialog;
+
 
 namespace TenantVerse.UI.Components.Pages.Invoice;
 
@@ -187,10 +189,6 @@ public partial class InvoiceList : ComponentBase
 
     private bool FilterInvoice(InvoiceModel invoice)
 {
-    // =========================
-    // SEARCH
-    // =========================
-
     if (!string.IsNullOrWhiteSpace(_searchString))
     {
         var search = _searchString.Trim();
@@ -321,7 +319,7 @@ public partial class InvoiceList : ComponentBase
 
     private async Task ShowTenantPopup(int tenantId)
     {
-        _selectedTenant = await _StateContainer.Tenant.GetTenantAsync(tenantId);
+        _selectedTenant = await _StateContainer.Tenant.GetTenantByIdAsync(tenantId);
         if (_selectedTenant is null)
         {
             _message = "Tenant details were not found.";
@@ -336,5 +334,74 @@ public partial class InvoiceList : ComponentBase
         _showTenantPopup = false;
         _selectedTenant = null;
     }
+
+
+    private async Task ShowTenantDetailsAsync(int tenantId)
+    {
+        _selectedTenant = await _StateContainer.Tenant.GetTenantByIdAsync(tenantId);
+
+    if (_selectedTenant is null)
+        return;
+
+    var parameters = new DialogParameters
+    {
+        {
+            nameof(TenantDetailsDialog.Id),
+            tenantId
+        },
+        {
+            nameof(TenantDetailsDialog.SelectedTenant),
+            _selectedTenant
+        }
+    };
+
+    var options = new DialogOptions
+    {
+        CloseOnEscapeKey = true,
+        MaxWidth = MaxWidth.Medium,
+        FullWidth = true
+    };
+
+    await DialogService.ShowAsync<TenantDetailsDialog>(
+        "Tenant Details",
+        parameters,
+        options);
+}
+
+
+
+// private async Task ShowTenantDetailsAsync(int tenantId)
+//     {
+//         _selectedTenant = await _StateContainer.Tenant.GetTenantByIdAsync(tenantId);
+
+//     if (_selectedTenant is null)
+//         return;
+
+//     var parameters = new DialogParameters
+//     {
+//         {
+//             nameof(TenantDetailsDialog.Id),
+//             tenantId
+//         }
+//     };
+
+//     var options = new DialogOptions
+//     {
+//         CloseOnEscapeKey = true,
+//         MaxWidth = MaxWidth.Medium,
+//         FullWidth = true
+//     };
+
+//     await DialogService.ShowAsync<TenantDetailsDialog>(
+//         "Tenant Details",
+//         parameters,
+//         options);
+// }
+
+
+     private async Task DeleteInvoice(int Id)
+     {
+
+     }
     
 }

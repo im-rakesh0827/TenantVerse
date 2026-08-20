@@ -288,7 +288,7 @@ public class TenantStateContainer
     // }
 
 
-    public async Task<TenantModel?> GetTenantAsync(int tenantId)
+    public async Task<TenantModel?> GetTenantByIdAsync(int tenantId)
     {
         if (!IsLoaded)
         {

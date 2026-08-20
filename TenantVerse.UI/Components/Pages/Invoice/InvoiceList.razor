@@ -191,13 +191,31 @@
                 </MudTd> *@
 
 
-                <MudTd DataLabel="Tenant">
+                @* <MudTd DataLabel="Tenant">
                     @if (!string.IsNullOrWhiteSpace(invoice.TenantName))
                     {
                         <MudButton Variant="Variant.Text"
                                 Color="Color.Primary"
                                 Size="Size.Small"
                                 OnClick="@(() => ShowTenantPopup(invoice.TenantId))">
+
+                            @invoice.TenantName
+                        </MudButton>
+                    }
+                    else
+                    {
+                        <MudText>-</MudText>
+                    }
+                </MudTd> *@
+
+
+                <MudTd DataLabel="Tenant">
+                    @if (!string.IsNullOrWhiteSpace(invoice.TenantName))
+                    {
+                        <MudButton Variant="Variant.Text"
+                                Color="Color.Primary"
+                                Size="Size.Small"
+                                OnClick="@(() => ShowTenantDetailsAsync(invoice.TenantId))">
 
                             @invoice.TenantName
                         </MudButton>
@@ -270,7 +288,6 @@
                             StartIcon="@Icons.Material.Filled.ReceiptLong"
                             OnClick="@(() => ShowChargesAsync(invoice))">
                         Charges (@invoice.Charges.Count)
-                        Charges
                     </MudButton>
                 </MudTd> *@
 
@@ -302,6 +319,15 @@
                                        EditOrViewInvoice(
                                            invoice.InvoiceId,
                                            "edit"))" />
+
+
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                   Color="Color.Error"
+                                   Size="Size.Small"
+                                   Title="Edit"
+                                   Disabled="true"
+                                   OnClick="@(() =>
+                                       DeleteInvoice(invoice.InvoiceId))" />
 
                 </MudTd>
 
@@ -347,9 +373,9 @@
 </MudPaper>
 
 
-@if (_showTenantPopup && _selectedTenant is not null)
+@* @if (_showTenantPopup && _selectedTenant is not null)
 {
     <TenantDetailsPopup
         Tenant="_selectedTenant"
         ClosePopup="CloseTenantPopup" />
-}
+} *@

@@ -1,0 +1,497 @@
+@using TenantVerse.Shared.Models.Tenant
+
+<MudDialog>
+
+    <TitleContent>
+
+        <MudStack Row="true"
+                  AlignItems="AlignItems.Center"
+                  Justify="Justify.SpaceBetween"
+                  Style="width:100%;">
+
+            <div>
+
+                <MudText Typo="Typo.h6">
+                    Tenant Details
+                </MudText>
+
+                @if (Tenant is not null)
+                {
+                    <MudText Typo="Typo.body2"
+                             Color="Color.Secondary">
+
+                        @Tenant.FirstName @Tenant.LastName
+
+                    </MudText>
+                }
+
+            </div>
+
+            <MudIconButton Icon="@Icons.Material.Filled.Close"
+                           Color="Color.Default"
+                           Size="Size.Small"
+                           OnClick="Close"
+                           Title="Close" />
+
+        </MudStack>
+
+    </TitleContent>
+
+
+    <DialogContent>
+
+        @if (Tenant is null)
+        {
+            <MudAlert Severity="Severity.Info">
+                Tenant information is not available.
+            </MudAlert>
+        }
+        else
+        {
+            <!-- =========================================
+                 PERSONAL INFORMATION
+                 ========================================= -->
+
+            <MudText Typo="Typo.h6"
+                     Class="mb-3">
+
+                Personal Information
+
+            </MudText>
+
+            <MudPaper Class="pa-4 mb-4"
+                      Elevation="1">
+
+                <MudGrid Spacing="2">
+
+                    <!-- NAME -->
+
+                    <MudItem xs="12"
+                             sm="6">
+
+                        <MudText Typo="Typo.caption"
+                                 Color="Color.Secondary">
+
+                            Name
+
+                        </MudText>
+
+                        <MudText Typo="Typo.body1">
+
+                            <b>
+                                @Tenant.FirstName @Tenant.LastName
+                            </b>
+
+                        </MudText>
+
+                    </MudItem>
+
+
+                    <!-- STATUS -->
+
+                    <MudItem xs="12"
+                             sm="6">
+
+                        <MudText Typo="Typo.caption"
+                                 Color="Color.Secondary">
+
+                            Status
+
+                        </MudText>
+
+                        <MudChip T="string"
+                                 Size="Size.Small"
+                                 Color="@GetStatusColor(Tenant.Status)">
+
+                            @(string.IsNullOrWhiteSpace(Tenant.Status)
+                                ? "Unknown"
+                                : Tenant.Status)
+
+                        </MudChip>
+
+                    </MudItem>
+
+
+                    <!-- PHONE -->
+
+                    <MudItem xs="12"
+                             sm="6">
+
+                        <MudText Typo="Typo.caption"
+                                 Color="Color.Secondary">
+
+                            Phone Number
+
+                        </MudText>
+
+                        <MudText>
+
+                            @Display(Tenant.PhoneNumber)
+
+                        </MudText>
+
+                    </MudItem>
+
+
+                    <!-- EMAIL -->
+
+                    <MudItem xs="12"
+                             sm="6">
+
+                        <MudText Typo="Typo.caption"
+                                 Color="Color.Secondary">
+
+                            Email
+
+                        </MudText>
+
+                        <MudText>
+
+                            @Display(Tenant.Email)
+
+                        </MudText>
+
+                    </MudItem>
+
+                </MudGrid>
+
+            </MudPaper>
+
+
+            <!-- =========================================
+                 EMERGENCY CONTACT
+                 ========================================= -->
+
+            <MudText Typo="Typo.h6"
+                     Class="mb-3">
+
+                Emergency Contact
+
+            </MudText>
+
+            <MudPaper Class="pa-4 mb-4"
+                      Elevation="1">
+
+                <MudGrid Spacing="2">
+
+                    <!-- CONTACT NAME -->
+
+                    <MudItem xs="12"
+                             sm="6">
+
+                        <MudText Typo="Typo.caption"
+                                 Color="Color.Secondary">
+
+                            Contact Name
+
+                        </MudText>
+
+                        <MudText>
+
+                            @Display(Tenant.EmergencyContactName)
+
+                        </MudText>
+
+                    </MudItem>
+
+
+                    <!-- CONTACT PHONE -->
+
+                    <MudItem xs="12"
+                             sm="6">
+
+                        <MudText Typo="Typo.caption"
+                                 Color="Color.Secondary">
+
+                            Contact Phone
+
+                        </MudText>
+
+                        <MudText>
+
+                            @Display(Tenant.EmergencyContactPhone)
+
+                        </MudText>
+
+                    </MudItem>
+
+                </MudGrid>
+
+            </MudPaper>
+
+
+            <!-- =========================================
+                 LEASE INFORMATION
+                 ========================================= -->
+
+            <MudText Typo="Typo.h6"
+                     Class="mb-3">
+
+                Lease Information
+
+            </MudText>
+
+            <MudPaper Class="pa-4 mb-4"
+                      Elevation="1">
+
+                <MudGrid Spacing="2">
+
+                    <!-- LEASE START -->
+
+                    <MudItem xs="12"
+                             sm="6">
+
+                        <MudText Typo="Typo.caption"
+                                 Color="Color.Secondary">
+
+                            Lease Start
+
+                        </MudText>
+
+                        <MudText>
+
+                            @(Tenant.LeaseStartDate?.ToString("dd MMM yyyy")
+                                ?? "-")
+
+                        </MudText>
+
+                    </MudItem>
+
+
+                    <!-- LEASE END -->
+
+                    <MudItem xs="12"
+                             sm="6">
+
+                        <MudText Typo="Typo.caption"
+                                 Color="Color.Secondary">
+
+                            Lease End
+
+                        </MudText>
+
+                        <MudText>
+
+                            @(Tenant.LeaseEndDate?.ToString("dd MMM yyyy")
+                                ?? "-")
+
+                        </MudText>
+
+                    </MudItem>
+
+
+                    <!-- MONTHLY RENT -->
+
+                    <MudItem xs="12"
+                             sm="6">
+
+                        <MudText Typo="Typo.caption"
+                                 Color="Color.Secondary">
+
+                            Monthly Rent
+
+                        </MudText>
+
+                        <MudText>
+
+                            <b>
+                                ₹@(Tenant.MonthlyRent?.ToString("N2") ?? "0.00")
+                            </b>
+
+                        </MudText>
+
+                    </MudItem>
+
+
+                    <!-- SECURITY DEPOSIT -->
+
+                    <MudItem xs="12"
+                             sm="6">
+
+                        <MudText Typo="Typo.caption"
+                                 Color="Color.Secondary">
+
+                            Security Deposit
+
+                        </MudText>
+
+                        <MudText>
+
+                            ₹@(Tenant.SecurityDeposit?.ToString("N2") ?? "0.00")
+
+                        </MudText>
+
+                    </MudItem>
+
+                </MudGrid>
+
+            </MudPaper>
+
+
+            <!-- =========================================
+                 TENANT / ASSIGNMENT INFORMATION
+                 ========================================= -->
+
+            <MudText Typo="Typo.h6"
+                     Class="mb-3">
+
+                Assignment Information
+
+            </MudText>
+
+            <MudPaper Class="pa-4"
+                      Elevation="1">
+
+                <MudGrid Spacing="2">
+
+                    <MudItem xs="12"
+                             sm="6">
+
+                        <MudText Typo="Typo.caption"
+                                 Color="Color.Secondary">
+
+                            Tenant ID
+
+                        </MudText>
+
+                        <MudText>
+
+                            @Tenant.TenantId
+
+                        </MudText>
+
+                    </MudItem>
+
+
+                    <MudItem xs="12"
+                             sm="6">
+
+                        <MudText Typo="Typo.caption"
+                                 Color="Color.Secondary">
+
+                            Property ID
+
+                        </MudText>
+
+                        <MudText>
+
+                            @Tenant.PropertyId
+
+                        </MudText>
+
+                    </MudItem>
+
+
+                    <MudItem xs="12"
+                             sm="6">
+
+                        <MudText Typo="Typo.caption"
+                                 Color="Color.Secondary">
+
+                            Flat ID
+
+                        </MudText>
+
+                        <MudText>
+
+                            @Tenant.UnitId
+
+                        </MudText>
+
+                    </MudItem>
+
+                </MudGrid>
+
+            </MudPaper>
+        }
+
+    </DialogContent>
+
+
+    @* <DialogActions>
+
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   OnClick="Close">
+
+            Close
+
+        </MudButton>
+
+    </DialogActions> *@
+
+</MudDialog>
+
+
+@code
+{
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; } = default!;
+
+    [Inject]
+    private StateContainer _StateContainer { get; set; } = default!;
+
+    [Inject]
+    private TenantService TenantService { get; set; } = default!;
+
+
+    
+    [Parameter]
+    public int Id {get; set;}
+    [Parameter]
+    public TenantModel? SelectedTenant { get; set; }
+
+    private TenantModel Tenant = new TenantModel();
+
+
+    private void Close()
+    {
+        MudDialog.Close();
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        //Tenant = await _StateContainer.Tenant.GetTenantByIdAsync(Id);
+        if(Id>0 && SelectedTenant is not null){
+            Tenant = SelectedTenant;
+            Console.WriteLine($"Selected info is available : {SelectedTenant.TenantId}");
+        }
+        else
+        {
+            var result = _StateContainer.Tenant.Tenants.FirstOrDefault(x=>x.TenantId==Id);
+            if(result is not null){
+                Tenant = result;
+                Console.WriteLine($"Taking info from StateContainer : {Tenant.TenantId}");
+
+            }
+            else
+            {
+                var tenantInfo = await TenantService.GetByIdAsync(Id);
+                Tenant = tenantInfo.Data;
+                Console.WriteLine($"Pulling information using API call : {Tenant.TenantId}");
+
+            }
+        }
+    }
+    
+
+    private static string Display(string? value)
+    {
+        return string.IsNullOrWhiteSpace(value)
+            ? "-"
+            : value;
+    }
+
+
+    private static Color GetStatusColor(string? status)
+    {
+        return status?.ToLowerInvariant() switch
+        {
+            "active" => Color.Success,
+            "inactive" => Color.Error,
+            "pending" => Color.Warning,
+            _ => Color.Default
+        };
+    }
+}
