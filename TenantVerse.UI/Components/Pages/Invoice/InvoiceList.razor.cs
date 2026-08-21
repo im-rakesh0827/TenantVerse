@@ -32,7 +32,7 @@ public partial class InvoiceList : ComponentBase
 
     private string _searchString = string.Empty;
 
-    private string? _paymentStatus;
+    private string? _paymentStatus = "All";
 
     private bool IsLoading;
 
@@ -246,7 +246,22 @@ public partial class InvoiceList : ComponentBase
     // PAYMENT STATUS
     // =========================
 
-    if (!string.IsNullOrWhiteSpace(_paymentStatus))
+    // if (!string.IsNullOrWhiteSpace(_paymentStatus))
+    // {
+    //     if (!string.Equals(
+    //             invoice.PaymentStatus?.Trim(),
+    //             _paymentStatus.Trim(),
+    //             StringComparison.OrdinalIgnoreCase))
+    //     {
+    //         return false;
+    //     }
+    // }
+
+    if (!string.IsNullOrWhiteSpace(_paymentStatus) &&
+        !string.Equals(
+            _paymentStatus,
+            "All",
+            StringComparison.OrdinalIgnoreCase))
     {
         if (!string.Equals(
                 invoice.PaymentStatus?.Trim(),
@@ -257,21 +272,37 @@ public partial class InvoiceList : ComponentBase
         }
     }
 
+    
+
 
     // =========================
     // BILLING MONTH
     // =========================
 
-    if (_billingMonth.HasValue)
-    {
-        var selectedMonth = _billingMonth.Value;
+    // if (_billingMonth.HasValue)
+    // {
+    //     var selectedMonth = _billingMonth.Value;
 
-        if (invoice.BillingMonth.Year != selectedMonth.Year ||
-            invoice.BillingMonth.Month != selectedMonth.Month)
-        {
-            return false;
-        }
+    //     if (invoice.BillingMonth.Year != selectedMonth.Year ||
+    //         invoice.BillingMonth.Month != selectedMonth.Month)
+    //     {
+    //         return false;
+    //     }
+    // }
+
+
+    // ==========================================
+// BILLING MONTH FILTER
+// ==========================================
+
+if (_billingMonth.HasValue)
+{
+    if (invoice.BillingMonth.Year != _billingMonth.Value.Year ||
+        invoice.BillingMonth.Month != _billingMonth.Value.Month)
+    {
+        return false;
     }
+}
 
 
     return true;

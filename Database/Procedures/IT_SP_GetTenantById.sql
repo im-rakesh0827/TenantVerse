@@ -1,4 +1,8 @@
-CREATE OR ALTER PROCEDURE dbo.IT_SP_GetTenantById
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE OR ALTER  PROCEDURE [dbo].[IT_SP_GetTenantById]
 (
     @TenantId INT
 )
@@ -42,6 +46,6 @@ BEGIN
         ON U.UnitId = T.UnitId
 
     WHERE T.TenantId = @TenantId
-      AND T.IsActive = 1;
+    --   AND T.IsActive = 1;
 END;
 GO

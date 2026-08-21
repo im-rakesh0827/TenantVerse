@@ -38,13 +38,12 @@
                  md="3">
 
             <MudSelect T="string"
-                       Label="Payment Status"
+                       Label="Invoice Status"
                        Variant="Variant.Outlined"
                        Margin="Margin.Dense"
-                       Clearable="true"
                        @bind-Value="_paymentStatus">
 
-                       @foreach (var status in PaymentStatus.StatusList)
+                       @foreach (var status in PaymentStatus.FilterStatusList)
                         {
                             <MudSelectItem T="string"
                                            Value="@status">
@@ -214,9 +213,10 @@
                     {
                         <MudButton Variant="Variant.Text"
                                 Color="Color.Primary"
+                                Style="justify-content:flex-start; text-align:left;"
+                                FullWidth="true"
                                 Size="Size.Small"
                                 OnClick="@(() => ShowTenantDetailsAsync(invoice.TenantId))">
-
                             @invoice.TenantName
                         </MudButton>
                     }
@@ -270,13 +270,41 @@
                      STATUS
                      ========================= -->
 
-                <MudTd DataLabel="Status">
+                @* <MudTd DataLabel="Status">
 
                     <MudText Color="@StatusColor.GetStatusColor(invoice.PaymentStatus)">
                         ● @(string.IsNullOrWhiteSpace(invoice.PaymentStatus)
                             ? "Unknown"
                             : invoice.PaymentStatus.Replace("PartiallyPaid", "Partially Paid"))
                     </MudText>
+
+                </MudTd> *@
+
+
+
+                <MudTd DataLabel="Status">
+
+                    @{
+                        var paymentStatus = string.IsNullOrWhiteSpace(invoice.PaymentStatus)
+                            ? "Unknown"
+                            : invoice.PaymentStatus.Replace(
+                                "PartiallyPaid",
+                                "Partially Paid");
+                    }
+
+                    <MudStack Row="true"
+                            AlignItems="AlignItems.Center"
+                            Spacing="1">
+
+                        <MudIcon Icon="@StatusIcon.GetStatusIcon(paymentStatus)"
+                                Color="@StatusColor.GetStatusColor(paymentStatus)"
+                                Size="Size.Small" />
+
+                        <MudText Color="@StatusColor.GetStatusColor(paymentStatus)">
+                            @paymentStatus
+                        </MudText>
+
+                    </MudStack>
 
                 </MudTd>
 

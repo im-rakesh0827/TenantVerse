@@ -27,10 +27,12 @@ public partial class TenantList
     private bool IsLoading;
     private string? _message;
     private Severity _severity = Severity.Info;
+    private string _tenantStatus = "Active";
 
 
     protected IEnumerable<TenantModel> FilteredTenants =>
         string.IsNullOrWhiteSpace(_searchString)
+        && string.IsNullOrWhiteSpace(_tenantStatus)
             ? _tenants
             : _tenants.Where(FilterTenant);
 
@@ -66,48 +68,125 @@ public partial class TenantList
     }
 
 
-    private bool FilterTenant(TenantModel tenant)
-    {
-        if (string.IsNullOrWhiteSpace(_searchString))
-            return true;
+    // private bool FilterTenant(TenantModel tenant)
+    // {
+    //     if (string.IsNullOrWhiteSpace(_searchString))
+    //         return true;
 
-        return
+    //     return
+    //         $"{tenant.FirstName} {tenant.LastName}"
+    //             .Contains(
+    //                 _searchString,
+    //                 StringComparison.OrdinalIgnoreCase)
+
+    //         || (tenant.PropertyName ?? string.Empty)
+    //             .Contains(
+    //                 _searchString,
+    //                 StringComparison.OrdinalIgnoreCase)
+
+    //         || (tenant.UnitNumber ?? string.Empty)
+    //             .Contains(
+    //                 _searchString,
+    //                 StringComparison.OrdinalIgnoreCase)
+
+    //         || (tenant.PhoneNumber ?? string.Empty)
+    //             .Contains(
+    //                 _searchString,
+    //                 StringComparison.OrdinalIgnoreCase)
+
+    //         || (tenant.Email ?? string.Empty)
+    //             .Contains(
+    //                 _searchString,
+    //                 StringComparison.OrdinalIgnoreCase)
+
+    //         || (tenant.Status ?? string.Empty)
+    //             .Contains(
+    //                 _searchString,
+    //                 StringComparison.OrdinalIgnoreCase)
+
+    //         || tenant.MonthlyRent?.ToString()
+    //             .Contains(
+    //                 _searchString,
+    //                 StringComparison.OrdinalIgnoreCase) == true;
+    // }
+
+private bool FilterTenant(TenantModel tenant)
+{
+    // ==========================================
+    // SEARCH FILTER
+    // ==========================================
+
+    if (!string.IsNullOrWhiteSpace(_searchString))
+    {
+        var search = _searchString.Trim();
+
+        var matchesSearch =
             $"{tenant.FirstName} {tenant.LastName}"
                 .Contains(
-                    _searchString,
+                    search,
                     StringComparison.OrdinalIgnoreCase)
 
             || (tenant.PropertyName ?? string.Empty)
                 .Contains(
-                    _searchString,
+                    search,
                     StringComparison.OrdinalIgnoreCase)
 
             || (tenant.UnitNumber ?? string.Empty)
                 .Contains(
-                    _searchString,
+                    search,
                     StringComparison.OrdinalIgnoreCase)
 
             || (tenant.PhoneNumber ?? string.Empty)
                 .Contains(
-                    _searchString,
+                    search,
                     StringComparison.OrdinalIgnoreCase)
 
             || (tenant.Email ?? string.Empty)
                 .Contains(
-                    _searchString,
+                    search,
                     StringComparison.OrdinalIgnoreCase)
 
             || (tenant.Status ?? string.Empty)
                 .Contains(
-                    _searchString,
+                    search,
                     StringComparison.OrdinalIgnoreCase)
 
-            || tenant.MonthlyRent?.ToString()
+            || tenant.MonthlyRent?
+                .ToString("N2")
                 .Contains(
-                    _searchString,
-                    StringComparison.OrdinalIgnoreCase) == true;
+                    search,
+                    StringComparison.OrdinalIgnoreCase)
+                == true;
+
+        if (!matchesSearch)
+        {
+            return false;
+        }
     }
 
+
+    // ==========================================
+    // STATUS FILTER
+    // ==========================================
+
+    if (!string.IsNullOrWhiteSpace(_tenantStatus) &&
+        !string.Equals(
+            _tenantStatus,
+            "All",
+            StringComparison.OrdinalIgnoreCase))
+    {
+        if (!string.Equals(
+                tenant.Status?.Trim(),
+                _tenantStatus.Trim(),
+                StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+    }
+
+
+    return true;
+}
 
     private void AddTenant()
     {
@@ -176,4 +255,6 @@ public partial class TenantList
                Snackbar.Add(_message, _severity);
           }
     }
+
+    
 }

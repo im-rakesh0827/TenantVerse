@@ -22,6 +22,8 @@ public partial class UnitList
     protected string? _errorMessage;
     private string _searchString = string.Empty;
 
+    private string _flatStatus="All";
+
     protected override async Task OnInitializedAsync()
     {
         await LoadUnitsAsync();
@@ -141,73 +143,179 @@ public partial class UnitList
             StringComparison.OrdinalIgnoreCase);
     }
 
-    private bool FilterUnit(UnitModel unit)
-    {
-        if (string.IsNullOrWhiteSpace(_searchString))
-            return true;
+    // private bool FilterUnit(UnitModel unit)
+    // {
+    //     if (string.IsNullOrWhiteSpace(_searchString))
+    //         return true;
 
-        return
+    //     return
+    //         (unit.UnitNumber?.Contains(
+    //             _searchString,
+    //             StringComparison.OrdinalIgnoreCase) ?? false)
+
+    //         ||
+
+    //         (unit.PropertyName?.Contains(
+    //             _searchString,
+    //             StringComparison.OrdinalIgnoreCase) ?? false)
+
+    //         ||
+
+    //         (unit.UnitType?.Contains(
+    //             _searchString,
+    //             StringComparison.OrdinalIgnoreCase) ?? false)
+
+    //         ||
+
+    //         (unit.FloorNumber?.ToString().Contains(
+    //             _searchString,
+    //             StringComparison.OrdinalIgnoreCase) ?? false)
+
+    //         ||
+
+    //         (unit.Bedrooms?.ToString().Contains(
+    //             _searchString,
+    //             StringComparison.OrdinalIgnoreCase) ?? false)
+
+    //         ||
+
+    //         (unit.Bathrooms?.ToString().Contains(
+    //             _searchString,
+    //             StringComparison.OrdinalIgnoreCase) ?? false)
+
+    //         ||
+
+    //         (unit.Area?.ToString().Contains(
+    //             _searchString,
+    //             StringComparison.OrdinalIgnoreCase) ?? false)
+
+    //         ||
+
+    //         (unit.MonthlyRent?.ToString().Contains(
+    //             _searchString,
+    //             StringComparison.OrdinalIgnoreCase) ?? false)
+
+    //         ||
+
+    //         (unit.SecurityDeposit?.ToString().Contains(
+    //             _searchString,
+    //             StringComparison.OrdinalIgnoreCase) ?? false)
+
+    //         ||
+
+    //         (unit.Status?.Contains(
+    //             _searchString,
+    //             StringComparison.OrdinalIgnoreCase) ?? false);
+    // }
+
+
+private bool FilterUnit(UnitModel unit)
+{
+    // ==========================================
+    // SEARCH FILTER
+    // ==========================================
+
+    if (!string.IsNullOrWhiteSpace(_searchString))
+    {
+        var search = _searchString.Trim();
+
+        var matchesSearch =
             (unit.UnitNumber?.Contains(
-                _searchString,
+                search,
                 StringComparison.OrdinalIgnoreCase) ?? false)
 
             ||
 
             (unit.PropertyName?.Contains(
-                _searchString,
+                search,
                 StringComparison.OrdinalIgnoreCase) ?? false)
 
             ||
 
             (unit.UnitType?.Contains(
-                _searchString,
+                search,
                 StringComparison.OrdinalIgnoreCase) ?? false)
 
             ||
 
             (unit.FloorNumber?.ToString().Contains(
-                _searchString,
+                search,
                 StringComparison.OrdinalIgnoreCase) ?? false)
 
             ||
 
             (unit.Bedrooms?.ToString().Contains(
-                _searchString,
+                search,
                 StringComparison.OrdinalIgnoreCase) ?? false)
 
             ||
 
             (unit.Bathrooms?.ToString().Contains(
-                _searchString,
+                search,
                 StringComparison.OrdinalIgnoreCase) ?? false)
 
             ||
 
             (unit.Area?.ToString().Contains(
-                _searchString,
+                search,
                 StringComparison.OrdinalIgnoreCase) ?? false)
 
             ||
 
             (unit.MonthlyRent?.ToString().Contains(
-                _searchString,
+                search,
                 StringComparison.OrdinalIgnoreCase) ?? false)
 
             ||
 
             (unit.SecurityDeposit?.ToString().Contains(
-                _searchString,
+                search,
                 StringComparison.OrdinalIgnoreCase) ?? false)
 
             ||
 
             (unit.Status?.Contains(
-                _searchString,
+                search,
                 StringComparison.OrdinalIgnoreCase) ?? false);
+
+        if (!matchesSearch)
+        {
+            return false;
+        }
     }
+
+
+    // ==========================================
+    // STATUS FILTER
+    // ==========================================
+
+    if (!string.IsNullOrWhiteSpace(_flatStatus) &&
+        !string.Equals(
+            _flatStatus,
+            "All",
+            StringComparison.OrdinalIgnoreCase))
+    {
+        if (!string.Equals(
+                unit.Status?.Trim(),
+                _flatStatus.Trim(),
+                StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+    }
+
+
+    // ==========================================
+    // MATCHED ALL FILTERS
+    // ==========================================
+
+    return true;
+}
+
 
     protected IEnumerable<UnitModel> FilteredUnits =>
         string.IsNullOrWhiteSpace(_searchString)
+        && string.IsNullOrWhiteSpace(_flatStatus)
             ? _units
             : _units.Where(FilterUnit);
     

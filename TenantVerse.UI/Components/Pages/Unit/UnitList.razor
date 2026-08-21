@@ -15,7 +15,7 @@
 
 <MudPaper Class="pa-2">
 
-    <MudStack Row="true"
+    @* <MudStack Row="true"
               Justify="Justify.SpaceBetween"
               AlignItems="AlignItems.Center">
 
@@ -44,7 +44,74 @@
 
         </MudButton>
 
-    </MudStack>
+    </MudStack> *@
+
+
+    <MudStack Row="true"
+          AlignItems="AlignItems.Center"
+          Spacing="2">
+
+    <!-- SEARCH -->
+
+    <MudItem xs="12"
+             sm="6"
+             md="4">
+
+        <MudTextField T="string"
+                      Label="Search"
+                      Placeholder="Search Flat..."
+                      Variant="Variant.Outlined"
+                      Margin="Margin.Dense"
+                      Immediate="true"
+                      Adornment="Adornment.Start"
+                      AdornmentIcon="@Icons.Material.Filled.Search"
+                      @bind-Value="_searchString" />
+
+    </MudItem>
+
+
+    <!-- STATUS -->
+
+    <MudItem xs="12"
+             sm="4"
+             md="3">
+
+        <MudSelect T="string"
+                   Label="Status"
+                   Variant="Variant.Outlined"
+                   Margin="Margin.Dense"
+                   Clearable="false"
+                   @bind-Value="_flatStatus">
+
+            @foreach (var status in UnitStatus.FilterStatusList)
+            {
+                <MudSelectItem T="string"
+                               Value="@status">
+
+                    @status
+
+                </MudSelectItem>
+            }
+
+        </MudSelect>
+
+    </MudItem>
+    
+
+
+    <!-- CREATE -->
+
+    <MudButton Variant="Variant.Filled"
+               Color="Color.Primary"
+               StartIcon="@Icons.Material.Filled.Add"
+               OnClick="AddUnit"
+               Style="margin-left:auto;">
+
+        Create
+
+    </MudButton>
+
+</MudStack>
 
 </MudPaper>
 
@@ -192,10 +259,29 @@
 
                 <!-- STATUS -->
 
-                <MudTd DataLabel="Status">
+                @* <MudTd DataLabel="Status">
                         <MudText Color="@StatusColor.GetStatusColor(context.Status)">
                             ● @context.Status
                         </MudText>
+                </MudTd> *@
+
+
+                <MudTd DataLabel="Status">
+
+                    <MudStack Row="true"
+                            AlignItems="AlignItems.Center"
+                            Spacing="1">
+
+                        <MudIcon Icon="@StatusIcon.GetStatusIcon(context.Status)"
+                                Color="@StatusColor.GetStatusColor(context.Status)"
+                                Size="Size.Small" />
+
+                        <MudText Color="@StatusColor.GetStatusColor(context.Status)">
+                            @context.Status
+                        </MudText>
+
+                    </MudStack>
+
                 </MudTd>
 
                 <!-- ACTIONS -->

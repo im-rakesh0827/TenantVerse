@@ -43,7 +43,7 @@
                    StartIcon="@Icons.Material.Filled.Add"
                    OnClick="NavigateToCreate">
 
-            Add Property
+            Create
 
         </MudButton>
 
@@ -132,7 +132,7 @@
                 <MudTd DataLabel="Email">
                     @context.Email
                 </MudTd>
-                <MudTd DataLabel="Status">
+                @* <MudTd DataLabel="Status">
                     @if (context.IsActive)
                     {
                         <MudText Color="Color.Success">
@@ -146,7 +146,40 @@
                         </MudText>
                     }
 
+                </MudTd> *@
+
+                <MudTd DataLabel="Status">
+
+                    <MudStack Row="true"
+                            AlignItems="AlignItems.Center"
+                            Spacing="1">
+
+                        @if (context.IsActive)
+                        {
+                            <MudIcon Icon="@Icons.Material.Filled.CheckCircle"
+                                    Color="Color.Success"
+                                    Size="Size.Small" />
+
+                            <MudText Color="Color.Success">
+                                Active
+                            </MudText>
+                        }
+                        else
+                        {
+                            <MudIcon Icon="@Icons.Material.Filled.Cancel"
+                                    Color="Color.Error"
+                                    Size="Size.Small" />
+
+                            <MudText Color="Color.Error">
+                                Inactive
+                            </MudText>
+                        }
+
+                    </MudStack>
+
                 </MudTd>
+
+
                 <MudTd DataLabel="Actions">
                     <MudIconButton Icon="@Icons.Material.Filled.Visibility"
                                    Color="Color.Info"

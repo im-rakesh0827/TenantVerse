@@ -141,7 +141,7 @@
                     Spacing="2">
 
             <MudButton Variant="Variant.Outlined"
-                        Color="Color.Secondary"
+                        Color="Color.Default"
                         Disabled="@(IsLoading)"
                         OnClick="Cancel">
                 Cancel
@@ -150,8 +150,9 @@
             <MudButton Variant="Variant.Filled"
                         Color="Color.Primary"
                         ButtonType="ButtonType.Submit"
+                        StartIcon="@Icons.Material.Filled.Save"
                         Disabled="@(IsDisabled || IsLoading)">
-            Update Property
+            Update
             </MudButton>
 
         </MudStack>
