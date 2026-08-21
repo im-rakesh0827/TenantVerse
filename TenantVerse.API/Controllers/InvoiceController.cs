@@ -11,12 +11,27 @@ namespace TenantVerse.API.Controllers;
 // [Authorize]
 public class InvoiceController : ControllerBase
 {
+    // private readonly IInvoiceService _invoiceService;
+
+    // public InvoiceController(
+    //     IInvoiceService invoiceService)
+    // {
+    //     _invoiceService = invoiceService;
+    // }
+
+
     private readonly IInvoiceService _invoiceService;
+    private readonly IInvoicePaymentService _invoicePaymentService;
+    private readonly IInvoicePdfService _invoicePdfService;
 
     public InvoiceController(
-        IInvoiceService invoiceService)
+        IInvoiceService invoiceService,
+        IInvoicePdfService invoicePdfService,
+        IInvoicePaymentService invoicePaymentService)
     {
         _invoiceService = invoiceService;
+        _invoicePdfService = invoicePdfService;
+        _invoicePaymentService = invoicePaymentService;
     }
 
     [HttpPost("create")]
@@ -79,6 +94,100 @@ public class InvoiceController : ControllerBase
         }
 
         return Ok(response);
+    }
+
+
+
+    [HttpGet("charges/{invoiceId:int}")]
+    public async Task<ActionResult<IEnumerable<InvoiceChargeModel>>>
+    GetChargesByInvoiceId(int invoiceId)
+    {
+        var charges =
+            await _invoiceService.GetChargesByInvoiceIdAsync(invoiceId);
+
+        return Ok(charges);
+    }
+
+
+
+
+
+    [HttpGet("{invoiceId:int}/pdf")]
+    public async Task<IActionResult> GenerateInvoicePdf(int invoiceId)
+    {
+        try
+        {
+            // ==========================================
+            // GET INVOICE
+            // ==========================================
+
+            var invoiceResponse = await _invoiceService.GetByIdAsync(invoiceId);
+
+            if (invoiceResponse is null ||
+                !invoiceResponse.IsSuccess ||
+                invoiceResponse.Data is null)
+            {
+                return NotFound(new
+                {
+                    IsSuccess = false,
+                    Message = invoiceResponse?.Message
+                        ?? "Invoice not found."
+                });
+            }
+
+            var invoice = invoiceResponse.Data;
+
+
+            // ==========================================
+            // GET CHARGES
+            // ==========================================
+
+            var charges = await _invoiceService.GetChargesByInvoiceIdAsync(invoiceId);
+
+            charges ??= Enumerable.Empty<InvoiceChargeModel>();
+
+
+            // ==========================================
+            // GET PAYMENTS
+            // ==========================================
+
+            var paymentResponse = await _invoicePaymentService.GetByInvoiceIdAsync(invoiceId);
+
+            var payments =
+                paymentResponse?.Data
+                ?? Enumerable.Empty<InvoicePaymentModel>();
+
+
+            // ==========================================
+            // GENERATE PDF
+            // ==========================================
+
+            var pdf =
+                _invoicePdfService.GenerateInvoicePdf(
+                    invoice,
+                    charges,
+                    payments);
+
+
+            // ==========================================
+            // RETURN PDF
+            // ==========================================
+
+            return File(
+                pdf,
+                "application/pdf",
+                $"Invoice - {invoice.InvoiceNumber}.pdf");
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(
+                StatusCodes.Status500InternalServerError,
+                new
+                {
+                    IsSuccess = false,
+                    Message = ex.Message
+                });
+        }
     }
 
 }

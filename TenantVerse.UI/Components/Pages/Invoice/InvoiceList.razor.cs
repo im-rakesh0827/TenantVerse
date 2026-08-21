@@ -6,7 +6,7 @@ using TenantVerse.Shared.Models.Tenant;
 using TenantVerse.UI.Components.Pages.Invoice.PopUpDialog;
 using TenantVerse.UI.Components.Pages.Tenant.PopUpScreen;
 using TenantVerse.UI.Components.Pages.Tenant.PopUpDialog;
-
+using Microsoft.JSInterop;
 
 namespace TenantVerse.UI.Components.Pages.Invoice;
 
@@ -26,6 +26,9 @@ public partial class InvoiceList : ComponentBase
 
     [Inject]
     private IDialogService DialogService { get; set; } = default!;
+
+    [Inject]
+private IJSRuntime JS { get; set; } = default!;
 
     private List<InvoiceModel> _invoices = new();
     // private List<InvoiceChargeModel> _charges = new();
@@ -434,5 +437,56 @@ if (_billingMonth.HasValue)
      {
 
      }
+
+
+private bool _isPdfDownloading{get; set;} = false;
+     private async Task DownloadInvoicePdfAsync(
+    InvoiceModel invoice)
+{
+    if (invoice is null)
+        return;
+
+    try
+    {
+        _isPdfDownloading = true;
+
+        var pdfBytes =
+            await InvoiceService
+                .DownloadInvoicePdfAsync(
+                    invoice.InvoiceId);
+
+        if (pdfBytes is null ||
+            pdfBytes.Length == 0)
+        {
+            Snackbar.Add(
+                "Unable to generate invoice PDF.",
+                Severity.Error);
+
+            return;
+        }
+
+        var fileName =
+            $"Invoice-{invoice.InvoiceNumber}.pdf";
+
+        await JS.InvokeVoidAsync(
+            "downloadFile",
+            fileName,
+            Convert.ToBase64String(pdfBytes));
+
+        Snackbar.Add(
+            "Invoice PDF downloaded successfully.",
+            Severity.Success);
+    }
+    catch (Exception ex)
+    {
+        Snackbar.Add(
+            $"Unable to download invoice PDF: {ex.Message}",
+            Severity.Error);
+    }
+    finally
+    {
+        _isPdfDownloading = false;
+    }
+}
     
 }

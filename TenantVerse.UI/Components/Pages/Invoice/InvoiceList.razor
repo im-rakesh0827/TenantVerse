@@ -357,7 +357,18 @@
                                    OnClick="@(() =>
                                        DeleteInvoice(invoice.InvoiceId))" />
 
+
+                                       <MudIconButton Icon="@Icons.Material.Filled.PictureAsPdf"
+               Color="Color.Error"
+               Size="Size.Small"
+               Title="Download Invoice PDF"
+               Disabled="@_isPdfDownloading"
+               OnClick="@(() => DownloadInvoicePdfAsync(invoice))" />
+
                 </MudTd>
+
+
+                
 
             </RowTemplate>
 

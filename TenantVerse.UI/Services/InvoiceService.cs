@@ -150,4 +150,16 @@ public async Task<ApiResponse<InvoiceModel>> GetByIdAsync(
                Message = "Unable to load invoice."
            };
 }
+
+
+
+public async Task<byte[]> DownloadInvoicePdfAsync(
+    int invoiceId)
+{
+    var response =
+        await Client.GetAsync($"{baseUrl}/{invoiceId}/pdf");
+
+    response.EnsureSuccessStatusCode();
+    return await response.Content.ReadAsByteArrayAsync();
+}
 }

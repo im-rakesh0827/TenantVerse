@@ -11,5 +11,7 @@ public interface IInvoiceRepository
 
      Task<int> UpdateAsync(UpdateInvoiceRequest request);
      Task<InvoiceModel?> GetByIdAsync(int invoiceId);
-   
+Task<IEnumerable<InvoiceChargeModel>> GetChargesByInvoiceIdAsync(
+    int invoiceId);
+
 }

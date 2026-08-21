@@ -365,5 +365,26 @@ public async Task<InvoiceModel?> GetByIdAsync(
 }
 
 
+public async Task<IEnumerable<InvoiceChargeModel>> GetChargesByInvoiceIdAsync(
+    int invoiceId)
+{
+    var connectionString =
+        _configuration.GetConnectionString("DefaultConnection");
+
+    await using var connection =
+        new SqlConnection(connectionString);
+
+    var charges =
+        await connection.QueryAsync<InvoiceChargeModel>(
+            "dbo.IT_SP_GetChargesByInvoiceId",
+            new
+            {
+                InvoiceId = invoiceId
+            },
+            commandType: CommandType.StoredProcedure);
+
+    return charges;
+}
+
 
 }

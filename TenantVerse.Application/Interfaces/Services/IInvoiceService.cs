@@ -17,4 +17,7 @@ public interface IInvoiceService
 
     Task<ApiResponse<InvoiceModel>> GetByIdAsync(
     int invoiceId);
+
+    Task<IEnumerable<InvoiceChargeModel>> GetChargesByInvoiceIdAsync(
+    int invoiceId);
 }

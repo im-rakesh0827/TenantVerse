@@ -209,76 +209,6 @@ public class InvoiceService : IInvoiceService
     }
 
 
-//     public async Task<int> UpdateAsync(
-//     UpdateInvoiceRequest request)
-// {
-//     if (request.InvoiceId <= 0)
-//         throw new ArgumentException("Invalid invoice ID.");
-
-//     if (request.Charges == null ||
-//         request.Charges.Count == 0)
-//     {
-//         throw new ArgumentException(
-//             "At least one invoice charge is required.");
-//     }
-
-//     return await _invoiceRepository.UpdateAsync(request);
-// }
-
-
-
-// public async Task<int> UpdateAsync(
-//     UpdateInvoiceRequest request)
-// {
-//     if (request.InvoiceId <= 0)
-//         throw new ArgumentException(
-//             "Invalid invoice ID.");
-
-//     if (request.Charges == null ||
-//         request.Charges.Count == 0)
-//     {
-//         throw new ArgumentException(
-//             "At least one invoice charge is required.");
-//     }
-
-//     var electricityCharges =
-//         request.Charges
-//             .Where(x =>
-//                 x.ChargeType.Equals(
-//                     "Electricity",
-//                     StringComparison.OrdinalIgnoreCase))
-//             .ToList();
-
-//     if (electricityCharges.Count > 1)
-//     {
-//         throw new ArgumentException(
-//             "An invoice can contain only one electricity charge.");
-//     }
-
-//     foreach (var charge in electricityCharges)
-//     {
-//         if (!charge.PreviousReading.HasValue ||
-//             !charge.CurrentReading.HasValue ||
-//             !charge.Rate.HasValue)
-//         {
-//             throw new ArgumentException(
-//                 "Electricity charge requires previous reading, current reading and rate.");
-//         }
-
-//         if (charge.CurrentReading.Value <
-//             charge.PreviousReading.Value)
-//         {
-//             throw new ArgumentException(
-//                 "Current electricity reading cannot be less than previous reading.");
-//         }
-//     }
-
-//     return await _invoiceRepository.UpdateAsync(request);
-// }
-
-
-
-
 
 public async Task<ApiResponse<int>> UpdateAsync(
     UpdateInvoiceRequest request)
@@ -367,6 +297,17 @@ public async Task<ApiResponse<InvoiceModel>> GetByIdAsync(
             Message = ex.Message
         };
     }
+}
+
+
+
+
+public async Task<IEnumerable<InvoiceChargeModel>>
+    GetChargesByInvoiceIdAsync(int invoiceId)
+{
+    var charges = await _invoiceRepository.GetChargesByInvoiceIdAsync(invoiceId);
+
+    return charges ?? Enumerable.Empty<InvoiceChargeModel>();
 }
 
 }

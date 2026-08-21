@@ -6,6 +6,8 @@ using TenantVerse.Infrastructure.Repositories;
 using TenantVerse.Application.Interfaces.Authentication;
 using TenantVerse.Infrastructure.Repositories.Authentication;
 using TenantVerse.Infrastructure.Services.Authentication;
+using TenantVerse.Application.Interfaces.Services;
+using TenantVerse.Infrastructure.Services;
 namespace TenantVerse.Infrastructure;
 
 public static class DependencyInjection
@@ -22,7 +24,7 @@ public static class DependencyInjection
         services.AddScoped<ITenantRepository, TenantRepository>();
         services.AddScoped<IInvoiceRepository, InvoiceRepository>();
         services.AddScoped<IInvoicePaymentRepository, InvoicePaymentRepository>();
-
+        services.AddScoped<IInvoicePdfService, InvoicePdfService>();
         return services;
     }
 }
