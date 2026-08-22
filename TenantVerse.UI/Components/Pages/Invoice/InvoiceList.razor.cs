@@ -48,14 +48,6 @@ private IJSRuntime JS { get; set; } = default!;
 
     private DateTime? _billingMonth;
 
-
-    // protected IEnumerable<InvoiceModel> FilteredInvoices =>
-    //     string.IsNullOrWhiteSpace(_searchString)
-    //         && string.IsNullOrWhiteSpace(_paymentStatus)
-    //             ? _invoices
-    //             : _invoices.Where(FilterInvoice);
-
-
     protected IEnumerable<InvoiceModel> FilteredInvoices =>
     string.IsNullOrWhiteSpace(_searchString)
     && string.IsNullOrWhiteSpace(_paymentStatus)
@@ -100,94 +92,6 @@ private IJSRuntime JS { get; set; } = default!;
             IsLoading = false;
         }
     }
-
-
-
-    // private bool FilterInvoice(InvoiceModel invoice)
-    // {
-    //     if (!string.IsNullOrWhiteSpace(_searchString))
-    //     {
-    //         var search =
-    //             _searchString.Trim();
-
-    //         var matchesSearch =
-    //             (invoice.InvoiceNumber ?? string.Empty)
-    //                 .Contains(
-    //                     search,
-    //                     StringComparison.OrdinalIgnoreCase)
-
-    //             ||
-
-    //             (invoice.PropertyName ?? string.Empty)
-    //                 .Contains(
-    //                     search,
-    //                     StringComparison.OrdinalIgnoreCase)
-
-    //             ||
-
-    //             (invoice.UnitNumber ?? string.Empty)
-    //                 .Contains(
-    //                     search,
-    //                     StringComparison.OrdinalIgnoreCase)
-
-    //             ||
-
-    //             (invoice.TenantName ?? string.Empty)
-    //                 .Contains(
-    //                     search,
-    //                     StringComparison.OrdinalIgnoreCase)
-
-    //             ||
-
-    //             invoice.BillingMonth
-    //                 .ToString("MMM yyyy")
-    //                 .Contains(
-    //                     search,
-    //                     StringComparison.OrdinalIgnoreCase)
-
-    //             ||
-
-    //             invoice.DueDate
-    //                 .ToString("dd MMM yyyy")
-    //                 .Contains(
-    //                     search,
-    //                     StringComparison.OrdinalIgnoreCase)
-
-    //             ||
-
-    //             invoice.TotalPayable
-    //                 .ToString()
-    //                 .Contains(
-    //                     search,
-    //                     StringComparison.OrdinalIgnoreCase)
-
-    //             ||
-
-    //             (invoice.PaymentStatus ?? string.Empty)
-    //                 .Contains(
-    //                     search,
-    //                     StringComparison.OrdinalIgnoreCase);
-
-
-    //         if (!matchesSearch)
-    //         {
-    //             return false;
-    //         }
-    //     }
-    //     if (!string.IsNullOrWhiteSpace(_paymentStatus))
-    //     {
-    //         if (!string.Equals(
-    //                 invoice.PaymentStatus,
-    //                 _paymentStatus,
-    //                 StringComparison.OrdinalIgnoreCase))
-    //         {
-    //             return false;
-    //         }
-    //     }
-
-
-    //     return true;
-    // }
 
 
     private bool FilterInvoice(InvoiceModel invoice)

@@ -117,10 +117,10 @@ public class InvoicePdfService : IInvoicePdfService
                                 .Bold();
 
                             left.Item()
-                                .Text("Rakesh Kumar");
+                                .Text(invoice.Property?.OwnerName);
 
                             left.Item()
-                                .Text("Darbhanga, Bihar");
+                                .Text(invoice.Property?.City +", "+invoice.Property?.State);
                         });
 
                     row.RelativeItem()
@@ -534,12 +534,12 @@ public Task<byte[]> GenerateInvoicePdfAsync(InvoiceModel invoice)
 
                             column.Item()
                                 .PaddingTop(8)
-                                .Text("Rakesh Kumar")
+                                .Text(invoice.Property?.OwnerName)
                                 .Bold()
                                 .FontSize(10);
 
                             column.Item()
-                                .Text("Darbhanga, Bihar")
+                                .Text(invoice.Property?.City+", "+invoice.Property?.State)
                                 .FontSize(9);
                         });
 
@@ -1223,16 +1223,15 @@ private static void AddPaymentHeader(
         .FontColor(Colors.White);
 }
 
-private static string GetPaymentStatusColor(
-    string? status)
-{
-    return status?.ToUpperInvariant() switch
+    private static string GetPaymentStatusColor(string? status)
     {
-        "PAID" => Colors.Green.Darken1,
-        "PARTIALLY PAID" => Colors.Orange.Darken2,
-        "OVERDUE" => Colors.Red.Darken1,
-        "VOID" => Colors.Grey.Darken1,
-        _ => Colors.Orange.Darken2
-    };
-}
+        return status?.ToUpperInvariant() switch
+        {
+            "PAID" => Colors.Green.Darken1,
+            "PARTIALLY PAID" => Colors.Orange.Darken2,
+            "OVERDUE" => Colors.Red.Darken1,
+            "VOID" => Colors.Grey.Darken1,
+            _ => Colors.Orange.Darken2
+        };
+    }
 }

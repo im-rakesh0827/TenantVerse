@@ -128,6 +128,7 @@
                 <MudTh>Total</MudTh>
                 <MudTh>Status</MudTh>
                 @* <MudTh>Charges</MudTh> *@
+                <MudTh>Download</MudTh>
                 <MudTh>Actions</MudTh>
             </HeaderContent>
 
@@ -320,6 +321,20 @@
                 </MudTd> *@
 
                 <!-- =========================
+                     DOWNLOAD
+                     ========================= -->
+                <MudTd DataLabel="Download">
+                    <div class="d-flex justify-center align-center">
+                        <MudIconButton Icon="@Icons.Material.Filled.PictureAsPdf"
+                                    Color="Color.Error"
+                                    Size="Size.Small"
+                                    Title="Download Invoice PDF"
+                                    Disabled="@_isPdfDownloading"
+                                    OnClick="@(() => DownloadInvoicePdfAsync(invoice))" />
+                    </div>
+                </MudTd>
+
+                <!-- =========================
                      ACTIONS
                      ========================= -->
 
@@ -356,16 +371,12 @@
                                    Disabled="true"
                                    OnClick="@(() =>
                                        DeleteInvoice(invoice.InvoiceId))" />
-
-
-                    <MudIconButton Icon="@Icons.Material.Filled.PictureAsPdf"
-                        Color="Color.Error"
-                        Size="Size.Small"
-                        Title="Download Invoice PDF"
-                        Disabled="@_isPdfDownloading"
-                        OnClick="@(() => DownloadInvoicePdfAsync(invoice))" />
-
                 </MudTd>
+
+
+
+
+                 
             </RowTemplate>
             <!-- =========================
                  NO RECORDS

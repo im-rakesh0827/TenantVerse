@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TenantVerse.Shared.Models.Property;
 
 namespace TenantVerse.Shared.Models.Invoice;
 public class CreateInvoiceRequest
@@ -87,6 +88,8 @@ public class InvoiceModel
 
     public List<InvoiceChargeModel> Charges { get; set; } = new();
     public List<InvoicePaymentModel> Payments { get; set; } = new();
+    public PropertyDto? Property { get; set; } = new();
+    // public UnitDto? Unit { get; set; } = new();
 }
 
 

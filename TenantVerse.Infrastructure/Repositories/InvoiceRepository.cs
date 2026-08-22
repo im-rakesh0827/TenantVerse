@@ -4,6 +4,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using TenantVerse.Application.Interfaces.Repositories;
 using TenantVerse.Shared.Models.Invoice;
+using TenantVerse.Shared.Models.Property;
 
 namespace TenantVerse.Infrastructure.Repositories;
 
@@ -357,15 +358,17 @@ public async Task<InvoiceModel?> GetByIdAsync(int invoiceId)
 
     var payments = await multi.ReadAsync<InvoicePaymentModel>();
 
+    var property = await multi.ReadAsync<PropertyDto>();
+
     invoice.Charges = charges.ToList();
     invoice.Payments = payments.ToList();
+    invoice.Property = property.FirstOrDefault();
 
     return invoice;
 }
 
 
-public async Task<IEnumerable<InvoiceChargeModel>> GetChargesByInvoiceIdAsync(
-    int invoiceId)
+public async Task<IEnumerable<InvoiceChargeModel>> GetChargesByInvoiceIdAsync(int invoiceId)
 {
     var connectionString =
         _configuration.GetConnectionString("DefaultConnection");
