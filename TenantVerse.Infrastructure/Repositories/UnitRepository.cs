@@ -1,7 +1,6 @@
 using System.Data;
 using Dapper;
 using TenantVerse.Shared.Models.Unit;
-using TenantVerse.Shared.Models.Unit.Requests;
 using TenantVerse.Application.Interfaces.Repositories;
 using TenantVerse.Infrastructure.Persistence;
 

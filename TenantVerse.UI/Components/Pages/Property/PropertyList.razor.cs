@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using TenantVerse.UI.Models.Property;
+using TenantVerse.Shared.Models.Property;
 using TenantVerse.UI.Services;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;

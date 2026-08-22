@@ -1,7 +1,6 @@
-using TenantVerse.Application.DTOs.Property;
+using TenantVerse.Shared.Models.Property;
 using TenantVerse.Application.Interfaces.Repositories;
 using TenantVerse.Application.Interfaces.Services;
-using TenantVerse.Domain.Entities;
 using TenantVerse.Application.Common.Mappings;
 using TenantVerse.Shared.Models;
 namespace TenantVerse.Application.Services;

@@ -1,5 +1,5 @@
-using TenantVerse.Application.DTOs.Property;
-using TenantVerse.Domain.Entities;
+using TenantVerse.Shared.Models.Property;
+
 
 namespace TenantVerse.Application.Common.Mappings;
 

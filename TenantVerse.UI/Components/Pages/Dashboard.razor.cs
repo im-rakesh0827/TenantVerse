@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Components;
-using TenantVerse.UI.Models.Property;
+using TenantVerse.Shared.Models.Property;
 using TenantVerse.UI.Services;
 using Blazored.LocalStorage;
 using TenantVerse.Shared.Models.Unit;

@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using TenantVerse.Shared.Models.Tenant;
 using TenantVerse.Shared.Models.Unit;
-using TenantVerse.UI.Models.Property;
+using TenantVerse.Shared.Models.Property;
 using TenantVerse.UI.Services;
 
 namespace TenantVerse.UI.Components.Pages.Tenant;

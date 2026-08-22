@@ -1,7 +1,6 @@
 using System.Net.Http.Json;
 using TenantVerse.Shared.Models;
 using TenantVerse.Shared.Models.Unit;
-using TenantVerse.Shared.Models.Unit.Requests;
 
 namespace TenantVerse.UI.Services;
 

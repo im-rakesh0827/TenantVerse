@@ -10,7 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using TenantVerse.UI.Models.Property;
+using TenantVerse.Shared.Models.Property;
 using TenantVerse.UI.Services;
 using TenantVerse.UI.Components.Shared;
 namespace TenantVerse.UI.Components.Pages.Invoice;

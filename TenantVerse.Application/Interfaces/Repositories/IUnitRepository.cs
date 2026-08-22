@@ -1,5 +1,4 @@
 using TenantVerse.Shared.Models.Unit;
-using TenantVerse.Shared.Models.Unit.Requests;
 
 namespace TenantVerse.Application.Interfaces.Repositories;
 

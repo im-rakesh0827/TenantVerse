@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using TenantVerse.Application.DTOs.Property;
+using TenantVerse.Shared.Models.Property;
 using TenantVerse.Application.Interfaces.Services;
 using TenantVerse.Shared.Models;
 using TenantVerse.Shared.Helpers;

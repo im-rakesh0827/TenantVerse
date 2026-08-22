@@ -1,13 +1,13 @@
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using TenantVerse.Shared.Models;
-using TenantVerse.Shared.Models.Unit.Requests;
+using TenantVerse.Shared.Models.Unit;
 using TenantVerse.UI.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using TenantVerse.UI.Models.Property;
+using TenantVerse.Shared.Models.Property;
 using TenantVerse.Shared.Models.Unit;
 using TenantVerse.Shared.Helpers;
 

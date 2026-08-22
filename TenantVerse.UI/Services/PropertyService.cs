@@ -1,5 +1,5 @@
 using System.Net.Http.Json;
-using TenantVerse.UI.Models.Property;
+using TenantVerse.Shared.Models.Property;
 using System.Net.Http.Headers;
 using Blazored.LocalStorage;
 // using TenantVerse.Shared.Models.Common;

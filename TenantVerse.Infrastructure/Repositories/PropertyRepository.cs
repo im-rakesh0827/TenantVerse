@@ -1,8 +1,8 @@
 using System.Data;
 using Dapper;
 using TenantVerse.Application.Interfaces.Repositories;
-using TenantVerse.Domain.Entities;
 using TenantVerse.Infrastructure.Persistence;
+using TenantVerse.Shared.Models.Property;
 
 namespace TenantVerse.Infrastructure.Repositories;
 

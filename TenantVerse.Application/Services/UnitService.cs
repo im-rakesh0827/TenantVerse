@@ -2,7 +2,6 @@ using TenantVerse.Application.Interfaces.Repositories;
 using TenantVerse.Application.Interfaces.Services;
 using TenantVerse.Shared.Models;
 using TenantVerse.Shared.Models.Unit;
-using TenantVerse.Shared.Models.Unit.Requests;
 
 namespace TenantVerse.Application.Services;
 

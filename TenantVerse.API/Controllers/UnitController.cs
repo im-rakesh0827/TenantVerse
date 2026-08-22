@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using TenantVerse.Application.Interfaces.Services;
 using TenantVerse.Shared.Models;
 using TenantVerse.Shared.Models.Unit;
-using TenantVerse.Shared.Models.Unit.Requests;
 
 namespace TenantVerse.API.Controllers;
 

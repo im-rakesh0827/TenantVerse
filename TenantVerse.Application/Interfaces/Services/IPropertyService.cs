@@ -1,4 +1,4 @@
-using TenantVerse.Application.DTOs.Property;
+using TenantVerse.Shared.Models.Property;
 using TenantVerse.Shared.Models;
 namespace TenantVerse.Application.Interfaces.Services;
 

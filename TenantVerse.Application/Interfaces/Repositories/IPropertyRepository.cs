@@ -1,5 +1,5 @@
-using TenantVerse.Domain.Entities;
 
+using TenantVerse.Shared.Models.Property;
 namespace TenantVerse.Application.Interfaces.Repositories;
 
 public interface IPropertyRepository
