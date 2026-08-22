@@ -439,54 +439,68 @@ if (_billingMonth.HasValue)
      }
 
 
-private bool _isPdfDownloading{get; set;} = false;
-     private async Task DownloadInvoicePdfAsync(
-    InvoiceModel invoice)
-{
-    if (invoice is null)
-        return;
-
-    try
+    private bool _isPdfDownloading{get; set;} = false;
+    private async Task DownloadInvoicePdfAsync(InvoiceModel invoice)
     {
-        _isPdfDownloading = true;
+        if (invoice is null)
+            return;
+        try
+        {
+            _isPdfDownloading = true;
+            var pdfBytes = await InvoiceService.DownloadInvoicePdfAsync(invoice.InvoiceId);
+            if (pdfBytes is null ||
+                pdfBytes.Length == 0)
+            {
+                Snackbar.Add(
+                    "Unable to generate invoice PDF.",
+                    Severity.Error);
 
-        var pdfBytes =
-            await InvoiceService
-                .DownloadInvoicePdfAsync(
-                    invoice.InvoiceId);
+                return;
+            }
 
-        if (pdfBytes is null ||
-            pdfBytes.Length == 0)
+            var fileName =
+                $"Invoice-{invoice.InvoiceNumber}.pdf";
+
+            await JS.InvokeVoidAsync(
+                "downloadFile",
+                fileName,
+                Convert.ToBase64String(pdfBytes));
+
+            Snackbar.Add(
+                "Invoice PDF downloaded successfully.",
+                Severity.Success);
+        }
+        catch (Exception ex)
         {
             Snackbar.Add(
-                "Unable to generate invoice PDF.",
+                $"Unable to download invoice PDF: {ex.Message}",
                 Severity.Error);
+        }
+        finally
+        {
+            _isPdfDownloading = false;
+        }
+    }
 
+    private async Task DownloadInvoicePdf(InvoiceModel _invoice)
+    {
+        if (_invoice == null)
+        {
             return;
         }
 
-        var fileName =
-            $"Invoice-{invoice.InvoiceNumber}.pdf";
+        var pdf =
+            await InvoiceService.GetInvoicePdfAsync(_invoice.InvoiceId);
 
+        if (pdf == null || pdf.Length == 0)
+        {
+            return;
+        }
         await JS.InvokeVoidAsync(
-            "downloadFile",
-            fileName,
-            Convert.ToBase64String(pdfBytes));
-
-        Snackbar.Add(
-            "Invoice PDF downloaded successfully.",
-            Severity.Success);
+            "downloadFile1",
+            $"Invoice-{_invoice.InvoiceNumber}.pdf",
+            "application/pdf",
+            pdf);
     }
-    catch (Exception ex)
-    {
-        Snackbar.Add(
-            $"Unable to download invoice PDF: {ex.Message}",
-            Severity.Error);
-    }
-    finally
-    {
-        _isPdfDownloading = false;
-    }
-}
     
 }

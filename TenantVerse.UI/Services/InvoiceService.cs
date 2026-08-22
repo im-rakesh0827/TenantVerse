@@ -153,13 +153,24 @@ public async Task<ApiResponse<InvoiceModel>> GetByIdAsync(
 
 
 
-public async Task<byte[]> DownloadInvoicePdfAsync(
-    int invoiceId)
+public async Task<byte[]> DownloadInvoicePdfAsync(int invoiceId)
 {
     var response =
         await Client.GetAsync($"{baseUrl}/{invoiceId}/pdf");
 
     response.EnsureSuccessStatusCode();
+    return await response.Content.ReadAsByteArrayAsync();
+}
+
+
+
+public async Task<byte[]?> GetInvoicePdfAsync(int invoiceId)
+{
+    var response = await Client.GetAsync($"{baseUrl}/generateInvoicePdf/{invoiceId}/pdf");
+    if (!response.IsSuccessStatusCode)
+    {
+        return null;
+    }
     return await response.Content.ReadAsByteArrayAsync();
 }
 }

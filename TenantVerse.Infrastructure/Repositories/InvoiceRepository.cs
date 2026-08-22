@@ -332,8 +332,7 @@ public async Task<int> UpdateAsync(
 }
 
 
-public async Task<InvoiceModel?> GetByIdAsync(
-    int invoiceId)
+public async Task<InvoiceModel?> GetByIdAsync(int invoiceId)
 {
     var connectionString =
         _configuration.GetConnectionString("DefaultConnection");
@@ -350,16 +349,16 @@ public async Task<InvoiceModel?> GetByIdAsync(
             },
             commandType: CommandType.StoredProcedure);
 
-    var invoice =
-        await multi.ReadFirstOrDefaultAsync<InvoiceModel>();
-
+    var invoice = await multi.ReadFirstOrDefaultAsync<InvoiceModel>();
     if (invoice == null)
         return null;
 
-    var charges =
-        await multi.ReadAsync<InvoiceChargeModel>();
+    var charges = await multi.ReadAsync<InvoiceChargeModel>();
+
+    var payments = await multi.ReadAsync<InvoicePaymentModel>();
 
     invoice.Charges = charges.ToList();
+    invoice.Payments = payments.ToList();
 
     return invoice;
 }

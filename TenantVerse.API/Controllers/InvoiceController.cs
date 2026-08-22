@@ -190,4 +190,28 @@ public class InvoiceController : ControllerBase
         }
     }
 
+
+
+
+
+
+    [HttpGet("generateInvoicePdf/{invoiceId:int}/pdf")]
+    public async Task<IActionResult> GetInvoicePdf(int invoiceId)
+    {
+        try
+        {
+            var pdf =
+                await _invoiceService.GetInvoicePdfAsync(invoiceId);
+
+            return File(
+                pdf,
+                "application/pdf",
+                $"Invoice-{invoiceId}.pdf");
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
+    }
+
 }

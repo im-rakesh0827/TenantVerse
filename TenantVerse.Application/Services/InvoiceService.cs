@@ -8,11 +8,12 @@ namespace TenantVerse.Application.Services;
 public class InvoiceService : IInvoiceService
 {
     private readonly IInvoiceRepository _invoiceRepository;
+    private readonly IInvoicePdfService _invoicePdfService;
 
-    public InvoiceService(
-        IInvoiceRepository invoiceRepository)
+    public InvoiceService(IInvoiceRepository invoiceRepository, IInvoicePdfService invoicePdfService)
     {
         _invoiceRepository = invoiceRepository;
+        _invoicePdfService = invoicePdfService;
     }
 
     public async Task<ApiResponse<CreateInvoiceResponse>> CreateAsync(
@@ -256,8 +257,7 @@ public async Task<ApiResponse<int>> UpdateAsync(
 
 
 
-public async Task<ApiResponse<InvoiceModel>> GetByIdAsync(
-    int invoiceId)
+public async Task<ApiResponse<InvoiceModel>> GetByIdAsync(int invoiceId)
 {
     try
     {
@@ -302,12 +302,22 @@ public async Task<ApiResponse<InvoiceModel>> GetByIdAsync(
 
 
 
-public async Task<IEnumerable<InvoiceChargeModel>>
-    GetChargesByInvoiceIdAsync(int invoiceId)
+public async Task<IEnumerable<InvoiceChargeModel>>GetChargesByInvoiceIdAsync(int invoiceId)
 {
     var charges = await _invoiceRepository.GetChargesByInvoiceIdAsync(invoiceId);
-
     return charges ?? Enumerable.Empty<InvoiceChargeModel>();
+}
+
+
+public async Task<byte[]> GetInvoicePdfAsync(int invoiceId)
+{
+    var invoice = await _invoiceRepository.GetByIdAsync(invoiceId);
+    if (invoice == null)
+    {
+        throw new KeyNotFoundException(
+            $"Invoice with ID {invoiceId} was not found.");
+    }
+    return await _invoicePdfService.GenerateInvoicePdfAsync(invoice);
 }
 
 }
